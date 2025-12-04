@@ -10,7 +10,7 @@ type DropDownProps = {
     onClose?: () => void,
 }
 
-export const DropDown = ({ children, openState, onClose, className }: DropDownProps) => {
+export const Dropdown = ({ children, openState, onClose, className }: DropDownProps) => {
     // handle dropdown open state
     const [isOpen, setIsOpen] = useState(false);
     const [isClose, setIsClose] = useState(false);

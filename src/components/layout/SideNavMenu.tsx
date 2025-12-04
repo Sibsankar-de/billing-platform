@@ -4,7 +4,7 @@ import { NavMenuType } from "@/types/NavMenuTypes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, FileText, Package, Receipt } from 'lucide-react';
-import { Button } from "./Button";
+import { Button } from "../ui/Button";
 
 
 export const SideNavMenu = () => {

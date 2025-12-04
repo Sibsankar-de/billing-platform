@@ -34,13 +34,21 @@ export const Select = ({
 
     useEffect(() => {
         const handleOutside = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+                setIsFocused(false);
+            };
         };
         window.addEventListener("mousedown", handleOutside);
         return () => window.removeEventListener("mousedown", handleOutside);
     }, []);
 
     const uid = id || Math.random().toString(36).substring(2, 15);
+
+    function handleClick() {
+        setIsFocused(p => !p);
+        setOpen(p => !p);
+    }
 
     function selectValue(val: string) {
         setSelected(val);
@@ -60,12 +68,12 @@ export const Select = ({
 
     return (
         <div className="relative cursor-pointer"
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
             ref={ref}
         >
             <div
-                className={clsx('w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg h-fit flex items-center gap-2 relative focus-within:ring-primary focus-within:ring-2 transition-all duration-200', className)}
+                className={clsx('w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg h-fit flex items-center gap-2 relative transition-all duration-200', isFocused && "ring-primary ring-2", className)}
+                onKeyDown={onKeyDown}
+                onClick={handleClick}
             >
                 <div
                     id={uid}
@@ -77,12 +85,10 @@ export const Select = ({
                         'w-full resize-y outline-none border-none bg-transparent',
                         disabled && "opacity-50 cursor-not-allowed"
                     )}
-                    onClick={() => !disabled && setOpen((s) => !s)}
-                    onKeyDown={onKeyDown}
                 >
                     <span className="truncate">{!selected ? placeholder : normalized.find((o) => o.value === selected)?.label ?? selected}</span>
                 </div>
-                <div className={cn("transition-transform duration-200", isFocused ? "rotate-180" : "rotate-0")}>
+                <div className={cn("transition-transform duration-200", isFocused ? "rotate-180" : "rotate-0")} >
                     <ChevronDown size={16} className="text-primary" />
                 </div>
             </div>

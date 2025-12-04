@@ -1,6 +1,6 @@
 import { LayoutDashboard, FileText, Package, Receipt, Settings, HelpCircle, Search, Bell, User } from 'lucide-react';
 import { NavMenuType } from '@/types/NavMenuTypes';
-import { SideNavMenu } from './ui/SideNavMenu';
+import { SideNavMenu } from './SideNavMenu';
 
 export function Sidebar() {
 

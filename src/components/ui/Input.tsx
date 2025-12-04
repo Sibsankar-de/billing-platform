@@ -7,6 +7,7 @@ import { cn } from '../utils'
 export const Input = ({ className, id, value, onChange, placeholder, type }: InputType) => {
     return (
         <input
+            id={id}
             type={type || "text"}
             placeholder={placeholder || ""}
             value={value}

@@ -1,4 +1,4 @@
-import { PageContainer } from '@/components/ui/PageContainer'
+import { PageContainer } from '@/components/sections/PageContainer'
 import React from 'react'
 
 export default function DashboardPage() {

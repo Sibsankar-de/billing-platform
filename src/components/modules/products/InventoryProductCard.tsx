@@ -1,6 +1,6 @@
+import { Button } from '@/components/ui/Button'
 import { Edit2, Package, Trash2 } from 'lucide-react'
 import React from 'react'
-import { Button } from './Button'
 
 export const InventoryProductCard = ({ product }: { product: ProductType }) => {
     return (
