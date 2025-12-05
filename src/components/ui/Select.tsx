@@ -71,7 +71,7 @@ export const Select = ({
             ref={ref}
         >
             <div
-                className={clsx('w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg h-fit flex items-center gap-2 relative transition-all duration-200', isFocused && "ring-primary ring-2", className)}
+                className={clsx('w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg h-fit flex items-center justify-between gap-2 relative transition-all duration-200', isFocused && "ring-primary ring-2", className)}
                 onKeyDown={onKeyDown}
                 onClick={handleClick}
             >

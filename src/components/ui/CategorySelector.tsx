@@ -25,7 +25,7 @@ export const CategorySelector = () => {
         <div>
             <div className='flex items-center gap-2'>
                 <div className='relative flex-1'>
-                    <Input placeholder='Type a category' value={inputValue} onChange={e => setInputValue(e)} />
+                    <Input id='category' placeholder='Type a category' value={inputValue} onChange={e => setInputValue(e)} />
                     <div>
                         <Dropdown openState={inputValue.length > 0} className='w-full mt-1 p-3'>
                             <p className='text-center'>Category not found! Try to add it.</p>

@@ -2,7 +2,7 @@
 
 import { NavMenuType } from "@/types/NavMenuTypes";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, FileText, Package, Receipt } from 'lucide-react';
 import { Button } from "../ui/Button";
 
@@ -25,6 +25,8 @@ export const SideNavMenu = () => {
 }
 
 const SideNavMenuItem = ({ item }: { item: NavMenuType }) => {
+    const params = useParams();
+    const storeId = params.store_id;
 
     const pathname = usePathname();
     const router = useRouter();
@@ -34,7 +36,7 @@ const SideNavMenuItem = ({ item }: { item: NavMenuType }) => {
 
     const handleButtonClick = () => {
         if (!isActive)
-            router.push(`/${item.id}`);
+            router.push(`/store/${storeId}/${item.id}`);
     }
     return (
         <li key={item.id}>

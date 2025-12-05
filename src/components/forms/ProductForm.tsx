@@ -4,6 +4,9 @@ import { Textarea } from '../ui/Textarea'
 import { Label } from '../ui/Label'
 import { CategorySelector } from '../ui/CategorySelector'
 import { StockInput } from '../ui/StockInput'
+import { PriceBreakdownInput } from '../ui/PriceBreakdownInput'
+import { Button } from '../ui/Button'
+import { CloudCheck } from 'lucide-react'
 
 export const ProductForm = () => {
     return (
@@ -31,14 +34,24 @@ export const ProductForm = () => {
                 </div>
                 <div className='flex-1'>
                     <Label htmlFor="stock" className='block text-gray-600 mb-1.5' required>Total Stock</Label>
-                    <StockInput />
+                    <StockInput id='stock' />
                 </div>
             </div>
             <div>
                 <Label htmlFor="price-breakdown" required>Add price per quantity</Label>
                 <div>
-                    
+                    <PriceBreakdownInput />
                 </div>
+            </div>
+
+            <div className='mt-10 flex items-center gap-3 justify-self-end'>
+                <Button variant='outline' className=''>
+                    Cancel
+                </Button>
+                <Button >
+                    <CloudCheck size={17} />
+                    Save product
+                </Button>
             </div>
         </div>
     )
