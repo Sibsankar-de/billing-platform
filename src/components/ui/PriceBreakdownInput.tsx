@@ -19,7 +19,7 @@ export const PriceBreakdownInput = () => {
     const [priceBreakdowns, setPriceBreakdowns] = useState<BreakdownType[]>([{ id: 1, price: "", stock: "", unit: "pcs" }]);
     function handleAddNewBreakdown() {
         const lastBreakdown = priceBreakdowns[priceBreakdowns.length - 1];
-        if (priceBreakdowns.length === 0 || (!lastBreakdown.price && !lastBreakdown.stock)) {
+        if (priceBreakdowns.length === 0 || (!lastBreakdown.price || !lastBreakdown.stock)) {
             toast.warn("Fill the current breakdown first.");
             return;
         }
@@ -28,7 +28,7 @@ export const PriceBreakdownInput = () => {
             id: lastBreakdown.id + 1,
             price: "",
             stock: "",
-            unit: "pcs"
+            unit: lastBreakdown.unit
         }
 
         setPriceBreakdowns(prev => ([...prev, newBreakdown]));
@@ -54,14 +54,15 @@ export const PriceBreakdownInput = () => {
 
     return (
         <div>
-            {priceBreakdowns.map(item => (
+            {priceBreakdowns.map((item, index) => (
                 <div key={item.id} className='flex gap-3 items-center max-w-2xl mb-2'>
                     <BreakdownItem
                         item={item}
                         id={item.id}
                         onInputChange={handleUpdateBreakdown}
+                        unitDisabled={priceBreakdowns.length > 1}
                     />
-                    {item.id === priceBreakdowns[priceBreakdowns.length - 1].id ?
+                    {(priceBreakdowns.length === 1 || index > 0) ?
                         <Button className='py-2' onClick={handleAddNewBreakdown}>
                             <Plus />
                         </Button>
@@ -76,7 +77,7 @@ export const PriceBreakdownInput = () => {
     )
 }
 
-function BreakdownItem({ id, item, onInputChange }: { id: number, onInputChange: (i: BreakdownType) => void, item: BreakdownType }) {
+function BreakdownItem({ id, item, onInputChange, unitDisabled }: { id: number, onInputChange: (i: BreakdownType) => void, item: BreakdownType, unitDisabled: boolean }) {
 
     const [inputData, setInputData] = useState<BreakdownType>(item);
 
@@ -106,11 +107,13 @@ function BreakdownItem({ id, item, onInputChange }: { id: number, onInputChange:
                 onChange={e => handleInputChange("price", e)}
                 value={inputData.price}
             />
+            <p className='text-gray-500'>/</p>
             <StockInput
                 id={'stock-' + id}
                 onStockChange={e => handleInputChange("stock", e)}
                 onUnitChange={e => handleInputChange("unit", e)}
                 value={inputData}
+                unitDisabled={unitDisabled}
             />
         </div>
     )

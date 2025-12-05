@@ -46,11 +46,13 @@ export const Select = ({
     const uid = id || Math.random().toString(36).substring(2, 15);
 
     function handleClick() {
+        if (disabled) return
         setIsFocused(p => !p);
         setOpen(p => !p);
     }
 
     function selectValue(val: string) {
+        if (disabled) return;
         setSelected(val);
         onChange?.(val);
         setOpen(false);
@@ -58,6 +60,7 @@ export const Select = ({
     }
 
     function onKeyDown(e: KeyboardEvent) {
+        if (disabled) return;
         if (e.key === " " || e.key === "Enter") {
             e.preventDefault();
             setOpen((s) => !s);
@@ -71,7 +74,7 @@ export const Select = ({
             ref={ref}
         >
             <div
-                className={clsx('w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg h-fit flex items-center justify-between gap-2 relative transition-all duration-200', isFocused && "ring-primary ring-2", className)}
+                className={clsx('w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg h-fit flex items-center justify-between gap-2 relative transition-all duration-200 focus-within:ring-primary focus-within:ring-2', isFocused && "ring-primary ring-2", className)}
                 onKeyDown={onKeyDown}
                 onClick={handleClick}
             >
@@ -86,7 +89,7 @@ export const Select = ({
                         disabled && "opacity-50 cursor-not-allowed"
                     )}
                 >
-                    <span className="truncate">{!selected ? placeholder : normalized.find((o) => o.value === selected)?.label ?? selected}</span>
+                    <span className="truncate select-none">{!selected ? placeholder : normalized.find((o) => o.value === selected)?.label ?? selected}</span>
                 </div>
                 <div className={cn("transition-transform duration-200", isFocused ? "rotate-180" : "rotate-0")} >
                     <ChevronDown size={16} className="text-primary" />
