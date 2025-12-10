@@ -72,9 +72,7 @@ export const InvoiceDocument: React.FC<Props> = ({
                     <thead className="bg-gray-100 border-b">
                         <tr>
                             <th className="py-2 px-3">Item</th>
-                            <th className="py-2 px-3">SKU</th>
                             <th className="py-2 px-3 text-center">Qty</th>
-                            <th className="py-2 px-3 text-center">Unit</th>
                             <th className="py-2 px-3 text-right">Price</th>
                             <th className="py-2 px-3 text-right">Total</th>
                         </tr>
@@ -84,9 +82,7 @@ export const InvoiceDocument: React.FC<Props> = ({
                         {invoice.billItems.map((item) => (
                             <tr key={item._id} className="border-b">
                                 <td className="py-2 px-3">{item.product.name}</td>
-                                <td className="py-2 px-3">{item.product.sku}</td>
-                                <td className="py-2 px-3 text-center">{item.quantity}</td>
-                                <td className="py-2 px-3 text-center">{item.unit}</td>
+                                <td className="py-2 px-3 text-center">{item.quantity} {item.unit}</td>
                                 <td className="py-2 px-3 text-right">
                                     {formatCurrency(item.price)}
                                 </td>

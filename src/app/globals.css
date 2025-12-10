@@ -119,6 +119,22 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@media print {
+  body {
+    background: white !important;
+  }
+
+  /* Only print the target section */
+  #root>*:not(#print-section):not(.print-allowed) {
+    display: none !important;
+  }
+
+  /* Prevent component from being split weirdly */
+  #print-section {
+    page-break-inside: avoid;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

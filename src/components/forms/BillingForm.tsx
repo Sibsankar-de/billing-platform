@@ -9,6 +9,8 @@ import { Textarea } from '../ui/Textarea';
 import { Label } from '../ui/Label';
 import { ProductSearchInput } from '../ui/ProductSearchInput';
 import { BillItemTypes } from '@/types/InvoiceTypes';
+import { Modal } from '../ui/Modal';
+import { InvoiceDocument } from '../sections/Invoice';
 
 export const BillingForm = () => {
     const [items, setItems] = useState<BillItemTypes[]>([
@@ -228,3 +230,11 @@ function BillingSectionRow({ item, onFieldUpdate, onRemoveItem }: { item: BillIt
         </tr>
     )
 } 
+
+const InvoicePrintModal = ()=>{
+    return (
+        <Modal>
+            {/* <InvoiceDocument invoice={}/> */}
+        </Modal>
+    )
+}
