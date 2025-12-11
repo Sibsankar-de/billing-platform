@@ -18,34 +18,32 @@ export const Pagination = ({ totalPage, currentPage = 1, onPageChange }: Paginat
   const [activePage, setActivePage] = useState(1);
   const [pageMapNumber, setPageMapNumber] = useState({ start: 1, end: viewport_num });
 
-  function resetPosition(pageNo: number) {
-    const contains = pageNo + viewport_num - 1;
-    const range = pageNo - contains;
-    setPageMapNumber({
-      start: pageNo,
-      end: contains
-    })
-  }
-
   useEffect(() => {
     if (currentPage) {
       setActivePage(currentPage);
-      resetPosition(currentPage);
     };
   }, [currentPage]);
+
+  useEffect(() => {
+    const contains = activePage + viewport_num - 1;
+    const max_st_range = totalPage - viewport_num;
+    setPageMapNumber(prev => ({
+      start: Math.min(max_st_range, activePage),
+      end: Math.min(contains, totalPage - 1)
+    }))
+  }, [activePage]);
 
 
   const handlePageChange = (page: number) => {
     if (page <= totalPage && page > 0) {
       setActivePage(page);
       onPageChange?.(page);
-      resetPosition(page)
     }
   }
 
   return (
     <div className='flex items-center justify-center w-full gap-2'>
-      <Button variant='outline' className='px-2 py-2 disabled:bg-gray-100 disabled:brightness-100' disabled={activePage === 1}><ChevronLeft size={19} /></Button>
+      <Button variant='outline' className='px-2 py-2 disabled:bg-gray-100 disabled:brightness-100' disabled={activePage === 1} onClick={() => handlePageChange(activePage - 1)}><ChevronLeft size={19} /></Button>
 
       <div className='flex items-center gap-0.5'>
         {
@@ -73,7 +71,7 @@ export const Pagination = ({ totalPage, currentPage = 1, onPageChange }: Paginat
         >{totalPage}</Button>
       </div>
 
-      <Button variant='outline' className='px-2 py-2 disabled:bg-gray-100 disabled:brightness-100' disabled={currentPage === totalPage}><ChevronRight size={19} /></Button>
+      <Button variant='outline' className='px-2 py-2 disabled:bg-gray-100 disabled:brightness-100' disabled={activePage === totalPage} onClick={() => handlePageChange(activePage + 1)}><ChevronRight size={19} /></Button>
     </div>
   )
 }
