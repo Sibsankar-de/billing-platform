@@ -1,5 +1,3 @@
-import react from "react";
-
 type PricePerQuantityType = {
     price?: number;
     quantity?: number;
