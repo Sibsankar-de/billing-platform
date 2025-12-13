@@ -7,7 +7,7 @@ import { ApiError } from "../utils/error-handler";
 
 export const createStore = asyncHandler(
   async (req: NextRequest, context: MiddlewareContext | undefined) => {
-    const { userId } = context!;
+    const { userId } = await context!;
     const { name, address, contactEmail, contactNo } = await req.json();
 
     if (!name) throw new ApiError(400, "Store name is required.");
@@ -34,8 +34,11 @@ export const updateStore = asyncHandler(
     context: MiddlewareContext | undefined,
     params: Record<string, any> | undefined
   ) => {
-    const { userId } = context!;
+    const { userId } = await context!;
     const storeId = params?.storeId;
+
+    console.log(params);
+    
 
     const updateData = await req.json();
 

@@ -6,8 +6,7 @@ const userSchema = new Schema(
   {
     userName: {
       type: String,
-      unique: true,
-      sparse: true,
+      required: true
     },
     email: {
       type: String,
@@ -23,7 +22,7 @@ const userSchema = new Schema(
     },
     authBy: {
       type: String,
-      enum: ["email", "google", "github", "linkedin"],
+      enum: ["email", "google"],
       default: "email",
     },
     isEmailVerified: {

@@ -25,7 +25,7 @@ export const createUser = asyncHandler(async (req: NextRequest) => {
         userName,
         email,
         password,
-        authBy: 'local'
+        authBy: 'email'
     })
 
     if (!newUser) throw new ApiError(401, "Failed to create user");
