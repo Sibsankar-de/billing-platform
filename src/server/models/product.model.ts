@@ -1,16 +1,16 @@
 import mongoose, { model, models, Schema } from "mongoose";
 
-const pricePerQuantitySchema = new Schema(
+export const pricePerQuantitySchema = new Schema(
   {
     price: {
       type: Number,
       default: 0,
     },
-    stock: {
+    quantity: {
       type: Number,
       default: 0,
     },
-    stockUnit: {
+    unit: {
       type: String,
       enum: storeEnums.STOCK_UNIT,
     },
