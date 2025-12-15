@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/response-handler";
 import { Store } from "../models/store.model";
 import { ApiError } from "../utils/error-handler";
 import { StatusCodes } from "http-status-codes";
+import { Product } from "../models/product.model";
 
 export const createStore = asyncHandler(
   async (req: NextRequest, context: MiddlewareContext | undefined) => {
@@ -53,10 +54,35 @@ export const updateStore = asyncHandler(
       { new: true }
     );
 
-    if (!updatedStore) throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to update store");
+    if (!updatedStore)
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "Failed to update store"
+      );
 
     return NextResponse.json(
       new ApiResponse(StatusCodes.OK, updatedStore, "Store updated")
+    );
+  }
+);
+
+export const getProductsByStore = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined
+  ) => {
+    const { userId } = await context!;
+    const { storeId, productId } = await params!;
+
+    const productList = await Product.find({ storeId, productId });
+
+    if (!productList) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Failed to get list");
+    }
+
+    return NextResponse.json(
+      new ApiResponse(StatusCodes.OK, {}, "Products fetched")
     );
   }
 );
