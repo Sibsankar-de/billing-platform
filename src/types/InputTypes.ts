@@ -9,4 +9,5 @@ export type InputType = {
   onChange?: (e: string) => void;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
   value?: string;
+  required?: boolean;
 };

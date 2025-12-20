@@ -15,7 +15,7 @@ export default async function ProductsPage({ params }: { params: Record<string, 
                         <h1 className="text-gray-900 mb-2">My Inventory</h1>
                         <p className="text-gray-600">Manage your product catalog and pricing</p>
                     </div>
-                    <Link href={`/store/${store_id}/inventory/add-product`}>
+                    <Link href={`/stores/${store_id}/inventory/add-product`}>
                         <Button
                             variant='primary'
                         >

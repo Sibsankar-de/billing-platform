@@ -36,7 +36,7 @@ const SideNavMenuItem = ({ item }: { item: NavMenuType }) => {
 
     const handleButtonClick = () => {
         if (!isActive)
-            router.push(`/store/${storeId}/${item.id}`);
+            router.push(`/stores/${storeId}/${item.id}`);
     }
     return (
         <li key={item.id}>

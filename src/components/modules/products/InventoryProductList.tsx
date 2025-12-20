@@ -35,7 +35,7 @@ export const InventoryProductList = () => {
     
     useEffect(()=>{
         if (storeId){
-            dispatch(fetchProducts(storeId) as any);
+            dispatch(fetchProducts(storeId));
         }
     }, [storeId]);
     return (

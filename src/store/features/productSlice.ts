@@ -3,7 +3,7 @@ import { createApiThunk, setState } from "../utils";
 import api from "@/configs/axios-config";
 import { ProductDto } from "@/types/dto/productDto";
 
-export const fetchProducts = createApiThunk(
+export const fetchProducts: any = createApiThunk(
   "products/list",
   async (storeId) => await api.get(`/stores/${storeId}/product-list`)
 );

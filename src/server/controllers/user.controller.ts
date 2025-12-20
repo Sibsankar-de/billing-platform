@@ -5,139 +5,172 @@ import { User } from "../models/user.model";
 import { ApiResponse } from "../utils/response-handler";
 import mongoose from "mongoose";
 import { cookies } from "next/headers";
-import jwt, { JwtPayload } from "jsonwebtoken"
-import { deleteFromCloudinary, uploadToCloudinary } from "../utils/coludinary-upload";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import {
+  deleteFromCloudinary,
+  uploadToCloudinary,
+} from "../utils/coludinary-upload";
 import { MiddlewareContext } from "@/types/middleware";
 import { cloudinaryFolders } from "../constants/cloudinary.constant";
 
-
 // create user
 export const createUser = asyncHandler(async (req: NextRequest) => {
-    const body = await req.json();
-    const { userName, email, password } = body;
+  const body = await req.json();
+  const { userName, email, password } = body;
 
-    if ([userName, email, password].some(e => e === '')) throw new ApiError(400, "All fields are required");
+  if ([userName, email, password].some((e) => e === ""))
+    throw new ApiError(400, "All fields are required");
 
-    const existedUser = await User.findOne({ email });
-    if (existedUser) throw new ApiError(402, "User already exist");
+  const existedUser = await User.findOne({ email });
+  if (existedUser) throw new ApiError(402, "User already exist");
 
-    const newUser = await User.create({
-        userName,
-        email,
-        password,
-        authBy: 'email'
-    })
+  const newUser = await User.create({
+    userName,
+    email,
+    password,
+    authBy: "email",
+  });
 
-    if (!newUser) throw new ApiError(401, "Failed to create user");
+  if (!newUser) throw new ApiError(401, "Failed to create user");
 
-    return NextResponse.json(new ApiResponse(200, {}, "User created"))
+  return NextResponse.json(new ApiResponse(200, {}, "User created"));
 });
 
 // generate tokens
-export const generateAccessAndRefrehToken = async (userId: mongoose.Types.ObjectId) => {
-    try {
-        const user = await User.findById(userId);
-        if (!user) throw new ApiError(401, "User not found");
-        const accessToken = await user.getAccessToken();
-        const refreshToken = await user.getRefreshToken();
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false });
-        return { accessToken, refreshToken };
-    } catch (error) {
-        throw new ApiError(500, "Internal error on generating tokens");
-    }
-}
+export const generateAccessAndRefrehToken = async (
+  userId: mongoose.Types.ObjectId
+) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new ApiError(401, "User not found");
+    const accessToken = await user.getAccessToken();
+    const refreshToken = await user.getRefreshToken();
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Internal error on generating tokens");
+  }
+};
 
 // cookie options
-const expiresDate = new Date(Date.now() + process.env.LOG_COOKIE_EXPIRY * 24 * 60 * 60 * 1000);
+const expiresDate = new Date(
+  Date.now() + process.env.LOG_COOKIE_EXPIRY * 24 * 60 * 60 * 1000
+);
 export const cookieOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none' as const,
-    path: '/',
-    expires: expiresDate
-}
+  httpOnly: true,
+  secure: true,
+  sameSite: "none" as const,
+  path: "/",
+  expires: expiresDate,
+};
 
 // log in
 export const loginUser = asyncHandler(async (req: NextRequest) => {
-    const { email, password } = await req.json();
+  const { email, password } = await req.json();
 
-    if ([email, password].some(e => e === '')) throw new ApiError(400, "All fields are required");
+  if ([email, password].some((e) => e === ""))
+    throw new ApiError(400, "All fields are required");
 
-    // check email
-    const user = await User.findOne({ email });
-    if (!user) throw new ApiError(402, "User not exist");
+  // check email
+  const user = await User.findOne({ email });
+  if (!user) throw new ApiError(402, "User not exist");
 
-    // check password
-    const isPasswordOk = await user.checkPassword(password);
-    if (!isPasswordOk) throw new ApiError(401, "Invalid password");
+  // check password
+  const isPasswordOk = await user.checkPassword(password);
+  if (!isPasswordOk) throw new ApiError(401, "Invalid password");
 
-    const { accessToken, refreshToken } = await generateAccessAndRefrehToken(user?._id);
+  const { accessToken, refreshToken } = await generateAccessAndRefrehToken(
+    user?._id
+  );
 
+  (await cookies()).set("accessToken", accessToken, cookieOptions);
+  (await cookies()).set("refreshToken", refreshToken, cookieOptions);
 
-    (await cookies()).set('accessToken', accessToken, cookieOptions);
-    (await cookies()).set('refreshToken', refreshToken, cookieOptions);
-
-    return NextResponse.json(new ApiResponse(200, {}, "User logged in"))
-
-})
+  return NextResponse.json(new ApiResponse(200, {}, "User logged in"));
+});
 
 // logout user
 export const logoutUser = asyncHandler(async (req: NextRequest) => {
-    const token = req.cookies.get('accessToken')?.value;
-    if (!token) throw new ApiError(400, "Invalid request");
+  const token = req.cookies.get("accessToken")?.value;
+  if (!token) throw new ApiError(400, "Invalid request");
 
-    const verifiedToken = await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  const verifiedToken = await jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET
+  );
 
-    if (!verifiedToken || typeof verifiedToken !== 'object' || !('_id' in verifiedToken)) {
-        throw new ApiError(401, "Unauthorised request");
-    }
+  if (
+    !verifiedToken ||
+    typeof verifiedToken !== "object" ||
+    !("_id" in verifiedToken)
+  ) {
+    throw new ApiError(401, "Unauthorised request");
+  }
 
-    const user = await User.findByIdAndUpdate((verifiedToken as jwt.JwtPayload)._id, {
-        refreshtoken: ''
-    }, { new: true });
+  const user = await User.findByIdAndUpdate(
+    (verifiedToken as jwt.JwtPayload)._id,
+    {
+      refreshtoken: "",
+    },
+    { new: true }
+  );
 
-    (await cookies()).delete('accessToken');
-    (await cookies()).delete('refreshToken');
+  (await cookies()).delete("accessToken");
+  (await cookies()).delete("refreshToken");
 
-    return NextResponse.json(new ApiResponse(200, {}, "User logged out"));
-})
+  return NextResponse.json(new ApiResponse(200, {}, "User logged out"));
+});
 
 // check for auth
-export const checkAuth = asyncHandler(async (req: NextRequest, context: MiddlewareContext | undefined) => {
+export const checkAuth = asyncHandler(
+  async (req: NextRequest, context: MiddlewareContext | undefined) => {
     const { userId } = context!;
     let isAuthenticated = false;
     if (userId) isAuthenticated = true;
 
-    return NextResponse.json(new ApiResponse(200, { isAuthenticated }, "authentication checked"));
-})
+    return NextResponse.json(
+      new ApiResponse(200, { isAuthenticated }, "authentication checked")
+    );
+  }
+);
 
 // update user
-export const updateUser = asyncHandler(async (req: NextRequest, context: MiddlewareContext | undefined) => {
+export const updateUser = asyncHandler(
+  async (req: NextRequest, context: MiddlewareContext | undefined) => {
     const { userId } = context!;
     const { email, userName } = await req.json();
     if (!email || !userName) throw new ApiError(402, "All fields are required");
 
-    // check for new email 
+    // check for new email
     const user = await User.findById(userId);
     if (email !== user.email) {
-        const userByNewEmail = await User.findOne({ email });
-        if (userByNewEmail) throw new ApiError(402, "Email is already in use");
+      const userByNewEmail = await User.findOne({ email });
+      if (userByNewEmail) throw new ApiError(402, "Email is already in use");
     }
 
-    const updatedUser = await User.findByIdAndUpdate(userId, {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
         userName,
-        email
-    }, { new: true }).select("-password -refreshToken");
+        email,
+      },
+      { new: true }
+    ).select("-password -refreshToken");
 
-    return NextResponse.json(new ApiResponse(200, updatedUser, "User details updated"));
-})
+    return NextResponse.json(
+      new ApiResponse(200, updatedUser, "User details updated")
+    );
+  }
+);
 
 // update password
-export const updatePassword = asyncHandler(async (req: NextRequest, context: MiddlewareContext | undefined) => {
+export const updatePassword = asyncHandler(
+  async (req: NextRequest, context: MiddlewareContext | undefined) => {
     const { userId } = context!;
     const { currentPassword, newPassword } = await req.json();
-    if (!currentPassword || !newPassword) throw new ApiError(400, "All fields are required");
+    if (!currentPassword || !newPassword)
+      throw new ApiError(400, "All fields are required");
 
     const user = await User.findById(userId);
 
@@ -147,15 +180,16 @@ export const updatePassword = asyncHandler(async (req: NextRequest, context: Mid
     const isPasswordOk = await user.checkPassword(currentPassword);
     if (!isPasswordOk) throw new ApiError(402, "Invalid current password");
 
-    user.password = newPassword
+    user.password = newPassword;
     user.save({ validateBeforeSave: false });
 
-
     return NextResponse.json(new ApiResponse(200, "Password updated"));
-})
+  }
+);
 
 // update avatar
-export const updateAvatar = asyncHandler(async (req: NextRequest, context: MiddlewareContext | undefined) => {
+export const updateAvatar = asyncHandler(
+  async (req: NextRequest, context: MiddlewareContext | undefined) => {
     const { userId, files } = context!;
 
     const user = await User.findById(userId);
@@ -166,25 +200,34 @@ export const updateAvatar = asyncHandler(async (req: NextRequest, context: Middl
 
     const buffer = Buffer.from(await image.arrayBuffer());
 
-    const uploadData = await uploadToCloudinary(buffer, image.name, cloudinaryFolders.USER_AVATAR);
+    const uploadData = await uploadToCloudinary(
+      buffer,
+      image.name,
+      cloudinaryFolders.USER_AVATAR
+    );
     if (!uploadData) throw new ApiError(402, "Failed to upload avatar");
 
     if (user.avatar) {
-        await deleteFromCloudinary(user.avatar);
+      await deleteFromCloudinary(user.avatar);
     }
 
     user.avatar = uploadData.url;
     user.save({ validateBeforeSave: false });
 
     return NextResponse.json(new ApiResponse(200, user, "Avatar updated"));
-})
+  }
+);
 
-export const validateAndResetPassword = asyncHandler(async (req: NextRequest) => {
+export const validateAndResetPassword = asyncHandler(
+  async (req: NextRequest) => {
     const { token, password } = await req.json();
 
     if (!token || !password) throw new ApiError(400, "Token is required");
 
-    const decodedToken = await jwt.verify(token, process.env.PASSWORD_RESET_TOKEN_SECRET);
+    const decodedToken = await jwt.verify(
+      token,
+      process.env.PASSWORD_RESET_TOKEN_SECRET
+    );
 
     if (!decodedToken) throw new ApiError(401, "Invalid token");
 
@@ -195,13 +238,16 @@ export const validateAndResetPassword = asyncHandler(async (req: NextRequest) =>
     user.password = password;
     await user.save({ validateBeforeSave: false });
 
-    return NextResponse.json(new ApiResponse(200, {}, "Password reset successfully"));
-});
+    return NextResponse.json(
+      new ApiResponse(200, {}, "Password reset successfully")
+    );
+  }
+);
 
 // queries
-export const getUserById = asyncHandler(async (req: NextRequest, context: MiddlewareContext | undefined) => {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('id')
+export const getCurrentUser = asyncHandler(
+  async (req: NextRequest, context: MiddlewareContext | undefined) => {
+    const { userId } = context!;
 
     if (!userId) throw new ApiError(400, "userid is required");
 
@@ -210,4 +256,5 @@ export const getUserById = asyncHandler(async (req: NextRequest, context: Middle
     if (!user) throw new ApiError(402, "User not found");
 
     return NextResponse.json(new ApiResponse(200, user, "User fetched"));
-});
+  }
+);

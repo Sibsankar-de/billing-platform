@@ -1,0 +1,78 @@
+"use client";
+
+import api from "@/configs/axios-config";
+import { AppDispatch } from "@/store/store";
+import { UserDto } from "@/types/dto/userDto";
+import { requestHandler } from "@/utils/api-request";
+import React, { createContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setCurrentUser } from "@/store/features/userSlice";
+
+type AuthContextTypes = {
+    isAuthenticated: boolean;
+    isAuthChecking: boolean;
+    registerUser: (payload: any) => void;
+    loginUser: (payload: any) => void;
+    logoutUser: () => void;
+};
+
+const AuthContext = createContext<AuthContextTypes | null>(null);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const [user, setUser] = useState<UserDto>({});
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthChecking, setIsAuthChecking] = useState(false);
+
+    const getCurrentUser = requestHandler(async () => {
+        setIsAuthChecking(true);
+        await api.get("/users/current-user").then((res) => {
+            const userData = res.data.data;
+            if (userData) {
+                setIsAuthenticated(true);
+                setUser(userData);
+                dispatch(setCurrentUser(userData));
+            }
+        });
+        setIsAuthChecking(false);
+    });
+
+    useEffect(() => {
+        getCurrentUser();
+    }, []);
+
+    const registerUser = requestHandler(async (payload) => {
+        await api.post("/users/register", payload).then(() => {
+            loginUser(payload);
+        });
+    });
+
+    const loginUser = requestHandler(async (payload) => {
+        await api.post("/users/login", payload).then(() => {
+            window.location.href = `${window.location.origin}/profile`;
+        });
+    });
+
+    const logoutUser = requestHandler(async () => {
+        await api.get("/users/logout").then(() => {
+            window.location.href = `${window.location.origin}/auth/login`;
+        });
+    });
+
+    return (
+        <AuthContext.Provider
+            value={{
+                isAuthenticated,
+                isAuthChecking,
+                registerUser,
+                loginUser,
+                logoutUser,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export default AuthContext;
