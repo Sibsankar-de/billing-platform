@@ -1,4 +1,5 @@
 import mongoose, { model, models, Schema } from "mongoose";
+import { storeEnums } from "../enums/store.enum";
 
 export const pricePerQuantitySchema = new Schema(
   {

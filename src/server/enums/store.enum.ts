@@ -1,3 +1,3 @@
-const storeEnums = {
+export const storeEnums = {
     STOCK_UNIT : ["KG", "LITRE", "PCS"]
 }

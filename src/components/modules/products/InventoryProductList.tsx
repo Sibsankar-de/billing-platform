@@ -1,10 +1,15 @@
+"use client";
+
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Search } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { InventoryProductCard } from './InventoryProductCard'
 import { SelectOptionType } from '@/types/SelectType'
 import { Pagination } from '@/components/ui/Pagination'
+import { useDispatch } from 'react-redux';
+import { useParams } from 'next/navigation';
+import { fetchProducts } from '@/store/features/productSlice';
 
 const mockProducts: ProductType[] = [
     { id: '1', name: 'Web Design Service', category: 'Services', price: 150.00, stock: 999, sku: 'WEB-001' },
@@ -24,6 +29,15 @@ const categories: SelectOptionType[] = [
 ]
 
 export const InventoryProductList = () => {
+    const params = useParams();
+    const storeId = params?.store_id;
+    const dispatch = useDispatch();
+    
+    useEffect(()=>{
+        if (storeId){
+            dispatch(fetchProducts(storeId) as any);
+        }
+    }, [storeId]);
     return (
         <div>
             <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
