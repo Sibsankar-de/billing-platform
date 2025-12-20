@@ -43,8 +43,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const registerUser = requestHandler(async (payload) => {
-        await api.post("/users/register", payload).then(() => {
-            loginUser(payload);
+        await api.post("/users/register", payload).then(async() => {
+            await loginUser(payload);
         });
     });
 

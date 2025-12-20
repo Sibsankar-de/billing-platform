@@ -1,7 +1,5 @@
 import { LoginForm } from '@/components/forms/LoginForm'
-import { Receipt } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
 
 export default function LoginPage() {
     return (

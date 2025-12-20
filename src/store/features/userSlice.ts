@@ -1,7 +1,8 @@
+import { UserDto } from "@/types/dto/userDto";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  data: {},
+  data: {} as UserDto,
   status: "idle",
   error: null,
 };

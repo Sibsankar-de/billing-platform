@@ -5,4 +5,5 @@ export type StoreDto = {
     address?: string;
     contactNo?: string;
     contactEmail?: string;
+    businessType?: string;
 }
