@@ -6,4 +6,6 @@ export type StoreDto = {
     contactNo?: string;
     contactEmail?: string;
     businessType?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }

@@ -15,4 +15,6 @@ export type ProductDto = {
     totalStock?: number;
     stockUnit?: string;
     pricePerQuantity?: pricePerQuantityType;
+    createdAt?: Date;
+    updatedAt?: Date;
 }

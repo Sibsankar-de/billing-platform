@@ -34,4 +34,6 @@ export type InvoiceDto = {
     discountAmount?: number;
     taxAmount?: number;
     taxRate?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
