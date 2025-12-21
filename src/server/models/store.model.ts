@@ -1,4 +1,20 @@
 import mongoose, { model, models, Schema } from "mongoose";
+import { storeEnums } from "../enums/store.enum";
+
+const accessListUserSchema = new Schema(
+  {
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: storeEnums.USER_ROLES,
+    },
+  },
+  { _id: false }
+);
 
 const storeSchema = new Schema(
   {
@@ -11,6 +27,9 @@ const storeSchema = new Schema(
       ref: "User",
       required: true,
     },
+    businessType: {
+      type: String,
+    },
     address: {
       type: String,
     },
@@ -19,6 +38,10 @@ const storeSchema = new Schema(
     },
     contactEmail: {
       type: String,
+    },
+    accessList: {
+      type: [accessListUserSchema],
+      required: true,
     },
   },
   { timestamps: true }

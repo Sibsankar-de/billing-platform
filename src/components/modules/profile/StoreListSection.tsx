@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
+import { StoreCreateModal } from "./StoreCreateModal";
 
 export const StoreListSection = () => {
   const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
@@ -15,12 +16,17 @@ export const StoreListSection = () => {
             Manage and switch between your business stores
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setIsStoreModalOpen((p) => !p)}>
           <Plus size={15} />
           Create Store
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-4"></div>
+
+      <StoreCreateModal
+        openState={isStoreModalOpen}
+        onClose={() => setIsStoreModalOpen(false)}
+      />
     </div>
   );
 };
