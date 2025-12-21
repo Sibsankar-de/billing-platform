@@ -1,5 +1,13 @@
 import { UserDto } from "@/types/dto/userDto";
 import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+import { createApiThunk, setState } from "../utils";
+import api from "@/configs/axios-config";
+
+export const fetchCurrentUser: any = createApiThunk(
+  "/users/get",
+  async () => await api.get("/users/current-user")
+);
 
 const initialState = {
   data: {} as UserDto,
@@ -15,7 +23,14 @@ const userSlice = createSlice({
       if (action.payload) state.data = action.payload;
     },
   },
+  extraReducers(builder) {
+    builder
+      .addCase(fetchCurrentUser.pending, setState)
+      .addCase(fetchCurrentUser.rejected, setState)
+      .addCase(fetchCurrentUser.fulfilled, setState);
+  },
 });
 
+export const selectUserSate = (state: RootState) => state.user;
 export const { setCurrentUser } = userSlice.actions;
 export default userSlice.reducer;

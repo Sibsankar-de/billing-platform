@@ -9,9 +9,14 @@ export const ProfileDetailsSection = () => {
   const user = useSelector((state: RootState) => state.user.data);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="p-6">
       <div className="flex items-start gap-6">
-        <Avatar src={user?.avatar} size={100} userName={user?.userName} />
+        <Avatar
+          src={user?.avatar}
+          size={100}
+          userName={user?.userName}
+          fallbackClass="text-3xl"
+        />
 
         <div className="flex-1">
           <div className="mb-4">

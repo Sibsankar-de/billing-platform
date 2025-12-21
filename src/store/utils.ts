@@ -7,9 +7,7 @@ export const createApiThunk = (
   return createAsyncThunk(type, async (payload: any, { rejectWithValue }) => {
     try {
       const response = await func(payload);
-      console.log(response.data);
-
-      return response.data;
+      return response.data.data;
     } catch (err) {
       const error = err as any;
       return rejectWithValue(error.response?.data || error.message);

@@ -14,14 +14,14 @@ export const SignupForm = () => {
   const { registerUser } = useContext(AuthContext)!;
   const [isLoading, setIsLoading] = useState(false);
 
-  const [formdata, setFormData] = useState({
+  const [formData, setFormData] = useState({
     userName: "",
     email: "",
     password: "",
     isAccepted: false,
   });
 
-  function handleFormData(key: keyof typeof formdata, value: any) {
+  function handleFormData(key: keyof typeof formData, value: any) {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
@@ -30,8 +30,8 @@ export const SignupForm = () => {
 
   async function handleSignUp() {
     let isError = false;
-    Object.keys(formdata).forEach((k) => {
-      if (!formdata[k as keyof typeof formdata] && k != "isAccepted") {
+    Object.keys(formData).forEach((k) => {
+      if (!formData[k as keyof typeof formData] && k != "isAccepted") {
         isError = true;
         toast.error(`${k} is required`);
         return;
@@ -39,17 +39,17 @@ export const SignupForm = () => {
     });
 
     if (isError) return;
-    if (formdata.password.length < 5) {
+    if (formData.password.length < 5) {
       toast.warn("Password should contain minimum of 5 characters.");
       return;
     }
-    if (!formdata.isAccepted) {
+    if (!formData.isAccepted) {
       toast.warn("You need to accept terms and conditions to continue");
       return;
     }
 
     setIsLoading(true);
-    await registerUser(formdata);
+    await registerUser(formData);
     setIsLoading(false);
   }
 
@@ -64,48 +64,59 @@ export const SignupForm = () => {
       >
         {/* Email Field */}
         <div className="space-y-2">
-          <Label htmlFor="username">Full name</Label>
+          <Label htmlFor="username" required>
+            Full name
+          </Label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               id="username"
               type="text"
-              value={formdata.userName}
+              value={formData.userName}
               onChange={(e) => handleFormData("userName", e)}
               placeholder="Enter your name"
               className="pl-10"
+              required
+              disabled={isLoading}
             />
           </div>
         </div>
         {/* Email Field */}
         <div className="space-y-2">
-          <Label htmlFor="email">Email Address</Label>
+          <Label htmlFor="email" required>
+            Email Address
+          </Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               id="email"
               type="email"
-              value={formdata.email}
+              value={formData.email}
               onChange={(e) => handleFormData("email", e)}
               placeholder="Enter your email"
               className="pl-10"
+              required
+              disabled={isLoading}
             />
           </div>
         </div>
 
         {/* Password Field */}
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" required>
+            Password
+          </Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               id="password"
               type={"password"}
-              value={formdata.password}
+              value={formData.password}
               onChange={(e) => handleFormData("password", e)}
               placeholder="Enter your password"
               className="pl-10"
               required
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -115,7 +126,7 @@ export const SignupForm = () => {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="remember"
-              checked={formdata.isAccepted}
+              checked={formData.isAccepted}
               onChange={(checked) => handleFormData("isAccepted", checked)}
             />
             <label
@@ -135,6 +146,7 @@ export const SignupForm = () => {
           type="submit"
           className="w-full justify-center"
           disabled={isLoading}
+          loading={isLoading}
         >
           Sign Up
         </Button>

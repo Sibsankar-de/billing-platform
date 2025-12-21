@@ -48,7 +48,7 @@ export const Dropdown = ({ children, openState, onClose, className }: DropDownPr
 
     if (!isOpen) return null;
     return (
-        <div className={clsx(`bg-card backdrop-blur-[20px] rounded-lg p-1 text-sm w-[20em] absolute border border-secondary z-50 dropdown-open-anim`, className, isClose && "dropdown-close-anim")} ref={boxRef}>
+        <div className={clsx(`bg-white rounded-lg p-1 text-sm w-[20em] absolute border border-secondary z-50 dropdown-open-anim`, className, isClose && "dropdown-close-anim")} ref={boxRef}>
             {children}
         </div>
     )

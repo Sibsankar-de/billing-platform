@@ -1,6 +1,9 @@
-import React from "react";
+"use client";
+
+import { useSelector } from "react-redux";
 import { cn } from "../utils";
-import { UserRound } from "lucide-react";
+import { User } from "lucide-react";
+import { selectUserSate } from "@/store/features/userSlice";
 
 type AvatarProps = {
   src?: string;
@@ -30,6 +33,10 @@ export const Avatar = ({
   size,
   fallbackClass,
 }: AvatarProps) => {
+  const user = useSelector(selectUserSate).data;
+  userName = userName || user?.userName;
+  src = src || user?.avatar;
+  
   return (
     <div
       className={cn(
@@ -44,15 +51,15 @@ export const Avatar = ({
 
       {!src && userName && (
         <div className="w-full h-full bg-linear-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white">
-          <span className={cn("text-3xl font-bold", fallbackClass)}>
+          <span className={cn("font-bold select-none", fallbackClass)}>
             {getAvatarFallback(userName || "")}
           </span>
         </div>
       )}
 
       {!src && !userName && (
-        <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
-          <UserRound className="w-[60%] h-[60%]" />
+        <div className="w-full h-full bg-indigo-100 rounded-full flex items-center justify-center">
+          <User className="w-[55%] h-[55%] text-primary" />
         </div>
       )}
     </div>

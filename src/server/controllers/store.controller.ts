@@ -79,6 +79,46 @@ export const updateStore = asyncHandler(
   }
 );
 
+export const getStoreList = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+  ) => {
+    const { userId } = await context!;
+
+    const storeList = await Store.find({ owner: userId }).select("-accessList");
+
+    if (!storeList) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Failed to get list");
+    }
+
+    return NextResponse.json(
+      new ApiResponse(StatusCodes.OK, storeList, "Stores fetched")
+    );
+  }
+);
+
+export const getStoreById = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined
+  ) => {
+    const { userId } = await context!;
+    const { storeId } = await params!;
+
+    const store = await Store.findById(storeId).select("-accessList");
+
+    if (!store) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Failed to get store");
+    }
+
+    return NextResponse.json(
+      new ApiResponse(StatusCodes.OK, store, "Store fetched")
+    );
+  }
+);
+
 export const getProductsByStore = asyncHandler(
   async (
     req: NextRequest,

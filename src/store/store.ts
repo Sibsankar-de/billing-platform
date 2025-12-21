@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import productReducer from "./features/productSlice";
 import userReducer from "./features/userSlice";
+import storeReducer from "./features/storeSlice";
 
 export function makeStore() {
   return configureStore({
     reducer: {
       product: productReducer,
       user: userReducer,
+      store: storeReducer,
     },
   });
 }

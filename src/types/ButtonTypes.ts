@@ -8,4 +8,5 @@ export type ButtonType = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   variant?: "nav" | "primary" | "none" | "secondary" | "outline" | "dark";
   disabled?: boolean;
+  loading?: boolean;
 };

@@ -1,12 +1,16 @@
+"use client";
+
 import { Button } from "@/components/ui/Button";
 import { StoreDto } from "@/types/dto/storeDto";
-import { LayoutDashboard, MapPin, Store } from "lucide-react";
-import React from "react";
+import { formatDateStr } from "@/utils/formatDate";
+import { MapPin, Settings, Store } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const StoreCard = ({ store }: { store: StoreDto }) => {
+  const router = useRouter();
   return (
     <div
-      className={`bg-white rounded-lg border-2 p-6 transition-all hover:shadow-md border-gray-200`}
+      className={`bg-white rounded-lg border p-6 transition-all hover:shadow-md border-gray-200 flex justify-between items-baseline`}
     >
       <div className="flex items-start gap-4">
         <div
@@ -24,15 +28,20 @@ export const StoreCard = ({ store }: { store: StoreDto }) => {
               <MapPin className="w-3 h-3" />
               {store.address}
             </span>
-            <span>Since 19 jan 2024</span>
+            <span>Since {formatDateStr(store?.createdAt || "").dateStr}</span>
           </div>
         </div>
       </div>
-
       <div className="flex items-center gap-2">
-        <Button>
-          <LayoutDashboard size={15} />
+        <Button onClick={() => router.push(`/stores/${store?._id}`)}>
+          <Store size={15} />
           Goto store
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => router.push(`/stores/${store?._id}/settings`)}
+        >
+          <Settings size={20} />
         </Button>
       </div>
     </div>

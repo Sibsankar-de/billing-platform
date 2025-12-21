@@ -12,12 +12,12 @@ export const LoginForm = () => {
   const { loginUser } = useContext(AuthContext)!;
   const [isLoading, setIsLoading] = useState(false);
 
-  const [formdata, setFormData] = useState({
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  function handleFormData(key: keyof typeof formdata, value: any) {
+  function handleFormData(key: keyof typeof formData, value: any) {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
@@ -26,8 +26,8 @@ export const LoginForm = () => {
 
   async function handleLogin() {
     let isError = false;
-    Object.keys(formdata).forEach((k) => {
-      if (!formdata[k as keyof typeof formdata]) {
+    Object.keys(formData).forEach((k) => {
+      if (!formData[k as keyof typeof formData]) {
         isError = true;
         toast.error(`${k} is required`);
         return;
@@ -37,7 +37,7 @@ export const LoginForm = () => {
     if (isError) return;
 
     setIsLoading(true);
-    await loginUser(formdata);
+    await loginUser(formData);
     setIsLoading(false);
   }
   return (
@@ -57,10 +57,12 @@ export const LoginForm = () => {
             <Input
               id="email"
               type="email"
-              value={formdata.email}
+              value={formData.email}
               onChange={(e) => handleFormData("email", e)}
               placeholder="Enter your email"
               className="pl-10"
+              required
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -73,11 +75,12 @@ export const LoginForm = () => {
             <Input
               id="password"
               type={"password"}
-              value={formdata.password}
+              value={formData.password}
               onChange={(e) => handleFormData("password", e)}
               placeholder="Enter your password"
               className="pl-10"
               required
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -94,6 +97,7 @@ export const LoginForm = () => {
           type="submit"
           className="w-full justify-center"
           disabled={isLoading}
+          loading={isLoading}
         >
           Log In
         </Button>
