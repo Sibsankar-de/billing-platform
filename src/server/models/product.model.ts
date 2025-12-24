@@ -60,8 +60,8 @@ const productSchema = new Schema(
       enum: storeEnums.STOCK_UNIT,
     },
     pricePerQuantity: {
-      type: pricePerQuantitySchema,
-      default: {},
+      type: [pricePerQuantitySchema],
+      default: [],
     },
   },
   { timestamps: true }

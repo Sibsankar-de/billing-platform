@@ -4,7 +4,7 @@ import { CloudCheck, Plus, PrinterCheck, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { StockInput } from '../ui/StockInput';
+import { StockUnitInput } from '../ui/StockUnitInput';
 import { Textarea } from '../ui/Textarea';
 import { Label } from '../ui/Label';
 import { ProductSearchInput } from '../ui/ProductSearchInput';
@@ -14,7 +14,7 @@ import { InvoiceDocument } from '../sections/Invoice';
 
 export const BillingForm = () => {
     const [items, setItems] = useState<BillItemTypes[]>([
-        { _id: '1', product: { name: "", sku: "" }, quantity: 1, price: 0, unit: "pcs" }
+        { _id: '1', product: { name: "", sku: "" }, quantity: 1, price: 0, unit: "PCS" }
     ]);
 
     const addItem = () => {
@@ -26,7 +26,7 @@ export const BillingForm = () => {
             },
             quantity: 1,
             price: 0,
-            unit: "pcs"
+            unit: "PCS"
         }]);
     };
 
@@ -201,11 +201,10 @@ function BillingSectionRow({ item, onFieldUpdate, onRemoveItem }: { item: BillIt
                 />
             </td>
             <td className="px-2 py-3">
-                <StockInput
-                    value={{ stock: String(item.quantity), unit: productFields.unit }}
-                    onStockChange={(e) => onFieldUpdate(item._id, 'quantity', parseInt(e) || 0)}
+                <StockUnitInput
+                    // value={{ stock: String(item.quantity), unit: productFields.unit }}
+                    // onStockChange={(e) => onFieldUpdate(item._id, 'quantity', parseInt(e) || 0)}
                     className='w-30'
-                    unitDisabled
                 />
             </td>
             <td className="px-2 py-3">

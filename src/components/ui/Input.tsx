@@ -1,9 +1,19 @@
 "use client";
 
-import { InputType } from "@/types/InputTypes";
 import React, { useState } from "react";
 import { cn } from "../utils";
 import { Eye, EyeOff } from "lucide-react";
+
+export type InputType = {
+  type?: string;
+  placeholder?: string;
+  className?: string;
+  id?: string;
+  onChange?: (e: string) => void;
+  value?: string;
+  disabled?: boolean;
+  props?: React.ComponentProps<"input">
+};
 
 export const Input = ({
   className,
@@ -12,9 +22,8 @@ export const Input = ({
   onChange,
   placeholder,
   type = "text",
-  onKeyDown,
-  required = false,
   disabled = false,
+  ...props
 }: InputType) => {
   const [showPassword, setShowPassword] = useState(false);
   const isTypePassword = type === "password";
@@ -26,14 +35,13 @@ export const Input = ({
         placeholder={placeholder || ""}
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
-        onKeyDown={(e) => onKeyDown?.(e)}
         className={cn(
           "w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200",
           isTypePassword && "pr-10",
           className
         )}
-        required={required}
         disabled={disabled}
+        {...props}
       />
       {isTypePassword && (
         <button

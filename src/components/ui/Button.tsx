@@ -1,10 +1,20 @@
 "use client";
 
-import { ButtonType } from "@/types/ButtonTypes";
 import { ClassValue } from "clsx";
-import React from "react";
 import { cn } from "../utils";
 import { Loader } from "./loader";
+
+export type ButtonType = {
+  children?: React.ReactNode;
+  type?: "button" | "reset" | "submit";
+  className?: string;
+  id?: string;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  variant?: "nav" | "primary" | "none" | "secondary" | "outline" | "dark";
+  disabled?: boolean;
+  loading?: boolean;
+  props?: React.ComponentProps<"button">;
+};
 
 export const Button = ({
   children,
@@ -15,6 +25,7 @@ export const Button = ({
   disabled = false,
   type = "button",
   loading = false,
+  ...props
 }: ButtonType) => {
   const variants: Record<string, ClassValue> = {
     nav: "",
@@ -37,6 +48,7 @@ export const Button = ({
       id={id}
       onClick={(e) => onClick?.(e)}
       disabled={disabled}
+      {...props}
     >
       {children}
       {/* Spinner for loading */}

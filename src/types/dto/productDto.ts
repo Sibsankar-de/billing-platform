@@ -1,7 +1,7 @@
-type pricePerQuantityType = {
+export type PricePerQuantityType = {
+    id?: number;
     price?:number;
     quantity?:number;
-    unit?:string;
 }
 
 export type ProductDto = {
@@ -14,7 +14,7 @@ export type ProductDto = {
     totalPrice?: number;
     totalStock?: number;
     stockUnit?: string;
-    pricePerQuantity?: pricePerQuantityType;
+    pricePerQuantity?: PricePerQuantityType[];
     createdAt?: Date;
     updatedAt?: Date;
 }

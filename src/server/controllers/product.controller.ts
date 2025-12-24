@@ -36,7 +36,7 @@ export const createProduct = asyncHandler(
         pricePerQuantity,
       ].some((e) => !e)
     )
-      throw new ApiError(StatusCodes.BAD_REQUEST, "All fields are required.");
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Fill all the stared fields.");
 
     if (pricePerQuantity.length === 0)
       throw new ApiError(

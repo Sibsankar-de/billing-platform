@@ -1,4 +1,5 @@
 import { createAsyncThunk, WritableDraft } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
 export const createApiThunk = (
   type: string,
@@ -30,5 +31,6 @@ export const setState = (
   } else if (action.type.endsWith("/rejected")) {
     state[key] = "failed";
     state.error = action.payload;
+    toast.error(action.payload?.message || "Something went wrong!");
   }
 };
