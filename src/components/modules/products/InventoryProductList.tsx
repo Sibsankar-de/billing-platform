@@ -3,83 +3,15 @@
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Search } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { InventoryProductCard } from "./InventoryProductCard";
 import { SelectOptionType } from "@/types/SelectType";
 import { Pagination } from "@/components/ui/Pagination";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "next/navigation";
-import {
-  fetchProducts,
-  selectProductState,
-} from "@/store/features/productSlice";
-
-const mockProducts: ProductType[] = [
-  {
-    id: "1",
-    name: "Web Design Service",
-    category: "Services",
-    price: 150.0,
-    stock: 999,
-    sku: "WEB-001",
-  },
-  {
-    id: "2",
-    name: "Mobile App Development",
-    category: "Services",
-    price: 500.0,
-    stock: 999,
-    sku: "MOB-001",
-  },
-  {
-    id: "3",
-    name: "SEO Consultation",
-    category: "Services",
-    price: 200.0,
-    stock: 999,
-    sku: "SEO-001",
-  },
-  {
-    id: "4",
-    name: "Brand Identity Package",
-    category: "Services",
-    price: 300.0,
-    stock: 999,
-    sku: "BRD-001",
-  },
-  {
-    id: "5",
-    name: "Cloud Hosting (Monthly)",
-    category: "Subscription",
-    price: 50.0,
-    stock: 999,
-    sku: "HOST-001",
-  },
-  {
-    id: "6",
-    name: "Premium Support",
-    category: "Services",
-    price: 100.0,
-    stock: 999,
-    sku: "SUP-001",
-  },
-  {
-    id: "7",
-    name: "E-commerce Setup",
-    category: "Services",
-    price: 800.0,
-    stock: 999,
-    sku: "ECOM-001",
-  },
-  {
-    id: "8",
-    name: "Content Writing",
-    category: "Services",
-    price: 75.0,
-    stock: 999,
-    sku: "CONT-001",
-  },
-];
+import { selectProductState } from "@/store/features/productSlice";
+import { getTotalPages, PageResult, paginate } from "@/utils/paginate";
+import { ProductDto } from "@/types/dto/productDto";
 
 const categories: SelectOptionType[] = [
   { label: "All Categories", value: "" },
@@ -87,19 +19,26 @@ const categories: SelectOptionType[] = [
   { label: "Subscription", value: "Subscription" },
 ];
 
+const PAGE_SIZE = 15;
+
 export const InventoryProductList = () => {
-  const params = useParams();
-  const storeId = params?.store_id;
-  const dispatch = useDispatch();
-  const productState = useSelector(selectProductState);
-  const listStatus = productState.status;
-  const productList = productState.data;
+  const { data: productList } = useSelector(selectProductState);
+
+  const [paginatedData, setPaginatedData] = useState<PageResult<ProductDto>>(
+    {}
+  );
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (storeId && listStatus === "idle") {
-      dispatch(fetchProducts(storeId));
+    if (page != paginatedData?.page) {
+      const paginatedResult = paginate(productList, PAGE_SIZE, page);
+      setPaginatedData(paginatedResult);
+      setPage(paginatedResult.page || 1);
     }
-  }, [storeId, dispatch]);
+  }, [page, productList]);
+
+  const totalPage = getTotalPages(productList.length, PAGE_SIZE);
+
   return (
     <div>
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -145,7 +84,11 @@ export const InventoryProductList = () => {
         </div>
       </div>
 
-      <Pagination currentPage={1} totalPage={11} />
+      <Pagination
+        currentPage={page}
+        totalPage={totalPage}
+        onPageChange={(e) => setPage(e)}
+      />
     </div>
   );
 };

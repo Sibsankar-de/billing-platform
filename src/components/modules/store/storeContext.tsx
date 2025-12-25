@@ -1,0 +1,32 @@
+"use client";
+
+import {
+  fetchProducts,
+  selectProductState,
+} from "@/store/features/productSlice";
+import { useParams } from "next/navigation";
+import React, { createContext, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+const storeContext = createContext<undefined>(undefined);
+
+export const StoreContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const params = useParams();
+  const storeId = params?.store_id;
+  const dispatch = useDispatch();
+  const { status: listStatus } = useSelector(selectProductState);
+
+  useEffect(() => {
+    if (storeId && (listStatus === "idle" || listStatus === "success")) {
+      dispatch(fetchProducts(storeId));
+    }
+  }, [storeId, dispatch]);
+
+  return (
+    <storeContext.Provider value={undefined}>{children}</storeContext.Provider>
+  );
+};
