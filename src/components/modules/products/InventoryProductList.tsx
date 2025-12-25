@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { InventoryProductCard } from "./InventoryProductCard";
 import { SelectOptionType } from "@/types/SelectType";
@@ -12,6 +12,9 @@ import { useParams } from "next/navigation";
 import { selectProductState } from "@/store/features/productSlice";
 import { getTotalPages, PageResult, paginate } from "@/utils/paginate";
 import { ProductDto } from "@/types/dto/productDto";
+import { Button } from "@/components/ui/Button";
+import { useStoreNavigation } from "@/hooks/store-navigation";
+import { ProductDeleteModal } from "./ProductDeleteModal";
 
 const categories: SelectOptionType[] = [
   { label: "All Categories", value: "" },
@@ -22,6 +25,7 @@ const categories: SelectOptionType[] = [
 const PAGE_SIZE = 15;
 
 export const InventoryProductList = () => {
+  const { navigate } = useStoreNavigation();
   const { data: productList } = useSelector(selectProductState);
 
   const [paginatedData, setPaginatedData] = useState<PageResult<ProductDto>>(
@@ -66,21 +70,39 @@ export const InventoryProductList = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th className="text-left text-primary px-6 py-4">Sno</th>
                 <th className="text-left text-gray-700 px-6 py-4">
                   Product Name
                 </th>
-                <th className="text-left text-gray-700 px-6 py-4">SKU</th>
-                <th className="text-left text-gray-700 px-6 py-4">Category</th>
-                <th className="text-right text-gray-700 px-6 py-4">Price</th>
+                <th className="text-center text-gray-700 px-6 py-4">SKU</th>
+                <th className="text-center text-gray-700 px-6 py-4">
+                  Date added
+                </th>
+                <th className="text-center text-gray-700 px-6 py-4">
+                  Price (&#8377;)
+                </th>
                 <th className="text-center text-gray-700 px-6 py-4">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {productList.map((product) => (
-                <InventoryProductCard key={product._id} product={product} />
+              {productList.map((product, index) => (
+                <InventoryProductCard
+                  key={product._id}
+                  product={product}
+                  index={index + 1}
+                />
               ))}
             </tbody>
           </table>
+          {productList.length === 0 && (
+            <div className="flex items-center justify-center flex-col gap-3 w-full p-3">
+              <p>No products found in your inventory!</p>
+              <Button onClick={() => navigate("/inventory/add-product")}>
+                <Plus size={17} />
+                Add new product
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -68,14 +68,13 @@ export const SignupForm = () => {
             Full name
           </Label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               id="username"
               type="text"
               value={formData.userName}
               onChange={(e) => handleFormData("userName", e)}
               placeholder="Enter your name"
-              className="pl-10"
+              icon={<User className="w-5 h-5 text-gray-400" />}
               required
               disabled={isLoading}
             />
@@ -87,14 +86,13 @@ export const SignupForm = () => {
             Email Address
           </Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => handleFormData("email", e)}
               placeholder="Enter your email"
-              className="pl-10"
+              icon={<Mail className="w-5 h-5 text-gray-400" />}
               required
               disabled={isLoading}
             />
@@ -107,14 +105,13 @@ export const SignupForm = () => {
             Password
           </Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               id="password"
               type={"password"}
               value={formData.password}
               onChange={(e) => handleFormData("password", e)}
               placeholder="Enter your password"
-              className="pl-10"
+              icon={<Lock className="w-5 h-5 text-gray-400" />}
               required
               disabled={isLoading}
             />

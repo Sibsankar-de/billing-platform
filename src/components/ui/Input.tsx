@@ -2,18 +2,14 @@
 
 import React, { useState } from "react";
 import { cn } from "../utils";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, OctagonAlert } from "lucide-react";
 
-export type InputType = {
-  type?: string;
-  placeholder?: string;
-  className?: string;
-  id?: string;
+export interface InputType
+  extends Omit<React.ComponentProps<"input">, "onChange"> {
   onChange?: (e: string) => void;
-  value?: string;
-  disabled?: boolean;
-  props?: React.ComponentProps<"input">
-};
+  isInvalid?: boolean;
+  icon?: React.ReactElement;
+}
 
 export const Input = ({
   className,
@@ -23,12 +19,19 @@ export const Input = ({
   placeholder,
   type = "text",
   disabled = false,
+  isInvalid = false,
+  icon,
   ...props
 }: InputType) => {
   const [showPassword, setShowPassword] = useState(false);
   const isTypePassword = type === "password";
   return (
-    <div>
+    <div className="flex items-center relative">
+      {icon && (
+        <span className="w-fit h-fit absolute left-3 flex items-center justify-center">
+          {icon}
+        </span>
+      )}
       <input
         id={id}
         type={showPassword ? "text" : type}
@@ -37,7 +40,9 @@ export const Input = ({
         onChange={(e) => onChange?.(e.target.value)}
         className={cn(
           "w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200",
+          isInvalid && "border-red-300 focus:ring-red-200 pr-10",
           isTypePassword && "pr-10",
+          icon && "pl-10",
           className
         )}
         disabled={disabled}
@@ -49,7 +54,7 @@ export const Input = ({
           onClick={(e) => {
             setShowPassword(!showPassword);
           }}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+          className="absolute right-3 text-gray-400 hover:text-gray-600 cursor-pointer"
         >
           {showPassword ? (
             <EyeOff className="w-5 h-5" />
@@ -57,6 +62,11 @@ export const Input = ({
             <Eye className="w-5 h-5" />
           )}
         </button>
+      )}
+      {isInvalid && (
+        <div className="absolute right-3">
+          <OctagonAlert className="w-5 h-5 text-red-300" />
+        </div>
       )}
     </div>
   );

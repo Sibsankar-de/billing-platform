@@ -36,7 +36,10 @@ export const createProduct = asyncHandler(
         pricePerQuantity,
       ].some((e) => !e)
     )
-      throw new ApiError(StatusCodes.BAD_REQUEST, "Fill all the stared fields.");
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Fill all the stared fields."
+      );
 
     if (pricePerQuantity.length === 0)
       throw new ApiError(
@@ -110,6 +113,21 @@ export const getProduct = asyncHandler(
 
     return NextResponse.json(
       new ApiResponse(StatusCodes.OK, product, "Product fetched")
+    );
+  }
+);
+
+export const deleteProduct = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined
+  ) => {
+    const { productId } = await params!;
+    await Product.findByIdAndDelete(productId);
+
+    return NextResponse.json(
+      new ApiResponse(200, { productId }, "Product deleted")
     );
   }
 );

@@ -8,23 +8,32 @@ import { StockUnitInput } from "../../ui/StockUnitInput";
 import { PriceBreakdownInput } from "../../ui/PriceBreakdownInput";
 import { Button } from "../../ui/Button";
 import { CloudCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PricePerQuantityType, ProductDto } from "@/types/dto/productDto";
 import { numToStr } from "@/utils/conversion";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addNewProductThunk,
   selectProductState,
+  updateProductThunk,
 } from "@/store/features/productSlice";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useStoreNavigation } from "@/hooks/store-navigation";
+import { StockInput } from "@/components/ui/StockInput";
 
-export const CreateProductForm = ({ formFor }: { formFor: string }) => {
+export const ProductForm = ({ formFor }: { formFor: string }) => {
   const router = useRouter();
   const params = useParams();
   const storeId = params?.store_id;
+  const productId = params?.product_id;
   const dispatch = useDispatch();
-  const { createStatus } = useSelector(selectProductState);
+  const {
+    data: productList,
+    createStatus,
+    updateStatus,
+  } = useSelector(selectProductState);
+  const { navigate } = useStoreNavigation();
 
   const [formData, setFormData] = useState<ProductDto>({
     name: "",
@@ -37,6 +46,14 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
     pricePerQuantity: [] as PricePerQuantityType[],
   });
 
+  useEffect(() => {
+    if (formFor === "edit" && productId) {
+      const product = productList.find((e) => e._id === productId);
+      if (!product) return;
+      setFormData(product);
+    }
+  }, [productList, productId, formFor]);
+
   function handleFormData(key: keyof typeof formData, value: any) {
     setFormData((prev) => ({
       ...prev,
@@ -46,20 +63,30 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
 
   const handleCreateProduct = () => {
     if (!formData || !storeId) return;
-    // if (createStatus === "idle")
     dispatch(addNewProductThunk({ ...formData, storeId }))
       .unwrap()
       .then(() => {
         toast.success("Product created");
-        router.push(`/stores/${storeId}/inventory`);
+        navigate(`/inventory`);
+      });
+  };
+
+  const handleUpdateProduct = () => {
+    if (!formData || !storeId) return;
+    dispatch(updateProductThunk({ ...formData, productId }))
+      .unwrap()
+      .then(() => {
+        toast.success("Product updated");
+        navigate(`/inventory`);
       });
   };
 
   const handleSaveProduct = () => {
     if (formFor === "create") handleCreateProduct();
+    else handleUpdateProduct();
   };
 
-  const isCreating = createStatus === "loading";
+  const isLoading = createStatus === "loading" || updateStatus === "loading";
 
   return (
     <div className="space-y-4">
@@ -71,7 +98,8 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
           placeholder="Enter product name"
           id="name"
           value={formData.name}
-          onChange={(e) => handleFormData("name", e)}
+          onChange={(e) => handleFormData("name", e.trim())}
+          disabled={isLoading}
         />
       </div>
       <div>
@@ -82,7 +110,8 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
           placeholder="Enter sku"
           id="sku"
           value={formData.sku}
-          onChange={(e) => handleFormData("sku", e)}
+          onChange={(e) => handleFormData("sku", e.trim())}
+          disabled={isLoading}
         />
       </div>
       <div>
@@ -94,6 +123,7 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
           id="description"
           value={formData.description}
           onChange={(e) => handleFormData("description", e)}
+          disabled={isLoading}
         />
       </div>
       <div>
@@ -112,7 +142,7 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
             className="block text-gray-600 mb-1.5"
             required
           >
-            Total price
+            Total price (&#8377;)
           </Label>
           <Input
             type="number"
@@ -120,6 +150,7 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
             id="price"
             value={numToStr(formData.totalPrice)}
             onChange={(e) => handleFormData("totalPrice", Number(e))}
+            disabled={isLoading}
           />
         </div>
         <div className="flex-1">
@@ -134,6 +165,7 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
             id="stock-unit"
             value={formData.stockUnit}
             onChange={(e) => handleFormData("stockUnit", e)}
+            disabled={isLoading}
           />
         </div>
         <div className="flex-1">
@@ -144,12 +176,14 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
           >
             Total Stock
           </Label>
-          <Input
+          <StockInput
             type="number"
             id="stock"
             placeholder="Enter quantity"
             value={numToStr(formData.totalStock)}
+            unit={formData.stockUnit}
             onChange={(e) => handleFormData("totalStock", Number(e))}
+            disabled={isLoading}
           />
         </div>
       </div>
@@ -161,6 +195,7 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
           <PriceBreakdownInput
             value={formData.pricePerQuantity}
             onChange={(e) => handleFormData("pricePerQuantity", e)}
+            unit={formData.stockUnit}
           />
         </div>
       </div>
@@ -171,8 +206,8 @@ export const CreateProductForm = ({ formFor }: { formFor: string }) => {
         </Button>
         <Button
           onClick={handleSaveProduct}
-          disabled={isCreating}
-          loading={isCreating}
+          disabled={isLoading}
+          loading={isLoading}
         >
           <CloudCheck size={17} />
           Save product

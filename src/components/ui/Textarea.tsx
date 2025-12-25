@@ -3,16 +3,11 @@
 import React from "react";
 import { cn } from "../utils";
 
-export type TextareaType = {
-  type?: string;
-  placeholder?: string;
-  className?: string;
-  id?: string;
+export interface TextareaType
+  extends Omit<React.ComponentProps<"textarea">, "onChange"> {
   onChange?: (e: string) => void;
-  value?: string;
-  disabled?: boolean;
-  props?: React.ComponentProps<"textarea">;
-};
+  isInvalid?: boolean;
+}
 
 export const Textarea = ({
   className,
@@ -20,7 +15,7 @@ export const Textarea = ({
   value,
   onChange,
   placeholder,
-  props,
+  ...props
 }: TextareaType) => {
   return (
     <textarea

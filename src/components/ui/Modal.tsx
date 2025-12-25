@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 type ModalProps = {
   children?: React.ReactNode;
@@ -48,7 +49,7 @@ export const Modal = ({
   });
 
   if (!open) return null;
-  return (
+  return createPortal(
     <div
       className={clsx(
         "fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-60 backdrop-blur-[5px] fade-in",
@@ -67,6 +68,7 @@ export const Modal = ({
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

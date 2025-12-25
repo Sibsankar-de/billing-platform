@@ -47,7 +47,7 @@ export const CategorySelector = ({
             id="category"
             placeholder="Type a category"
             value={inputValue}
-            onChange={(e) => setInputValue(e)}
+            onChange={(e) => setInputValue(e.trim())}
           />
           <div>
             <Dropdown

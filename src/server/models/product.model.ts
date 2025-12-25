@@ -3,6 +3,10 @@ import { storeEnums } from "../enums/store.enum";
 
 export const pricePerQuantitySchema = new Schema(
   {
+    id: {
+      type: Number,
+      default: 1,
+    },
     price: {
       type: Number,
       default: 0,
@@ -10,10 +14,6 @@ export const pricePerQuantitySchema = new Schema(
     quantity: {
       type: Number,
       default: 0,
-    },
-    unit: {
-      type: String,
-      enum: storeEnums.STOCK_UNIT,
     },
   },
   { _id: false }

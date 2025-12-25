@@ -1,21 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Label } from "./Label";
+import { useEffect, useState } from "react";
 import { Input } from "./Input";
-import { StockUnitInput } from "./StockUnitInput";
 import { Button } from "./Button";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { PricePerQuantityType } from "@/types/dto/productDto";
 import { numToStr } from "@/utils/conversion";
+import { StockInput } from "./StockInput";
 
 export const PriceBreakdownInput = ({
   value,
   onChange,
+  unit,
 }: {
   value?: PricePerQuantityType[];
   onChange?: (e: PricePerQuantityType[]) => void;
+  unit?: string;
 }) => {
   const [priceBreakdowns, setPriceBreakdowns] = useState<
     PricePerQuantityType[]
@@ -39,7 +40,7 @@ export const PriceBreakdownInput = ({
     }
 
     const newBreakdown: PricePerQuantityType = {
-      id: lastBreakdown.id! + 1,
+      id: (lastBreakdown.id || 0) + 1,
       price: 0,
       quantity: 0,
     };
@@ -72,6 +73,7 @@ export const PriceBreakdownInput = ({
             item={item}
             id={item.id!}
             onInputChange={handleUpdateBreakdown}
+            unit={unit}
           />
           {index === priceBreakdowns.length - 1 ? (
             <Button className="py-2" onClick={handleAddNewBreakdown}>
@@ -100,10 +102,12 @@ function BreakdownItem({
   id,
   item,
   onInputChange,
+  unit,
 }: {
   id: number;
   onInputChange: (i: PricePerQuantityType) => void;
   item: PricePerQuantityType;
+  unit?: string;
 }) {
   const [inputData, setInputData] = useState<PricePerQuantityType>(item);
 
@@ -134,11 +138,12 @@ function BreakdownItem({
         value={numToStr(inputData.price)}
       />
       <p className="text-gray-500">/</p>
-      <Input
+      <StockInput
         id={"stock-" + id}
         placeholder="Enter quantity"
         onChange={(e) => handleInputChange("quantity", e)}
         value={numToStr(inputData.quantity)}
+        unit={unit}
       />
     </div>
   );

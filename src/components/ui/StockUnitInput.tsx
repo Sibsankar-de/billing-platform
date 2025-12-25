@@ -1,3 +1,4 @@
+import { unitMap } from "@/constants/UnitMaps";
 import { Select } from "./Select";
 import { SelectOptionType } from "@/types/SelectType";
 
@@ -13,11 +14,7 @@ export const StockUnitInput = ({
   className?: string;
   disabled?: boolean;
 }) => {
-  const options: SelectOptionType[] = [
-    { value: "PCS", label: "PCS" },
-    { value: "KG", label: "KG" },
-    { value: "LITRE", label: "Litre" },
-  ];
+  const options: SelectOptionType[] = unitMap;
   return (
     <Select
       id={id}

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { PageContainer } from "@/components/sections/PageContainer";
 import React from "react";
-import { CreateProductForm } from "@/components/modules/products/CreateProductForm";
+import { ProductForm } from "@/components/modules/products/ProductForm";
 
 export default function AddProductPage() {
   return (
@@ -14,7 +14,7 @@ export default function AddProductPage() {
           </div>
         </div>
       </div>
-      <CreateProductForm formFor="create"/>
+      <ProductForm formFor="create" />
     </PageContainer>
   );
 }

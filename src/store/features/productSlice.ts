@@ -14,10 +14,23 @@ export const addNewProductThunk: any = createApiThunk(
   async (payload) => await api.post("/products/create", payload)
 );
 
+export const updateProductThunk: any = createApiThunk(
+  "/products/update",
+  async (payload) =>
+    await api.post(`/products/${payload.productId}/update`, payload)
+);
+
+export const deleteProductThunk: any = createApiThunk(
+  "/products/delete",
+  async (payload) => await api.delete(`/products/${payload.productId}/delete`)
+);
+
 const initialState = {
   data: [] as ProductDto[],
   status: "idle",
   createStatus: "idle",
+  updateStatus: "idle",
+  deleteStatus: "idle",
   error: null,
 };
 
@@ -40,12 +53,40 @@ const productSlice = createSlice({
         state.createStatus = "success";
         state.error = null;
         state.data.push(action.payload);
+      })
+      .addCase(updateProductThunk.pending, (state, action) =>
+        setState(state, action, "updateStatus")
+      )
+      .addCase(updateProductThunk.rejected, (state, action) =>
+        setState(state, action, "updateStatus")
+      )
+      .addCase(updateProductThunk.fulfilled, (state, action) => {
+        state.updateStatus = "success";
+        state.error = null;
+        const updatedProduct = action.payload;
+        const p_index = state.data.findIndex(
+          (p) => p._id === updatedProduct._id
+        );
+        if (p_index !== -1) {
+          state.data[p_index] = updatedProduct;
+        }
+      })
+
+      .addCase(deleteProductThunk.pending, (state, action) =>
+        setState(state, action, "deleteStatus")
+      )
+      .addCase(deleteProductThunk.rejected, (state, action) =>
+        setState(state, action, "deleteStatus")
+      )
+      .addCase(deleteProductThunk.fulfilled, (state, action) => {
+        state.deleteStatus = "success";
+        state.error = null;
+        state.data = state.data.filter(
+          (e) => e._id !== action.payload?.productId
+        );
       });
   },
 });
-
-export const getProductById = (state: RootState, id: string) =>
-  state.product.data.find((e) => e._id === id);
 
 export const selectProductState = (state: RootState) => state.product;
 export default productSlice.reducer;

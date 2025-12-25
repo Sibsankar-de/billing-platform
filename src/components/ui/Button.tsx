@@ -4,7 +4,7 @@ import { ClassValue } from "clsx";
 import { cn } from "../utils";
 import { Loader } from "./loader";
 
-export type ButtonType = {
+export interface ButtonType extends React.ComponentProps<"button"> {
   children?: React.ReactNode;
   type?: "button" | "reset" | "submit";
   className?: string;
@@ -13,8 +13,7 @@ export type ButtonType = {
   variant?: "nav" | "primary" | "none" | "secondary" | "outline" | "dark";
   disabled?: boolean;
   loading?: boolean;
-  props?: React.ComponentProps<"button">;
-};
+}
 
 export const Button = ({
   children,

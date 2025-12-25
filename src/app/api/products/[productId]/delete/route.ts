@@ -2,10 +2,10 @@ import { withDbAndCors } from "@/server/utils/withDbAndCors";
 import { NextRequest } from "next/server";
 import { runMiddlewares } from "@/server/utils/middlewareControll";
 import { verifyAuth } from "@/server/middlewares/auth.middleware";
-import { updateProduct } from "@/server/controllers/product.controller";
+import { deleteProduct } from "@/server/controllers/product.controller";
 
-export const POST = withDbAndCors(async (req: NextRequest, { params }) => {
+export const DELETE = withDbAndCors(async (req: NextRequest, { params }) => {
   const context = runMiddlewares(req, [verifyAuth]);
 
-  return await updateProduct(req, context, params);
+  return await deleteProduct(req, context, params);
 });
