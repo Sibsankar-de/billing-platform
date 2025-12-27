@@ -98,7 +98,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
           placeholder="Enter product name"
           id="name"
           value={formData.name}
-          onChange={(e) => handleFormData("name", e.trim())}
+          onChange={(e) => handleFormData("name", e)}
           disabled={isLoading}
         />
       </div>
@@ -110,7 +110,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
           placeholder="Enter sku"
           id="sku"
           value={formData.sku}
-          onChange={(e) => handleFormData("sku", e.trim())}
+          onChange={(e) => handleFormData("sku", e)}
           disabled={isLoading}
         />
       </div>

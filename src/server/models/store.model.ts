@@ -21,6 +21,7 @@ const storeSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     owner: {
       type: mongoose.Types.ObjectId,
@@ -29,9 +30,11 @@ const storeSchema = new Schema(
     },
     businessType: {
       type: String,
+      trim: true,
     },
     address: {
       type: String,
+      trim: true,
     },
     contactNo: {
       type: String,

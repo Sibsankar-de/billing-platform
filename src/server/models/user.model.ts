@@ -6,12 +6,14 @@ const userSchema = new Schema(
   {
     userName: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
     password: {
       type: String,
@@ -35,8 +37,8 @@ const userSchema = new Schema(
       enum: ["USER", "ADMIN"],
     },
     refreshToken: {
-        type: String,
-    }
+      type: String,
+    },
   },
   { timestamps: true }
 );

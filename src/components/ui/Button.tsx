@@ -42,6 +42,7 @@ export const Button = ({
         "flex items-center gap-2 px-4 py-2.5 border border-transparent rounded-lg cursor-pointer disabled:brightness-75 disabled:cursor-not-allowed select-none relative",
         "transition-all duration-150 active:translate-y-0.5 active:brightness-90",
         variants[variant],
+        loading && "bg-gray-300",
         className
       )}
       id={id}
@@ -56,11 +57,11 @@ export const Button = ({
           aria-disabled={true}
           className={cn(
             "absolute w-full h-full inset-0 flex justify-center items-center",
-            variants[variant],
-            "border-none! rounded-2xl! transition-none! pointer-events-none!"
+            "bg-gray-300",
+            "border-none! rounded-lg! transition-none! pointer-events-none!"
           )}
         >
-          <Loader className="" />
+          <Loader className="border-white border-t-primary" size={22} />
         </div>
       )}
     </button>

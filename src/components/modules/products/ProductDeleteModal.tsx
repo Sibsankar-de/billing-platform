@@ -61,9 +61,13 @@ export function ProductDeleteModal({
       </div>
       <p>This action will delete the product permanently.</p>
       <div className="mb-6">
-        <Label>Type "{confirmationLine}" for confirmation.</Label>
+        <Label>
+          Type{" "}
+          <span className="text-red-400 font-semibold">{confirmationLine}</span>{" "}
+          for confirmation.
+        </Label>
         <Input
-          placeholder="Type the confirmation line"
+          placeholder={confirmationLine}
           onChange={(e) => setConfInpt(e)}
           value={confInput}
           isInvalid={confInput.length > 0 && confInput !== confirmationLine}
@@ -75,9 +79,10 @@ export function ProductDeleteModal({
           variant="outline"
           className="w-full justify-center bg-gray-200 text-red-400 border-2 border-red-200 hover:bg-red-100"
           onClick={handleDelete}
-          disabled={isDeleting}
+          disabled={isDeleting || confInput !== confirmationLine}
+          loading={isDeleting}
         >
-          {isDeleting ? "Deleting..." : "I want to Delete!"}
+          I want to Delete!
         </Button>
       </div>
     </Modal>
