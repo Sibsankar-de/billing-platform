@@ -19,6 +19,7 @@ export const StockInput = ({
     <div className="grid grid-cols-[1fr_auto]">
       <Input
         id={id}
+        type="number"
         className={cn("flex-1 rounded-r-none", className)}
         {...props}
       />

@@ -18,7 +18,7 @@ export type CustomerTypes = {
 };
 
 export type BillItemTypes = {
-  _id: string;
+  _id?: string;
   product: {
     name: string;
     sku: string;

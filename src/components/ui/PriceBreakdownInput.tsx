@@ -71,7 +71,7 @@ export const PriceBreakdownInput = ({
         <div key={item.id} className="flex gap-3 items-center max-w-2xl mb-2">
           <BreakdownItem
             item={item}
-            id={item.id!}
+            id={item.id}
             onInputChange={handleUpdateBreakdown}
             unit={unit}
           />

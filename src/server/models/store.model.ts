@@ -42,6 +42,10 @@ const storeSchema = new Schema(
     contactEmail: {
       type: String,
     },
+    taxRate: {
+      type: Number,
+      default: 0,
+    },
     accessList: {
       type: [accessListUserSchema],
       required: true,

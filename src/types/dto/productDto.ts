@@ -1,20 +1,20 @@
 export type PricePerQuantityType = {
-    id?: number;
-    price?:number;
-    quantity?:number;
+    id: number;
+    price:number;
+    quantity:number;
 }
 
 export type ProductDto = {
-    _id?: string;
-    storeId?: string;
-    name?: string;
-    sku?: string;
+    _id: string;
+    storeId: string;
+    name: string;
+    sku: string;
     description?: string;
     categories?: string[];
-    totalPrice?: number;
-    totalStock?: number;
-    stockUnit?: string;
-    pricePerQuantity?: PricePerQuantityType[];
+    totalPrice: number;
+    totalStock: number;
+    stockUnit: string;
+    pricePerQuantity: PricePerQuantityType[];
     createdAt?: Date;
     updatedAt?: Date;
 }

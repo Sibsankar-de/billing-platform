@@ -35,7 +35,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
   } = useSelector(selectProductState);
   const { navigate } = useStoreNavigation();
 
-  const [formData, setFormData] = useState<ProductDto>({
+  const [formData, setFormData] = useState<Record<string, any>>({
     name: "",
     sku: "",
     description: "",
