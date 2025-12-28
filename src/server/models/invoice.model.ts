@@ -1,5 +1,6 @@
 import mongoose, { model, models, Schema } from "mongoose";
 import { pricePerQuantitySchema } from "./product.model";
+import { invoiceEnums } from "../enums/invoice.enum";
 
 const customerSchema = new Schema(
   {
@@ -21,7 +22,15 @@ const customerSchema = new Schema(
 
 const billItemSchema = new Schema(
   {
+    id: {
+      type: Number,
+      default: 1,
+    },
     product: {
+      id: {
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+      },
       name: {
         type: String,
       },
@@ -42,7 +51,10 @@ const billItemSchema = new Schema(
     },
     stockUnit: {
       type: String,
-      required: true,
+    },
+    totalProfit: {
+      type: Number,
+      default: 0,
     },
   },
   { _id: false }
@@ -92,6 +104,15 @@ const invoiceSchema = new Schema(
     taxRate: {
       type: Number,
       default: 0,
+    },
+    totalProfit: {
+      type: String,
+      default: 0,
+    },
+    status: {
+      type: String,
+      enum: invoiceEnums.invoiceStatus,
+      default: "DRAFTED",
     },
   },
   { timestamps: true }

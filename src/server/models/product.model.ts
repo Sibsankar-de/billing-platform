@@ -15,6 +15,10 @@ export const pricePerQuantitySchema = new Schema(
       type: Number,
       default: 0,
     },
+    profitMargin: {
+      type: Number,
+      default: 0,
+    },
   },
   { _id: false }
 );

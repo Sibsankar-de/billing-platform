@@ -27,9 +27,10 @@ export const BillingForm = () => {
   const [items, setItems] = useState<BillItemType[]>([
     {
       id: Date.now(),
-      product: { name: "", sku: "" },
+      product: { id: `${Date.now() - 20}`, name: "", sku: "" },
       netQuantity: 0,
       totalPrice: 0,
+      totalProfit: 0,
       stockUnit: "",
     },
   ]);
@@ -40,11 +41,13 @@ export const BillingForm = () => {
       {
         id: Date.now(),
         product: {
+          id: `${Date.now() - 20}`,
           name: "",
           sku: "",
         },
         netQuantity: 0,
         totalPrice: 0,
+        totalProfit: 0,
         stockUnit: "",
       },
     ]);
@@ -233,8 +236,9 @@ function BillingSectionRow({
         ...item,
         id: id,
         product: {
-          name: selectedItem?.name,
-          sku: selectedItem?.sku,
+          id: selectedItem._id,
+          name: selectedItem.name,
+          sku: selectedItem.sku,
         },
         netQuantity: 1,
         totalPrice: calculatePrice(1, selectedItem.pricePerQuantity),
