@@ -69,6 +69,20 @@ export const BillingForm = () => {
     });
   };
 
+  // keyboard events
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key;
+      if (e.ctrlKey && key === "i") {
+        e.preventDefault();
+        addItem();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  });
+
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
