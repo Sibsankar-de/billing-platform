@@ -8,15 +8,18 @@ import { toast } from "react-toastify";
 import { PricePerQuantityType } from "@/types/dto/productDto";
 import { numToStr } from "@/utils/conversion";
 import { StockInput } from "./StockInput";
+import { calculateProfit } from "@/utils/price-calculator";
 
 export const PriceBreakdownInput = ({
   value,
   onChange,
   unit,
+  buyingPricePerItem,
 }: {
   value?: PricePerQuantityType[];
   onChange?: (e: PricePerQuantityType[]) => void;
   unit?: string;
+  buyingPricePerItem?: number;
 }) => {
   const [priceBreakdowns, setPriceBreakdowns] = useState<
     PricePerQuantityType[]
@@ -51,49 +54,82 @@ export const PriceBreakdownInput = ({
   function handleUpdateBreakdown(breakdown: PricePerQuantityType) {
     const { id, price, quantity } = breakdown;
 
-    let breakdownlist = priceBreakdowns;
+    // Always clone
+    const breakdownlist = [...priceBreakdowns];
+
     const editIndex = breakdownlist.findIndex((e) => e.id === id);
-    const editItem = breakdownlist[editIndex];
+
+    if (editIndex === -1) return;
+
+    // update item
     breakdownlist[editIndex] = {
-      ...editItem,
+      ...breakdownlist[editIndex],
       price,
       quantity,
     };
 
-    onChange?.(breakdownlist);
+    // calculate profit using UPDATED values
+    if (price > 0 && quantity > 0 && buyingPricePerItem) {
+      const costPerItem = price / quantity;
+
+      const profitMargin = calculateProfit(buyingPricePerItem, costPerItem);
+
+      breakdownlist[editIndex] = {
+        ...breakdownlist[editIndex],
+        profitMargin,
+      };
+    }
 
     setPriceBreakdowns(breakdownlist);
+    onChange?.(breakdownlist);
   }
+
+  // update profit margins on stock change
+  useEffect(() => {
+    if (!buyingPricePerItem) return;
+    setPriceBreakdowns((prev) =>
+      prev.map((item) => {
+        const costPerItem = item.price / item.quantity;
+        const profitMargin = calculateProfit(buyingPricePerItem, costPerItem);
+        return {
+          ...item,
+          profitMargin,
+        };
+      })
+    );
+  }, [buyingPricePerItem]);
 
   return (
     <div>
-      {priceBreakdowns.map((item, index) => (
-        <div key={item.id} className="flex gap-3 items-center max-w-2xl mb-2">
-          <BreakdownItem
-            item={item}
-            id={item.id}
-            onInputChange={handleUpdateBreakdown}
-            unit={unit}
-          />
-          {index === priceBreakdowns.length - 1 ? (
-            <Button className="py-2" onClick={handleAddNewBreakdown}>
-              <Plus />
-            </Button>
-          ) : (
-            <Button
-              variant="none"
-              className="py-2 bg-red-200/50 text-red-400"
-              onClick={() =>
-                setPriceBreakdowns(
-                  priceBreakdowns.filter((bd) => bd.id !== item.id)
-                )
-              }
-            >
-              <Trash2 />
-            </Button>
-          )}
-        </div>
-      ))}
+      {priceBreakdowns.map((item, index) => {
+        return (
+          <div key={item.id} className="flex gap-3 items-center max-w-2xl mb-2">
+            <BreakdownItem
+              item={item}
+              id={item.id}
+              onInputChange={handleUpdateBreakdown}
+              unit={unit}
+            />
+            {index === priceBreakdowns.length - 1 ? (
+              <Button className="py-2" onClick={handleAddNewBreakdown}>
+                <Plus />
+              </Button>
+            ) : (
+              <Button
+                variant="none"
+                className="py-2 bg-red-200/50 text-red-400"
+                onClick={() =>
+                  setPriceBreakdowns(
+                    priceBreakdowns.filter((bd) => bd.id !== item.id)
+                  )
+                }
+              >
+                <Trash2 />
+              </Button>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -112,7 +148,7 @@ function BreakdownItem({
   const [inputData, setInputData] = useState<PricePerQuantityType>(item);
 
   useEffect(() => {
-    setInputData(item);
+    if (item !== inputData) setInputData(item);
   }, [item]);
 
   const handleInputChange = (key: keyof PricePerQuantityType, input: any) => {
@@ -145,6 +181,12 @@ function BreakdownItem({
         value={numToStr(inputData.quantity)}
         unit={unit}
       />
+      {inputData.profitMargin !== undefined && (
+        <div className="text-[0.8em] text-center px-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+          <p>Margin</p>
+          <p className="">{inputData.profitMargin}%</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -12,7 +12,7 @@ export type ProductDto = {
   sku: string;
   description?: string;
   categories?: string[];
-  totalPrice: number;
+  buyingPrice: number;
   totalStock: number;
   stockUnit: string;
   pricePerQuantity: PricePerQuantityType[];

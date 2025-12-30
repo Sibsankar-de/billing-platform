@@ -23,3 +23,14 @@ export function calculatePrice(
   const unitPrice = chosen.price / chosen.quantity;
   return Number((quantity * unitPrice).toFixed(2));
 }
+
+export function calculateProfit(
+  sellingPrice: number | undefined,
+  buyingPrice: number | undefined
+): number {
+  if (!sellingPrice || !buyingPrice || sellingPrice === 0 || buyingPrice === 0)
+    return 0;
+  return Number(
+    ((buyingPrice - sellingPrice) * (100 / sellingPrice)).toFixed(2)
+  );
+}

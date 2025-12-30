@@ -40,7 +40,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     sku: "",
     description: "",
     categories: [],
-    totalPrice: 0,
+    buyingPrice: 0,
     stockUnit: "PCS",
     totalStock: 0,
     pricePerQuantity: [] as PricePerQuantityType[],
@@ -142,14 +142,14 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
             className="block text-gray-600 mb-1.5"
             required
           >
-            Total price (&#8377;)
+            Total buying price (&#8377;)
           </Label>
           <Input
             type="number"
             placeholder="Enter total price"
             id="price"
-            value={numToStr(formData.totalPrice)}
-            onChange={(e) => handleFormData("totalPrice", Number(e))}
+            value={numToStr(formData.buyingPrice)}
+            onChange={(e) => handleFormData("buyingPrice", Number(e))}
             disabled={isLoading}
           />
         </div>
@@ -189,13 +189,14 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
       </div>
       <div>
         <Label htmlFor="price-breakdown" required>
-          Add price per quantity
+          Add price per quantity (Selling prices)
         </Label>
         <div>
           <PriceBreakdownInput
             value={formData.pricePerQuantity}
             onChange={(e) => handleFormData("pricePerQuantity", e)}
             unit={formData.stockUnit}
+            buyingPricePerItem={formData.buyingPrice / formData.totalStock}
           />
         </div>
       </div>

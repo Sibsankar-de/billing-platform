@@ -52,7 +52,7 @@ const productSchema = new Schema(
       type: [String],
       default: [],
     },
-    totalPrice: {
+    buyingPrice: {
       type: Number,
       required: true,
     },

@@ -19,7 +19,7 @@ export const createProduct = asyncHandler(
       storeId,
       name,
       sku,
-      totalPrice,
+      buyingPrice,
       totalStock,
       stockUnit,
       pricePerQuantity,
@@ -30,7 +30,7 @@ export const createProduct = asyncHandler(
         storeId,
         name,
         sku,
-        totalPrice,
+        buyingPrice,
         totalStock,
         stockUnit,
         pricePerQuantity,
@@ -75,11 +75,11 @@ export const updateProduct = asyncHandler(
     const { productId } = await params!;
 
     const productData = await req.json();
-    const { name, sku, totalPrice, totalStock, stockUnit, pricePerQuantity } =
+    const { name, sku, buyingPrice, totalStock, stockUnit, pricePerQuantity } =
       productData;
 
     if (
-      [name, sku, totalPrice, totalStock, stockUnit, pricePerQuantity].some(
+      [name, sku, buyingPrice, totalStock, stockUnit, pricePerQuantity].some(
         (e) => !e
       )
     )
