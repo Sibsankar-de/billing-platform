@@ -16,9 +16,10 @@ import { Modal } from "../ui/Modal";
 import { StockInput } from "../ui/StockInput";
 import { ProductDto } from "@/types/dto/productDto";
 import { BillItemType } from "@/types/dto/invoiceDto";
-import { calculatePrice } from "@/utils/price-calculator";
+import { calculatePrice, calculateRate } from "@/utils/price-calculator";
 import { useSelector } from "react-redux";
 import { selectStoreState } from "@/store/features/storeSlice";
+import { SecondaryInput } from "../ui/SecondaryInput";
 
 export const BillingForm = () => {
   const {
@@ -34,6 +35,17 @@ export const BillingForm = () => {
       stockUnit: "",
     },
   ]);
+  const [calculations, setCalculations] = useState({
+    subtotal: 0,
+    taxAmount: 0,
+    discountAmount: 0,
+    total: 0,
+  });
+
+  const [discount, setDiscount] = useState({
+    discountAmount: "",
+    discountRate: "",
+  });
 
   const addItem = () => {
     setItems([
@@ -72,6 +84,22 @@ export const BillingForm = () => {
     });
   };
 
+  const handleDiscountChange = (key: keyof typeof discount, value: string) => {
+    if (key === "discountAmount") {
+      setDiscount({
+        discountAmount: value,
+        discountRate: String(
+          calculateRate(Number(calculations.subtotal), Number(value))
+        ),
+      });
+    } else {
+      setDiscount({
+        discountAmount: String((Number(value) * calculations.subtotal) / 100),
+        discountRate: value,
+      });
+    }
+  };
+
   // keyboard events
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -86,9 +114,27 @@ export const BillingForm = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   });
 
-  const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-  const tax = subtotal * 0.1;
-  const total = subtotal + tax;
+  // calculate bill
+  useEffect(() => {
+    const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+    const tax = 0;
+    const total = subtotal + tax - Number(discount.discountAmount);
+    const discountAmount = (Number(discount.discountRate) * subtotal) / 100;
+
+    setCalculations((p) => ({
+      ...p,
+      subtotal,
+      taxAmount: tax,
+      total: Number(total.toFixed(2)),
+      discountAmount,
+    }));
+    if (discount.discountAmount != String(discountAmount) && discountAmount > 0)
+      setDiscount((p) => ({
+        ...p,
+        discountAmount: String(discountAmount),
+      }));
+  }, [items, discount]);
+
   return (
     <div>
       {/* Invoice Header */}
@@ -164,17 +210,31 @@ export const BillingForm = () => {
         <div>
           <Label>Discounts</Label>
           <div className="mb-2">
-            <Input type="number" placeholder="Discount percent (%)" />
+            <SecondaryInput
+              type="number"
+              placeholder="Discount percent (%)"
+              field="%"
+              onChange={(e) => handleDiscountChange("discountRate", e)}
+              value={discount.discountRate}
+            />
           </div>
           <div>
-            <Input type="number" placeholder="Discount amount (₹)" />
+            <SecondaryInput
+              type="number"
+              placeholder="Discount amount (₹)"
+              field="&#8377;"
+              onChange={(e) => handleDiscountChange("discountAmount", e)}
+              value={discount.discountAmount}
+            />
           </div>
         </div>
         <div className="w-80">
           <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Subtotal</span>
-              <span className="text-gray-900">&#8377;{subtotal}</span>
+              <span className="text-gray-900">
+                &#8377;{calculations.subtotal}
+              </span>
             </div>
             {currentStore?.taxRate && (
               <div className="flex items-center justify-between">
@@ -184,10 +244,24 @@ export const BillingForm = () => {
                 <span className="text-gray-900">&#8377;0</span>
               </div>
             )}
+            {discount.discountAmount && (
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">
+                  Discount (
+                  <span className="text-green-600">
+                    {discount.discountRate}%
+                  </span>
+                  )
+                </span>
+                <span className="text-green-600">
+                  - &#8377;{discount.discountAmount}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-900">Total</span>
-            <span className="text-gray-900">&#8377;0</span>
+            <span className="text-gray-900">&#8377;{calculations.total}</span>
           </div>
         </div>
       </div>
@@ -245,6 +319,7 @@ function BillingSectionRow({
         stockUnit: selectedItem.stockUnit,
       };
       setProductFields(newItem);
+      onFieldUpdate(newItem);
     }
   }, [selectedItem]);
 

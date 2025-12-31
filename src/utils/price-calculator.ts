@@ -34,3 +34,11 @@ export function calculateProfit(
     ((buyingPrice - sellingPrice) * (100 / sellingPrice)).toFixed(2)
   );
 }
+
+export function calculateRate(
+  price1: number | undefined,
+  price2: number | undefined
+): number {
+  if (!price2 || !price1 || price2 === 0 || price1 === 0) return 0;
+  return Number(((price1 - price2) * (100 / price2)).toFixed(2));
+}
