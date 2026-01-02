@@ -21,6 +21,7 @@ export type BillItemType = {
 export type InvoiceDto = {
   _id: string;
   storeId?: string;
+  customerId?: string;
   customerDetails?: CustomerDetailsType;
   invoiceNumber: string;
   issueDate: Date;

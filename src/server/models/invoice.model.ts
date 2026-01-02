@@ -2,24 +2,6 @@ import mongoose, { model, models, Schema } from "mongoose";
 import { pricePerQuantitySchema } from "./product.model";
 import { invoiceEnums } from "../enums/invoice.enum";
 
-const customerSchema = new Schema(
-  {
-    name: {
-      type: String,
-    },
-    phoneNumber: {
-      type: String,
-    },
-    email: {
-      type: String,
-    },
-    address: {
-      type: String,
-    },
-  },
-  { _id: false }
-);
-
 const billItemSchema = new Schema(
   {
     id: {
@@ -72,7 +54,9 @@ const invoiceSchema = new Schema(
       ref: "Store",
       required: true,
     },
-    customerDetails: customerSchema,
+    customerId: {
+      type: mongoose.Types.ObjectId,
+    },
     invoiceNumber: {
       type: String,
       required: true,

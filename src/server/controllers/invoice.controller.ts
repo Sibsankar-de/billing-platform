@@ -6,6 +6,7 @@ import { ApiError } from "../utils/error-handler";
 import { StatusCodes } from "http-status-codes";
 import { Invoice } from "../models/invoice.model";
 import { Product } from "../models/product.model";
+import { Customer } from "../models/customer.model";
 
 export const createInvoice = asyncHandler(
   async (
@@ -35,9 +36,19 @@ export const createInvoice = asyncHandler(
       );
     }
 
+    const customerDetails = billData?.customerDetails;
+    let customerId = null;
+    if (customerDetails?.fullName || customerDetails?.phoneNumber) {
+      const customer = await Customer.create({
+        ...customerDetails,
+      });
+      customerId = customer[0]._id;
+    }
+
     const newInvoice = await Invoice.create({
       creatorId: userId,
       storeId,
+      customerId,
       ...billData,
     });
 

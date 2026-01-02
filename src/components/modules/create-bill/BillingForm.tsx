@@ -1,27 +1,27 @@
 "use client";
 
-import {
-  CloudCheck,
-  Plus,
-  PrinterCheck,
-  RotateCcw,
-  Trash2,
-} from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
-import { Label } from "../ui/Label";
-import { ProductSearchInput } from "../ui/ProductSearchInput";
-import { Modal } from "../ui/Modal";
-import { StockInput } from "../ui/StockInput";
+import { Button } from "../../ui/Button";
+import { Input } from "../../ui/Input";
+import { Label } from "../../ui/Label";
+import { ProductSearchInput } from "../../ui/ProductSearchInput";
+import { Modal } from "../../ui/Modal";
+import { StockInput } from "../../ui/StockInput";
 import { ProductDto } from "@/types/dto/productDto";
 import { BillItemType } from "@/types/dto/invoiceDto";
 import { calculatePrice, calculateRate } from "@/utils/price-calculator";
 import { useSelector } from "react-redux";
 import { selectStoreState } from "@/store/features/storeSlice";
-import { SecondaryInput } from "../ui/SecondaryInput";
+import { SecondaryInput } from "../../ui/SecondaryInput";
 
-export const BillingForm = () => {
+export const BillingForm = ({
+  data,
+  onBillChange,
+}: {
+  data?: Record<string, any>;
+  onBillChange: (e: Record<string, any>) => void;
+}) => {
   const {
     data: { currentStore },
   } = useSelector(selectStoreState);
@@ -41,6 +41,11 @@ export const BillingForm = () => {
     discountAmount: 0,
     total: 0,
   });
+
+  useEffect(() => {
+    if (data?.items) setItems(data.items);
+    if (data?.calculations) setCalculations(data.calculations);
+  }, [data]);
 
   const [discount, setDiscount] = useState({
     discountAmount: "",
@@ -135,33 +140,16 @@ export const BillingForm = () => {
       }));
   }, [items, discount]);
 
+  // data flow
+  useEffect(() => {
+    onBillChange({
+      items,
+      calculations,
+    });
+  }, [items, calculations]);
+
   return (
     <div>
-      {/* Invoice Header */}
-      <div className="mb-8 pb-8 border-b border-gray-200">
-        <div className="space-y-2">
-          <Label>Bill To</Label>
-          <Input placeholder="Client Name" />
-          <Input placeholder="Phone number" />
-          <Input placeholder="Address" />
-        </div>
-      </div>
-
-      {/* Invoice Details */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <div>
-          <Label>Invoice Number</Label>
-          <Input type="text" placeholder="INV-001" />
-        </div>
-        <div>
-          <Label>Invoice Date</Label>
-          <Input
-            type="date"
-            // value="2025-12-04"
-          />
-        </div>
-      </div>
-
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <Label className="text-gray-900">Items</Label>
@@ -265,21 +253,6 @@ export const BillingForm = () => {
           </div>
         </div>
       </div>
-
-      <div className="mt-12 flex gap-2">
-        <Button className="w-full justify-center flex-1">
-          <PrinterCheck size={18} />
-          Save & print bill
-        </Button>
-        <Button variant="outline" className="text-green-700 bg-gray-100">
-          <CloudCheck size={18} />
-          Save as Draft
-        </Button>
-        <Button variant="outline" className="text-red-400 bg-gray-100">
-          <RotateCcw size={18} />
-          Reset
-        </Button>
-      </div>
     </div>
   );
 };
@@ -353,13 +326,7 @@ function BillingSectionRow({
   return (
     <tr key={item.id} className="border-t border-gray-200">
       <td className="px-2 py-3">
-        <ProductSearchInput
-          // type="text"
-          // value={item.product}
-          // onChange={(e) => updateItem(item.id, 'product', e)}
-          // placeholder="Product name"
-          onSelect={(e) => setSelectedItem(e)}
-        />
+        <ProductSearchInput onSelect={(e) => setSelectedItem(e)} />
       </td>
       <td className="px-2 py-3">
         <StockInput
