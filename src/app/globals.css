@@ -214,7 +214,7 @@ html {
 @keyframes dropDwonOpenAnim {
   0% {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(15px);
   }
 
   100% {
@@ -235,6 +235,6 @@ html {
 
   100% {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(15px);
   }
 }

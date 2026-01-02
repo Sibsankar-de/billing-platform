@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Input } from "./Input";
-import { Button } from "./Button";
+import { Input } from "../../ui/Input";
+import { Button } from "../../ui/Button";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { PricePerQuantityType } from "@/types/dto/productDto";
 import { numToStr } from "@/utils/conversion";
-import { StockInput } from "./StockInput";
+import { StockInput } from "../../ui/StockInput";
 import { calculateProfit } from "@/utils/price-calculator";
 
 export const PriceBreakdownInput = ({

@@ -66,7 +66,7 @@ function binarySearchPrefix<T>(
   return firstMatchIndex;
 }
 
-export function searchList<T extends Record<string, any>>(
+export function search<T extends Record<string, any>>(
   index: ReturnType<typeof createIndex<T>>,
   query: string,
   limit = 25

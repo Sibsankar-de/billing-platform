@@ -5,7 +5,7 @@ import { Textarea } from "../../ui/Textarea";
 import { Label } from "../../ui/Label";
 import { CategorySelector } from "../../ui/CategorySelector";
 import { StockUnitInput } from "../../ui/StockUnitInput";
-import { PriceBreakdownInput } from "../../ui/PriceBreakdownInput";
+import { PriceBreakdownInput } from "./PriceBreakdownInput";
 import { Button } from "../../ui/Button";
 import { CloudCheck } from "lucide-react";
 import { useEffect, useState } from "react";

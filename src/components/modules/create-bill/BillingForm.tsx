@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
 import { Label } from "../../ui/Label";
-import { ProductSearchInput } from "../../ui/ProductSearchInput";
+import { ProductSearchInput } from "./ProductSearchInput";
 import { Modal } from "../../ui/Modal";
 import { StockInput } from "../../ui/StockInput";
 import { ProductDto } from "@/types/dto/productDto";
@@ -356,7 +356,3 @@ function BillingSectionRow({
     </tr>
   );
 }
-
-const InvoicePrintModal = () => {
-  return <Modal>{/* <InvoiceDocument invoice={}/> */}</Modal>;
-};
