@@ -1,13 +1,14 @@
 "use client";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
-import { Input } from "../../ui/Input";
-import { Dropdown } from "../../ui/Dropdown";
-import { cn } from "../../utils";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectProductState } from "@/store/features/productSlice";
 import { ProductDto } from "@/types/dto/productDto";
-import { SearchItem, SearchRule, SearchWrapper } from "../../ui/SearchWrapper";
+import {
+  SelectableItem,
+  SelectableDropdownList,
+} from "../../ui/SelectableDropdownList";
+import { createIndex, search } from "@/utils/genericSearch";
 
 export const ProductSearchInput = ({
   onSelect,
@@ -16,28 +17,44 @@ export const ProductSearchInput = ({
 }) => {
   const { data: productList } = useSelector(selectProductState);
 
-  const searchRules: SearchRule[] = [
+  const searchRules: any = [
     { field: "name", priority: 1000, mode: "prefix" },
     { field: "sku", priority: 900, mode: "prefix" },
     { field: "name", priority: 800, mode: "substring" },
     { field: "sku", priority: 700, mode: "substring" },
   ];
 
+  const index = useMemo(
+    () => createIndex(productList, searchRules),
+    [productList]
+  );
+
+  const [value, setValue] = useState("");
+  const [filteredList, setFilteredList] = useState<typeof productList>([]);
+
+  useEffect(() => {
+    if (!value.trim()) return;
+
+    const r = search(index, value, 25);
+    setFilteredList(r as any);
+  }, [value, index]);
+
   return (
-    <SearchWrapper
-      list={productList}
+    <SelectableDropdownList
+      items={filteredList}
+      value={value}
       getLabel={(p) => p.name}
       onSelect={onSelect}
-      rules={searchRules}
+      onChange={setValue}
     >
       {(items) =>
         items.map((p, i) => (
-          <SearchItem key={p._id} item={p} index={i}>
+          <SelectableItem key={p._id} item={p} index={i}>
             <p className="text-lg">{p.name}</p>
             <p className="text-sm text-gray-600">{p.sku}</p>
-          </SearchItem>
+          </SelectableItem>
         ))
       }
-    </SearchWrapper>
+    </SelectableDropdownList>
   );
 };
