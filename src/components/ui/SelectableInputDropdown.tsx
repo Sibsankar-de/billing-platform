@@ -10,7 +10,7 @@ import {
   ReactNode,
 } from "react";
 
-import { Input } from "./Input";
+import { Input, InputType } from "./Input";
 import { Dropdown } from "./Dropdown";
 import { cn } from "../utils";
 
@@ -23,24 +23,26 @@ type Ctx<T> = {
 
 const SearchWrapperContext = createContext<Ctx<any> | null>(null);
 
-export function useSelectableDropdown<T>() {
+export function useSelectableInputDropdown<T>() {
   const ctx = useContext(SearchWrapperContext);
   if (!ctx) throw new Error("SearchItem must be used inside SearchWrapper");
   return ctx as Ctx<T>;
 }
 
 type Props<T> = {
-  items: T[]; // <-- already searched
-  value: string; // <-- input value from parent
-  onChange: (value: string) => void; // <-- parent handles search
+  items: T[];
+  value: string;
+  inputProps?: InputType;
+  onChange: (value: string) => void;
   onSelect: (item: T) => void;
   getLabel: (item: T) => string;
   children: (items: T[]) => ReactNode;
 };
 
-export function SelectableDropdownList<T>({
+export function SelectableInputDropdown<T>({
   items,
   value,
+  inputProps,
   onChange,
   onSelect,
   getLabel,
@@ -91,7 +93,7 @@ export function SelectableDropdownList<T>({
     >
       <div className="relative flex-1">
         <Input
-          placeholder="Search…"
+          placeholder={inputProps?.placeholder || "Search…"}
           value={value}
           onChange={(v) => {
             onChange(v); // parent filters
@@ -100,6 +102,7 @@ export function SelectableDropdownList<T>({
           }}
           onKeyDown={handleKeyDown}
           autoComplete="off"
+          {...inputProps}
         />
 
         <Dropdown
@@ -129,7 +132,8 @@ export function SelectableItem<T>({
   index,
   children,
 }: SearchItemProps<T>) {
-  const { focusedIndex, selected, handleSelect } = useSelectableDropdown<T>();
+  const { focusedIndex, selected, handleSelect } =
+    useSelectableInputDropdown<T>();
 
   return (
     <li

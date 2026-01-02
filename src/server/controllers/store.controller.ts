@@ -7,6 +7,7 @@ import { ApiError } from "../utils/error-handler";
 import { StatusCodes } from "http-status-codes";
 import { Product } from "../models/product.model";
 import { StoreDto } from "@/types/dto/storeDto";
+import { Customer } from "../models/customer.model";
 
 export const createStore = asyncHandler(
   async (req: NextRequest, context: MiddlewareContext | undefined) => {
@@ -80,10 +81,7 @@ export const updateStore = asyncHandler(
 );
 
 export const getStoreList = asyncHandler(
-  async (
-    req: NextRequest,
-    context: MiddlewareContext | undefined,
-  ) => {
+  async (req: NextRequest, context: MiddlewareContext | undefined) => {
     const { userId } = await context!;
 
     const storeList = await Store.find({ owner: userId }).select("-accessList");
@@ -136,6 +134,22 @@ export const getProductsByStore = asyncHandler(
 
     return NextResponse.json(
       new ApiResponse(StatusCodes.OK, productList, "Products fetched")
+    );
+  }
+);
+
+export const getCustomerList = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined
+  ) => {
+    const { storeId } = await params!;
+
+    const customerList = await Customer.find({ storeId });
+
+    return NextResponse.json(
+      new ApiResponse(StatusCodes.OK, customerList, "Customer details fetched")
     );
   }
 );

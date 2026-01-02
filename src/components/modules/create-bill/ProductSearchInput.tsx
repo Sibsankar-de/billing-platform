@@ -6,8 +6,8 @@ import { selectProductState } from "@/store/features/productSlice";
 import { ProductDto } from "@/types/dto/productDto";
 import {
   SelectableItem,
-  SelectableDropdownList,
-} from "../../ui/SelectableDropdownList";
+  SelectableInputDropdown,
+} from "../../ui/SelectableInputDropdown";
 import { createIndex, search } from "@/utils/genericSearch";
 
 export const ProductSearchInput = ({
@@ -40,9 +40,13 @@ export const ProductSearchInput = ({
   }, [value, index]);
 
   return (
-    <SelectableDropdownList
+    <SelectableInputDropdown
       items={filteredList}
       value={value}
+      inputProps={{
+        autoFocus: true,
+        placeholder: "Type a product...",
+      }}
       getLabel={(p) => p.name}
       onSelect={onSelect}
       onChange={setValue}
@@ -55,6 +59,6 @@ export const ProductSearchInput = ({
           </SelectableItem>
         ))
       }
-    </SelectableDropdownList>
+    </SelectableInputDropdown>
   );
 };
