@@ -154,7 +154,9 @@ export const getProduct = asyncHandler(
     params: Record<string, any> | undefined
   ) => {
     const { productId } = await params!;
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate([
+      { path: "categories", select: "_id name storeId" },
+    ]);
 
     if (!product)
       throw new ApiError(StatusCodes.BAD_REQUEST, "Invalid product id");

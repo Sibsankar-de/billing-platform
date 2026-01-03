@@ -2,11 +2,11 @@
 
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { CustomerDetailsType } from "@/types/dto/invoiceDto";
+import { CustomerDto } from "@/types/dto/customerDto";
 import { useState } from "react";
 
 export const CustomerDetailsForm = () => {
-  const [customerData, setCustomerData] = useState<CustomerDetailsType>({
+  const [customerData, setCustomerData] = useState<CustomerDto>({
     name: "",
     phoneNumber: "",
     address: "",

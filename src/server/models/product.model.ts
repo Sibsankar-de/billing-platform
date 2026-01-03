@@ -49,7 +49,8 @@ const productSchema = new Schema(
       type: String,
     },
     categories: {
-      type: [String],
+      type: [mongoose.Types.ObjectId],
+      ref: "Category",
       default: [],
     },
     buyingPricePerQuantity: {

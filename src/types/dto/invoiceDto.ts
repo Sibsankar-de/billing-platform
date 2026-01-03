@@ -1,9 +1,4 @@
-export type CustomerDetailsType = {
-  name?: string;
-  phoneNumber?: string;
-  email?: string;
-  address?: string;
-};
+import { CustomerDto } from "./customerDto";
 
 export type BillItemType = {
   id: number;
@@ -22,7 +17,7 @@ export type InvoiceDto = {
   _id: string;
   storeId?: string;
   customerId?: string;
-  customerDetails?: CustomerDetailsType;
+  customerDetails?: CustomerDto;
   invoiceNumber: string;
   issueDate: Date;
   billItems: BillItemType[];

@@ -31,7 +31,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
   const productId = params?.product_id;
   const dispatch = useDispatch();
   const {
-    data: productList,
+    data: { productList },
     createStatus,
     updateStatus,
   } = useSelector(selectProductState);

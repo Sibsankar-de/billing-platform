@@ -26,7 +26,9 @@ const PAGE_SIZE = 15;
 
 export const InventoryProductList = () => {
   const { navigate } = useStoreNavigation();
-  const { data: productList } = useSelector(selectProductState);
+  const {
+    data: { productList },
+  } = useSelector(selectProductState);
 
   const [paginatedData, setPaginatedData] = useState<PageResult<ProductDto>>(
     {}

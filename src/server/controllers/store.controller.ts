@@ -8,6 +8,8 @@ import { StatusCodes } from "http-status-codes";
 import { Product } from "../models/product.model";
 import { StoreDto } from "@/types/dto/storeDto";
 import { Customer } from "../models/customer.model";
+import mongoose from "mongoose";
+import { Category } from "../models/category.model";
 
 export const createStore = asyncHandler(
   async (req: NextRequest, context: MiddlewareContext | undefined) => {
@@ -126,7 +128,17 @@ export const getProductsByStore = asyncHandler(
     const { userId } = await context!;
     const { storeId } = await params!;
 
-    const productList = await Product.find({ storeId });
+    const productList = await Product.aggregate([
+      { $match: { storeId: new mongoose.Types.ObjectId(storeId) } },
+      {
+        $lookup: {
+          from: "categories",
+          let: { catIds: "$categories" },
+          pipeline: [{ $project: { _id: 1, name: 1 } }],
+          as: "categories",
+        },
+      },
+    ]);
 
     if (!productList) {
       throw new ApiError(StatusCodes.BAD_REQUEST, "Failed to get list");
@@ -150,6 +162,22 @@ export const getCustomerList = asyncHandler(
 
     return NextResponse.json(
       new ApiResponse(StatusCodes.OK, customerList, "Customer details fetched")
+    );
+  }
+);
+
+export const getCategoriesByStore = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined
+  ) => {
+    const { storeId } = await params!;
+
+    const categories = await Category.find({ storeId }).select("_id name storeId");
+
+    return NextResponse.json(
+      new ApiResponse(StatusCodes.OK, categories, "Categories fetched")
     );
   }
 );

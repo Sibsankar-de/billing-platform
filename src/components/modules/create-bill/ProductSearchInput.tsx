@@ -15,7 +15,9 @@ export const ProductSearchInput = ({
 }: {
   onSelect: (e: ProductDto) => void;
 }) => {
-  const { data: productList } = useSelector(selectProductState);
+  const {
+    data: { productList },
+  } = useSelector(selectProductState);
 
   const searchRules: any = [
     { field: "name", priority: 1000, mode: "prefix" },

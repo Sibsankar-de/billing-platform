@@ -3,6 +3,7 @@ import { createApiThunk, setState } from "../utils";
 import api from "@/configs/axios-config";
 import { ProductDto } from "@/types/dto/productDto";
 import { RootState } from "../store";
+import { CategoryDto } from "@/types/dto/categoryDto";
 
 export const fetchProducts: any = createApiThunk(
   "products/list",
@@ -26,7 +27,10 @@ export const deleteProductThunk: any = createApiThunk(
 );
 
 const initialState = {
-  data: [] as ProductDto[],
+  data: {
+    productList: [] as ProductDto[],
+    categoryList: [] as CategoryDto[],
+  },
   status: "idle",
   createStatus: "idle",
   updateStatus: "idle",
@@ -42,7 +46,11 @@ const productSlice = createSlice({
     builder
       .addCase(fetchProducts.pending, setState)
       .addCase(fetchProducts.rejected, setState)
-      .addCase(fetchProducts.fulfilled, setState)
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.status = "success";
+        state.error = null;
+        state.data.productList = action.payload;
+      })
       .addCase(addNewProductThunk.pending, (state, action) =>
         setState(state, action, "createStatus")
       )
@@ -52,7 +60,7 @@ const productSlice = createSlice({
       .addCase(addNewProductThunk.fulfilled, (state, action) => {
         state.createStatus = "success";
         state.error = null;
-        state.data.push(action.payload);
+        state.data.productList.push(action.payload);
       })
       .addCase(updateProductThunk.pending, (state, action) =>
         setState(state, action, "updateStatus")
@@ -64,11 +72,11 @@ const productSlice = createSlice({
         state.updateStatus = "success";
         state.error = null;
         const updatedProduct = action.payload;
-        const p_index = state.data.findIndex(
+        const p_index = state.data.productList.findIndex(
           (p) => p._id === updatedProduct._id
         );
         if (p_index !== -1) {
-          state.data[p_index] = updatedProduct;
+          state.data.productList[p_index] = updatedProduct;
         }
       })
 
@@ -81,7 +89,7 @@ const productSlice = createSlice({
       .addCase(deleteProductThunk.fulfilled, (state, action) => {
         state.deleteStatus = "success";
         state.error = null;
-        state.data = state.data.filter(
+        state.data.productList = state.data.productList.filter(
           (e) => e._id !== action.payload?.productId
         );
       });
