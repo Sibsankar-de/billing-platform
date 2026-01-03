@@ -52,13 +52,19 @@ const productSchema = new Schema(
       type: [String],
       default: [],
     },
-    buyingPrice: {
+    buyingPricePerQuantity: {
       type: Number,
       required: true,
     },
     totalStock: {
       type: Number,
-      required: true,
+      required: function () {
+        return this.enabledInventoryTracking;
+      },
+    },
+    enabledInventoryTracking: {
+      type: Boolean,
+      default: false,
     },
     stockUnit: {
       type: String,

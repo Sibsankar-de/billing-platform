@@ -7,7 +7,7 @@ import { CategorySelector } from "../../ui/CategorySelector";
 import { StockUnitInput } from "../../ui/StockUnitInput";
 import { PriceBreakdownInput } from "./PriceBreakdownInput";
 import { Button } from "../../ui/Button";
-import { CloudCheck } from "lucide-react";
+import { CloudCheck, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PricePerQuantityType, ProductDto } from "@/types/dto/productDto";
 import { numToStr } from "@/utils/conversion";
@@ -21,6 +21,8 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import { StockInput } from "@/components/ui/StockInput";
+import { Separator } from "@/components/ui/Separator";
+import { ToggleButton } from "@/components/ui/ToggleButton";
 
 export const ProductForm = ({ formFor }: { formFor: string }) => {
   const router = useRouter();
@@ -40,9 +42,10 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     sku: "",
     description: "",
     categories: [],
-    buyingPrice: 0,
+    buyingPricePerQuantity: 0,
     stockUnit: "PCS",
     totalStock: 0,
+    enableInventoryTracking: false,
     pricePerQuantity: [] as PricePerQuantityType[],
   });
 
@@ -135,6 +138,9 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
           onChange={(e) => handleFormData("categories", e)}
         />
       </div>
+
+      <Separator text={"Buying price"} className="mb-8 mt-10" />
+
       <div className="flex items-center gap-3">
         <div className="flex-1">
           <Label
@@ -142,17 +148,20 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
             className="block text-gray-600 mb-1.5"
             required
           >
-            Total buying price (&#8377;)
+            Buying price (&#8377;)
           </Label>
           <Input
             type="number"
-            placeholder="Enter total price"
+            placeholder="Enter price for 1 unit"
             id="price"
-            value={numToStr(formData.buyingPrice)}
-            onChange={(e) => handleFormData("buyingPrice", Number(e))}
+            value={numToStr(formData.buyingPricePerQuantity)}
+            onChange={(e) =>
+              handleFormData("buyingPricePerQuantity", Number(e))
+            }
             disabled={isLoading}
           />
         </div>
+        <p className="mt-7 text-gray-500">/</p>
         <div className="flex-1">
           <Label
             htmlFor="stock-unit"
@@ -168,25 +177,41 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
             disabled={isLoading}
           />
         </div>
+      </div>
+
+      <Separator text={"Inventory tracking"} className="mb-8 mt-10" />
+
+      <div>
+        <div className="flex items-center gap-3 mb-3">
+          <p>Enable Invantory tracking</p>
+          <Info size={15} className="mr-6" />
+          <ToggleButton
+            isActive={formData.enableInventoryTracking}
+            onChange={(e) => handleFormData("enableInventoryTracking", e)}
+          />
+        </div>
         <div className="flex-1">
           <Label
             htmlFor="stock"
             className="block text-gray-600 mb-1.5"
-            required
+            required={formData.enableInventoryTracking}
           >
             Total Stock
           </Label>
           <StockInput
             type="number"
             id="stock"
-            placeholder="Enter quantity"
+            placeholder="Enter stock"
             value={numToStr(formData.totalStock)}
             unit={formData.stockUnit}
             onChange={(e) => handleFormData("totalStock", Number(e))}
-            disabled={isLoading}
+            disabled={!formData.enableInventoryTracking || isLoading}
           />
         </div>
       </div>
+
+      <Separator text={"Selling price"} className="mb-8 mt-10" />
+
       <div>
         <Label htmlFor="price-breakdown" required>
           Add price per quantity (Selling prices)
@@ -196,7 +221,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
             value={formData.pricePerQuantity}
             onChange={(e) => handleFormData("pricePerQuantity", e)}
             unit={formData.stockUnit}
-            buyingPricePerItem={formData.buyingPrice / formData.totalStock}
+            buyingPricePerItem={formData.buyingPricePerQuantity}
           />
         </div>
       </div>

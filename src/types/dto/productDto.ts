@@ -12,8 +12,9 @@ export type ProductDto = {
   sku: string;
   description?: string;
   categories?: string[];
-  buyingPrice: number;
-  totalStock: number;
+  buyingPricePerQuantity: number;
+  totalStock?: number;
+  enableInventoryTracking?: boolean;
   stockUnit: string;
   pricePerQuantity: PricePerQuantityType[];
   createdAt?: Date;

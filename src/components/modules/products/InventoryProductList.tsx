@@ -79,7 +79,7 @@ export const InventoryProductList = () => {
                   Date added
                 </th>
                 <th className="text-center text-gray-700 px-6 py-4">
-                  Price (&#8377;)
+                  Price / Qty
                 </th>
                 <th className="text-center text-gray-700 px-6 py-4">Actions</th>
               </tr>

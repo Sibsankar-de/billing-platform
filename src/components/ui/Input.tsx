@@ -43,6 +43,7 @@ export const Input = ({
           isInvalid && "border-red-300 focus:ring-red-200 pr-10",
           isTypePassword && "pr-10",
           icon && "pl-10",
+          disabled && "bg-gray-100 cursor-not-allowed",
           className
         )}
         disabled={disabled}

@@ -24,7 +24,8 @@ export function formatDateStr(mongoDateStr: string | Date | number) {
     "nov",
     "dec",
   ];
-  const month = monthNames[date.getMonth()];
+  const monthNumber = date.getMonth() + 1;
+  const month = monthNames[monthNumber - 1];
   const year = date.getFullYear();
   const dateStr = `${day} ${month} ${year}`;
 
@@ -35,23 +36,22 @@ export function formatDateStr(mongoDateStr: string | Date | number) {
   hours = hours % 12;
   hours = hours || 12; // Convert 0 to 12
   const timeStr = `${hours}:${minutes} ${ampm}`;
-  const dashedDate = `${year}-${month}-${day}`;
+  const dashedDate = `${year}-${monthNumber.toString().padStart(2, "0")}-${day
+    .toString()
+    .padStart(2, "0")}`;
 
   return {
     dashedDate,
     dateStr,
     timeStr,
     day,
-    monthNumber: date.getMonth() + 1,
+    monthNumber,
     year,
     month,
   };
 }
 
-export function getDayDifference(
-  date1: string | Date,
-  date2: string | Date
-) {
+export function getDayDifference(date1: string | Date, date2: string | Date) {
   // Convert strings to Date objects
   const d1 = new Date(date1);
   const d2 = new Date(date2);

@@ -7,6 +7,7 @@ import { formatDateStr } from "@/utils/formatDate";
 import { Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { ProductDeleteModal } from "./ProductDeleteModal";
+import { convertUnit } from "@/utils/conversion";
 
 export const InventoryProductCard = ({
   index,
@@ -32,11 +33,14 @@ export const InventoryProductCard = ({
       </td>
       <td className="px-6 py-4 text-center">
         <span className="text-gray-600">
-          {formatDateStr(product.createdAt!).dateStr}
+          {formatDateStr(product.createdAt!).dashedDate}
         </span>
       </td>
       <td className="px-6 py-4 text-center">
-        <span className="text-gray-900">&#8377;{product.totalPrice?.toFixed(2)}</span>
+        <span className="text-gray-900">
+          <span>&#8377;{Number(product.buyingPricePerQuantity?.toFixed(2))}</span>{" "}
+          <span>/</span> <span>{convertUnit(product.stockUnit)}</span>
+        </span>
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center justify-center gap-2">

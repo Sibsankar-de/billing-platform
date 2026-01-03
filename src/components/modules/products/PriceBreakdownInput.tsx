@@ -9,6 +9,7 @@ import { PricePerQuantityType } from "@/types/dto/productDto";
 import { numToStr } from "@/utils/conversion";
 import { StockInput } from "../../ui/StockInput";
 import { calculateProfit } from "@/utils/price-calculator";
+import { cn } from "@/components/utils";
 
 export const PriceBreakdownInput = ({
   value,
@@ -163,6 +164,12 @@ function BreakdownItem({
     });
   };
 
+  function getColor(profit: number) {
+    if (profit > 0) return "text-green-700";
+    else if (profit < 0) return "text-red-400";
+    else return "text-gray-700";
+  }
+
   return (
     <div className="flex items-center gap-3">
       <Input
@@ -182,9 +189,15 @@ function BreakdownItem({
         unit={unit}
       />
       {inputData.profitMargin !== undefined && (
-        <div className="text-[0.8em] text-center px-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
-          <p>Margin</p>
-          <p className="">{inputData.profitMargin}%</p>
+        <div
+          className={cn(
+            "flex flex-col text-[0.8em] text-center px-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700"
+          )}
+        >
+          <span>Margin</span>
+          <span className={cn(getColor(inputData.profitMargin))}>
+            {inputData.profitMargin}%
+          </span>
         </div>
       )}
     </div>
