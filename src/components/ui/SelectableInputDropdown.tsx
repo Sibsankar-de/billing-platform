@@ -33,6 +33,7 @@ type Props<T> = {
   items: T[];
   value: string;
   inputProps?: InputType;
+  closeOnEmpty?: boolean;
   onChange: (value: string) => void;
   onSelect: (item: T) => void;
   getLabel: (item: T) => string;
@@ -43,6 +44,7 @@ export function SelectableInputDropdown<T>({
   items,
   value,
   inputProps,
+  closeOnEmpty = false,
   onChange,
   onSelect,
   getLabel,
@@ -97,7 +99,11 @@ export function SelectableInputDropdown<T>({
           value={value}
           onChange={(v) => {
             onChange(v); // parent filters
-            setOpen(v.trim().length > 0); // only toggle dropdown
+            if (closeOnEmpty && !items.length) {
+              setOpen(false);
+            } else {
+              setOpen(v.trim().length > 0);
+            }
             setFocusedIndex(0);
           }}
           onKeyDown={handleKeyDown}
@@ -121,16 +127,18 @@ export function SelectableInputDropdown<T>({
   );
 }
 
-type SearchItemProps<T> = {
+interface SearchItemProps<T> extends React.ComponentProps<"li"> {
   item: T;
   index: number;
   children: ReactNode;
-};
+}
 
 export function SelectableItem<T>({
   item,
   index,
   children,
+  className,
+  ...props
 }: SearchItemProps<T>) {
   const { focusedIndex, selected, handleSelect } =
     useSelectableInputDropdown<T>();
@@ -139,10 +147,12 @@ export function SelectableItem<T>({
     <li
       className={cn(
         "p-2 px-3 rounded cursor-pointer",
-        index === focusedIndex && "bg-accent",
-        (selected as any)?._id === (item as any)._id && "bg-muted"
+        index === focusedIndex && "bg-accent!",
+        (selected as any)?._id === (item as any)._id && "bg-muted",
+        className
       )}
       onClick={() => handleSelect(item)}
+      {...props}
     >
       {children}
     </li>

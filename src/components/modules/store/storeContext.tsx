@@ -5,6 +5,10 @@ import {
   fetchProducts,
   selectProductState,
 } from "@/store/features/productSlice";
+import {
+  fetchCustomerList,
+  selectStoreState,
+} from "@/store/features/storeSlice";
 import { useParams } from "next/navigation";
 import React, { createContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,15 +26,17 @@ export const StoreContextProvider = ({
   const { status: listStatus, categoryStatus } =
     useSelector(selectProductState);
 
+  const { customerStatus } = useSelector(selectStoreState);
+
   useEffect(() => {
     if (storeId && (listStatus === "idle" || listStatus === "success")) {
       dispatch(fetchProducts(storeId));
     }
-  }, [storeId, dispatch]);
-
-  useEffect(() => {
     if (categoryStatus === "idle") {
       dispatch(fetchCategoriesThunk(storeId));
+    }
+    if (customerStatus === "idle") {
+      dispatch(fetchCustomerList(storeId));
     }
   }, [storeId, dispatch]);
 

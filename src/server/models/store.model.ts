@@ -34,6 +34,10 @@ const storeSettingsSchema = new Schema(
       type: Number,
       default: 0,
     },
+    invoiceNumberPrefix: {
+      type: String,
+      default: "INV",
+    },
   },
   { _id: false }
 );
@@ -64,9 +68,8 @@ const storeSchema = new Schema(
     contactEmail: {
       type: String,
     },
-    taxRate: {
-      type: Number,
-      default: 0,
+    lastInvoiceNumber: {
+      type: String,
     },
     accessList: {
       type: [accessListUserSchema],

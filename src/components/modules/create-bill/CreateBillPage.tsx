@@ -23,6 +23,13 @@ export const CreateBillPage = () => {
     customerDetails: {},
   });
 
+  const handleFormChange = (key: keyof typeof formData, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   const handleBillchange = (data: Record<string, any>) => {
     const { subTotal, total, taxAmount, discountAmount, totalProfit } =
       data.calculations;
@@ -40,7 +47,9 @@ export const CreateBillPage = () => {
     <div>
       {/* Invoice Header */}
       <div className="mb-8">
-        <CustomerDetailsForm />
+        <CustomerDetailsForm
+          onChange={(e) => handleFormChange("customerDetails", e)}
+        />
       </div>
 
       {/* Invoice Details */}

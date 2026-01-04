@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { createApiThunk, setState } from "../utils";
 import api from "@/configs/axios-config";
 import { RootState } from "../store";
+import { CustomerDto } from "@/types/dto/customerDto";
 
 export const fetchStoreList: any = createApiThunk(
   "/stores/list",
@@ -19,13 +20,20 @@ export const createNewStoreThunk: any = createApiThunk(
   async (payload) => await api.post("/stores/create", payload)
 );
 
+export const fetchCustomerList: any = createApiThunk(
+  "/stores/customers",
+  async (storeId: string) => await api.get(`/stores/${storeId}/customer-list`)
+);
+
 const initialState = {
   data: {
     storeList: [] as StoreDto[],
     currentStore: {} as StoreDto,
+    customerList: [] as CustomerDto[],
   },
   status: "idle",
   createStatus: "idle",
+  customerStatus: "idle",
   error: null,
 };
 
@@ -62,6 +70,17 @@ const storeSlice = createSlice({
       .addCase(createNewStoreThunk.fulfilled, (state, action) => {
         state.createStatus = "success";
         state.data.storeList.push(action.payload);
+        state.error = null;
+      })
+      .addCase(fetchCustomerList.pending, (state, action) =>
+        setState(state, action, "customerStatus")
+      )
+      .addCase(fetchCustomerList.rejected, (state, action) =>
+        setState(state, action, "customerStatus")
+      )
+      .addCase(fetchCustomerList.fulfilled, (state, action) => {
+        state.customerStatus = "success";
+        state.data.customerList = action.payload;
         state.error = null;
       });
   },

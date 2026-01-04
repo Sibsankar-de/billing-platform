@@ -5,6 +5,8 @@ import { selectProductState } from "@/store/features/productSlice";
 import { ProductDto } from "@/types/dto/productDto";
 import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
 import { SearchableInput } from "@/components/ui/SearchableInputDropdown";
+import { calculatePrice } from "@/utils/price-calculator";
+import { convertUnit } from "@/utils/conversion";
 
 export function ProductSearchInput({
   onSelect,
@@ -26,14 +28,28 @@ export function ProductSearchInput({
     <SearchableInput
       items={productList}
       rules={rules}
+      inputProps={{ autoFocus: true }}
       getLabel={(p) => p.name}
       onSelect={onSelect}
       placeholder="Type a product..."
     >
       {(p, i) => (
-        <SelectableItem key={p._id} item={p} index={i}>
-          <p className="text-lg">{p.name}</p>
-          <p className="text-sm text-gray-600">{p.sku}</p>
+        <SelectableItem
+          key={p._id}
+          item={p}
+          index={i}
+          className="flex justify-between"
+        >
+          <div>
+            <p className="text-[15px]">{p.name}</p>
+            <p className="text-sm text-gray-600">{p.sku}</p>
+          </div>
+          <div>
+            <p className="text-green-800">
+              &#8377;{calculatePrice(1, p.pricePerQuantity)} /{" "}
+              {convertUnit(p.stockUnit)}
+            </p>
+          </div>
         </SelectableItem>
       )}
     </SearchableInput>

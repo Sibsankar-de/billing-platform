@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, ReactNode } from "react";
 import { createIndex, search, SearchRule } from "@/utils/genericSearch";
 import { SelectableInputDropdown } from "@/components/ui/SelectableInputDropdown";
+import { InputType } from "./Input";
 
 type SearchableInputDropdownProps<T extends Record<string, any>> = {
   items: T[];
@@ -10,6 +11,8 @@ type SearchableInputDropdownProps<T extends Record<string, any>> = {
   limit?: number;
   value?: string;
   placeholder?: string;
+  closeOnEmpty?: boolean;
+  inputProps?: InputType;
   getLabel: (item: T) => string;
   onSelect: (item: T) => void;
   onChange?: (value: string) => void;
@@ -22,6 +25,8 @@ export function SearchableInput<T extends Record<string, any>>({
   limit = 25,
   value = "",
   placeholder = "Type to search…",
+  closeOnEmpty,
+  inputProps,
   getLabel,
   onSelect,
   onChange,
@@ -52,7 +57,8 @@ export function SearchableInput<T extends Record<string, any>>({
     <SelectableInputDropdown
       items={filtered}
       value={inputValue}
-      inputProps={{ autoFocus: true, placeholder }}
+      inputProps={{ placeholder, ...inputProps }}
+      closeOnEmpty={closeOnEmpty}
       getLabel={getLabel}
       onSelect={onSelect}
       onChange={(e) => {
