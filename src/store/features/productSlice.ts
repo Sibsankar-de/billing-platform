@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { createApiThunk, setState } from "../utils";
 import api from "@/configs/axios-config";
 import { ProductDto } from "@/types/dto/productDto";
@@ -26,6 +26,17 @@ export const deleteProductThunk: any = createApiThunk(
   async (payload) => await api.delete(`/products/${payload.productId}/delete`)
 );
 
+export const fetchCategoriesThunk: any = createApiThunk(
+  "categories/list",
+  async (storeId) => await api.get(`/stores/${storeId}/category-list`)
+);
+
+export const createCategoryThunk: any = createApiThunk(
+  "categories/create",
+  async (payload) =>
+    await api.post(`/stores/${payload.storeId}/add-category`, payload)
+);
+
 const initialState = {
   data: {
     productList: [] as ProductDto[],
@@ -35,6 +46,7 @@ const initialState = {
   createStatus: "idle",
   updateStatus: "idle",
   deleteStatus: "idle",
+  categoryStatus: "idle",
   error: null,
 };
 
@@ -92,6 +104,28 @@ const productSlice = createSlice({
         state.data.productList = state.data.productList.filter(
           (e) => e._id !== action.payload?.productId
         );
+      })
+      .addCase(fetchCategoriesThunk.pending, (state, action) =>
+        setState(state, action, "categoryStatus")
+      )
+      .addCase(fetchCategoriesThunk.rejected, (state, action) =>
+        setState(state, action, "categoryStatus")
+      )
+      .addCase(fetchCategoriesThunk.fulfilled, (state, action) => {
+        state.categoryStatus = "success";
+        state.error = null;
+        state.data.categoryList = action.payload;
+      })
+      .addCase(createCategoryThunk.pending, (state, action) =>
+        setState(state, action, "categoryStatus")
+      )
+      .addCase(createCategoryThunk.rejected, (state, action) =>
+        setState(state, action, "categoryStatus")
+      )
+      .addCase(createCategoryThunk.fulfilled, (state, action) => {
+        state.categoryStatus = "success";
+        state.error = null;
+        state.data.categoryList.push(action.payload);
       });
   },
 });

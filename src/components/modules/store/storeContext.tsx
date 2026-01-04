@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  fetchCategoriesThunk,
   fetchProducts,
   selectProductState,
 } from "@/store/features/productSlice";
@@ -18,11 +19,18 @@ export const StoreContextProvider = ({
   const params = useParams();
   const storeId = params?.store_id;
   const dispatch = useDispatch();
-  const { status: listStatus } = useSelector(selectProductState);
+  const { status: listStatus, categoryStatus } =
+    useSelector(selectProductState);
 
   useEffect(() => {
     if (storeId && (listStatus === "idle" || listStatus === "success")) {
       dispatch(fetchProducts(storeId));
+    }
+  }, [storeId, dispatch]);
+
+  useEffect(() => {
+    if (categoryStatus === "idle") {
+      dispatch(fetchCategoriesThunk(storeId));
     }
   }, [storeId, dispatch]);
 

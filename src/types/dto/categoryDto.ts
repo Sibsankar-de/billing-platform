@@ -1,5 +1,5 @@
 export type CategoryDto = {
-  _id?: string;
+  _id: string;
   storeId?: string;
   name: string;
 };

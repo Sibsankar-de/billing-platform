@@ -1,4 +1,4 @@
-type SearchRule<T> = {
+export type SearchRule<T> = {
   field: keyof T;
   priority: number;
   mode: "prefix" | "substring";

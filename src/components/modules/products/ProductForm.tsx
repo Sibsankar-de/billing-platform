@@ -3,7 +3,7 @@
 import { Input } from "../../ui/Input";
 import { Textarea } from "../../ui/Textarea";
 import { Label } from "../../ui/Label";
-import { CategorySelector } from "../../ui/CategorySelector";
+import { CategorySelector } from "./CategorySelector";
 import { StockUnitInput } from "../../ui/StockUnitInput";
 import { PriceBreakdownInput } from "./PriceBreakdownInput";
 import { Button } from "../../ui/Button";
@@ -23,6 +23,7 @@ import { useStoreNavigation } from "@/hooks/store-navigation";
 import { StockInput } from "@/components/ui/StockInput";
 import { Separator } from "@/components/ui/Separator";
 import { ToggleButton } from "@/components/ui/ToggleButton";
+import { CategoryDto } from "@/types/dto/categoryDto";
 
 export const ProductForm = ({ formFor }: { formFor: string }) => {
   const router = useRouter();
@@ -41,7 +42,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     name: "",
     sku: "",
     description: "",
-    categories: [],
+    categories: [] as CategoryDto[],
     buyingPricePerQuantity: 0,
     stockUnit: "PCS",
     totalStock: 0,

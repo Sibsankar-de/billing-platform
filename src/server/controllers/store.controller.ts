@@ -166,6 +166,36 @@ export const getCustomerList = asyncHandler(
   }
 );
 
+export const createCategory = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined
+  ) => {
+    const { storeId } = await params!;
+
+    const { name } = await req.json();
+
+    if (!name) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Category name is required");
+    }
+
+    const existingCategory = await Category.findOne({ name, storeId });
+    if (existingCategory) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Category with this name already exists"
+      );
+    }
+
+    const category = await Category.create({ name, storeId });
+
+    return NextResponse.json(
+      new ApiResponse(StatusCodes.OK, category, "Category created")
+    );
+  }
+);
+
 export const getCategoriesByStore = asyncHandler(
   async (
     req: NextRequest,
@@ -174,7 +204,9 @@ export const getCategoriesByStore = asyncHandler(
   ) => {
     const { storeId } = await params!;
 
-    const categories = await Category.find({ storeId }).select("_id name storeId");
+    const categories = await Category.find({ storeId }).select(
+      "_id name storeId"
+    );
 
     return NextResponse.json(
       new ApiResponse(StatusCodes.OK, categories, "Categories fetched")
