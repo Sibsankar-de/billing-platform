@@ -9,12 +9,18 @@ import {
   User,
 } from "lucide-react";
 import { NavMenuType } from "@/types/NavMenuTypes";
-import { SideNavMenu } from "./SideNavMenu";
+import { SideNavMenu, SideNavMenuItem } from "./SideNavMenu";
 import { useSelector } from "react-redux";
 import { selectUserSate } from "@/store/features/userSlice";
 import { Avatar } from "../ui/Avatar";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { useState } from "react";
+
+const settingsItem: NavMenuType = {
+  id: "settings",
+  label: "Settings",
+  icon: Settings,
+};
 
 export function Sidebar() {
   return (
@@ -36,14 +42,13 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-gray-200">
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-          <Settings className="w-5 h-5" />
-          <span>Settings</span>
-        </button>
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-          <HelpCircle className="w-5 h-5" />
-          <span>Help</span>
-        </button>
+        <ul>
+          <SideNavMenuItem item={settingsItem} />
+          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+            <HelpCircle className="w-5 h-5" />
+            <span>Help</span>
+          </button>
+        </ul>
       </div>
     </aside>
   );

@@ -23,7 +23,7 @@ export const SideNavMenu = () => {
   );
 };
 
-const SideNavMenuItem = ({ item }: { item: NavMenuType }) => {
+export const SideNavMenuItem = ({ item }: { item: NavMenuType }) => {
   const params = useParams();
   const storeId = params.store_id;
 

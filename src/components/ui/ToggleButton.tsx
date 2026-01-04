@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 
 interface ToggleButtonProps {
-  isActive: boolean;
+  isActive?: boolean;
   onChange?: (isActive: boolean) => void;
   disabled?: boolean;
   name?: string; // radios need a name to group them

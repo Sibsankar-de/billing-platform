@@ -68,6 +68,17 @@ const storeSchema = new Schema(
     contactEmail: {
       type: String,
     },
+    registrationNumber: {
+      type: String,
+      trim: true,
+    },
+    website: {
+      type: String,
+      trim: true,
+    },
+    logoUrl: {
+      type: String,
+    },
     lastInvoiceNumber: {
       type: String,
     },

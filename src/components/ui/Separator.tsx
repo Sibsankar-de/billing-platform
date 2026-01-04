@@ -4,7 +4,7 @@ export const Separator = ({
   text,
   className,
 }: {
-  text: string;
+  text?: string;
   className?: string;
 }) => {
   return (
@@ -14,7 +14,9 @@ export const Separator = ({
         className
       )}
     >
-      <p className="bg-background text-sm text-gray-500 px-2">{text}</p>
+      {text && (
+        <p className="bg-background text-sm text-gray-500 px-2">{text}</p>
+      )}
     </div>
   );
 };
