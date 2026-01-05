@@ -1,14 +1,15 @@
 "use client";
 
 import {
+  fetchCurrentStore,
+  fetchCustomerList,
+  selectCurrentStoreState,
+} from "@/store/features/currentStoreSlice";
+import {
   fetchCategoriesThunk,
   fetchProducts,
   selectProductState,
 } from "@/store/features/productSlice";
-import {
-  fetchCustomerList,
-  selectStoreState,
-} from "@/store/features/storeSlice";
 import { useParams } from "next/navigation";
 import React, { createContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,20 +24,23 @@ export const StoreContextProvider = ({
   const params = useParams();
   const storeId = params?.store_id;
   const dispatch = useDispatch();
+  const { customerStatus } = useSelector(selectCurrentStoreState);
   const { status: listStatus, categoryStatus } =
     useSelector(selectProductState);
 
-  const { customerStatus } = useSelector(selectStoreState);
-
   useEffect(() => {
-    if (storeId && (listStatus === "idle" || listStatus === "success")) {
-      dispatch(fetchProducts(storeId));
-    }
-    if (categoryStatus === "idle") {
-      dispatch(fetchCategoriesThunk(storeId));
-    }
-    if (customerStatus === "idle") {
-      dispatch(fetchCustomerList(storeId));
+    if (storeId) {
+      dispatch(fetchCurrentStore(storeId));
+
+      if (listStatus === "idle" || listStatus === "success") {
+        dispatch(fetchProducts(storeId));
+      }
+      if (categoryStatus === "idle") {
+        dispatch(fetchCategoriesThunk(storeId));
+      }
+      if (customerStatus === "idle") {
+        dispatch(fetchCustomerList(storeId));
+      }
     }
   }, [storeId, dispatch]);
 

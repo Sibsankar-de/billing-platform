@@ -123,8 +123,10 @@ export const updateProduct = asyncHandler(
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
-        ...productData,
-        categories: categoryIds,
+        $set: {
+          ...productData,
+          categories: categoryIds,
+        },
       },
       { new: true }
     );

@@ -9,5 +9,5 @@ export const useStoreNavigation = () => {
 
   const navigate = (path: string) => router.push(`${basePath}/${path}`);
 
-  return { basePath, navigate };
+  return { storeId, basePath, navigate };
 };

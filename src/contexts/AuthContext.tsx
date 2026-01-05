@@ -2,11 +2,10 @@
 
 import api from "@/configs/axios-config";
 import { AppDispatch } from "@/store/store";
-import { UserDto } from "@/types/dto/userDto";
 import { requestHandler } from "@/utils/api-request";
 import React, { createContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { fetchCurrentUser, setCurrentUser } from "@/store/features/userSlice";
+import { fetchCurrentUser } from "@/store/features/userSlice";
 
 type AuthContextTypes = {
   isAuthenticated: boolean;
@@ -21,7 +20,6 @@ const AuthContext = createContext<AuthContextTypes | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const [user, setUser] = useState<UserDto>({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(false);
 

@@ -5,11 +5,26 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Separator } from "@/components/ui/Separator";
+import { useStoreNavigation } from "@/hooks/store-navigation";
+import {
+  selectCurrentStoreState,
+  updateStoreDetailsThunk,
+} from "@/store/features/currentStoreSlice";
 import { StoreDto } from "@/types/dto/storeDto";
 import { Building2, Store, Upload } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 export const StoreInfoComponent = () => {
+  const { storeId } = useStoreNavigation();
+
+  const dispatch = useDispatch();
+  const {
+    data: { currentStore },
+    storeUpdateStatus,
+  } = useSelector(selectCurrentStoreState);
+
   const [formData, setFormData] = useState({
     name: "",
     contactEmail: "",
@@ -25,6 +40,34 @@ export const StoreInfoComponent = () => {
       [key]: value,
     }));
   }
+
+  useEffect(() => {
+    let data: any = {};
+    Object.keys(formData).map((key) => {
+      const storeKey = key as keyof typeof currentStore;
+      if (currentStore[storeKey]) {
+        data[key] = currentStore[storeKey];
+      }
+    });
+
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
+  }, [currentStore]);
+
+  const handleSaveChanges = () => {
+    if (storeUpdateStatus !== "loading" && storeId) {
+      dispatch(updateStoreDetailsThunk({ storeId, updateData: formData }))
+        .unwrap()
+        .then(() => {
+          toast.success("Store details saved!");
+        });
+    }
+  };
+
+  const isUpdating = storeUpdateStatus === "loading";
+
   return (
     <PrimaryBox>
       <div className="flex justify-between gap-4">
@@ -40,7 +83,14 @@ export const StoreInfoComponent = () => {
           </div>
         </div>
         <div>
-          <Button variant="dark">Save changes</Button>
+          <Button
+            variant="dark"
+            disabled={isUpdating}
+            loading={isUpdating}
+            onClick={handleSaveChanges}
+          >
+            Save changes
+          </Button>
         </div>
       </div>
 
@@ -54,6 +104,7 @@ export const StoreInfoComponent = () => {
             value={formData.name}
             onChange={(e) => handleFormDataChange("name", e)}
             placeholder="Enter business name"
+            disabled={isUpdating}
           />
         </div>
 
@@ -65,6 +116,7 @@ export const StoreInfoComponent = () => {
             value={formData.contactEmail}
             onChange={(e) => handleFormDataChange("contactEmail", e)}
             placeholder="contact@business.com"
+            disabled={isUpdating}
           />
         </div>
 
@@ -76,6 +128,7 @@ export const StoreInfoComponent = () => {
             value={formData.contactNo}
             onChange={(e) => handleFormDataChange("contactNo", e)}
             placeholder="+91 (555) 000-0000"
+            disabled={isUpdating}
           />
         </div>
 
@@ -86,6 +139,7 @@ export const StoreInfoComponent = () => {
             value={formData.website}
             onChange={(e) => handleFormDataChange("website", e)}
             placeholder="www.business.com"
+            disabled={isUpdating}
           />
         </div>
 
@@ -96,6 +150,7 @@ export const StoreInfoComponent = () => {
             value={formData.address}
             onChange={(e) => handleFormDataChange("address", e)}
             placeholder="123 Business Street"
+            disabled={isUpdating}
           />
         </div>
 
@@ -106,6 +161,7 @@ export const StoreInfoComponent = () => {
             value={formData.registrationNumber}
             onChange={(e) => handleFormDataChange("registrationNumber", e)}
             placeholder="12-3456789"
+            disabled={isUpdating}
           />
         </div>
       </div>

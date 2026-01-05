@@ -1,3 +1,11 @@
+export type StoreSettingsDto = {
+  enableInventoryTracking?: boolean;
+  roundupInvoiceTotal?: boolean;
+  defaultDiscountRate?: number;
+  defaultTaxRate?: number;
+  invoiceNumberPrefix?: string;
+};
+
 export type StoreDto = {
   _id: string;
   name: string;
@@ -9,6 +17,7 @@ export type StoreDto = {
   registrationNumber?: string;
   website?: string;
   taxRate?: number;
+  storeSettings?: StoreSettingsDto;
   createdAt?: Date;
   updatedAt?: Date;
 };

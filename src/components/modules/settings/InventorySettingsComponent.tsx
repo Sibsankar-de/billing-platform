@@ -1,12 +1,30 @@
 "use client";
 
 import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { ToggleButton } from "@/components/ui/ToggleButton";
+import { useStoreNavigation } from "@/hooks/store-navigation";
+import {
+  selectCurrentStoreState,
+  updateStoreSettingsThunk,
+} from "@/store/features/currentStoreSlice";
 import { Package } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 export const InventorySettingsComponent = () => {
+  const { storeId } = useStoreNavigation();
+
+  const dispatch = useDispatch();
+  const {
+    data: {
+      currentStore: { storeSettings },
+    },
+    settingsUpdateStatus,
+  } = useSelector(selectCurrentStoreState);
+
   const [formData, setFormData] = useState({
     enableInventoryTracking: false,
   });
@@ -17,6 +35,35 @@ export const InventorySettingsComponent = () => {
       [key]: value,
     }));
   }
+
+  useEffect(() => {
+    if (!storeSettings) return;
+    let data: any = {};
+    Object.keys(formData).map((key) => {
+      const storeKey = key as keyof typeof storeSettings;
+      if (storeSettings[storeKey]) {
+        data[key] = storeSettings[storeKey];
+      }
+    });
+
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
+  }, [storeSettings]);
+
+  const handleSaveChanges = () => {
+    if (settingsUpdateStatus !== "loading" && storeId) {
+      dispatch(updateStoreSettingsThunk({ storeId, updateData: formData }))
+        .unwrap()
+        .then(() => {
+          toast.success("Store settings saved!");
+        });
+    }
+  };
+
+  const isUpdating = settingsUpdateStatus === "loading";
+
   return (
     <PrimaryBox>
       <div className="flex justify-between gap-3">
@@ -31,6 +78,16 @@ export const InventorySettingsComponent = () => {
             </p>
           </div>
         </div>
+        <div>
+          <Button
+            variant="dark"
+            onClick={handleSaveChanges}
+            disabled={isUpdating}
+            loading={isUpdating}
+          >
+            Save Changes
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -43,6 +100,7 @@ export const InventorySettingsComponent = () => {
             <ToggleButton
               id="stock-tracking"
               isActive={formData.enableInventoryTracking}
+              disabled={isUpdating}
               onChange={(e) =>
                 handleFormDataChange("enableInventoryTracking", e)
               }

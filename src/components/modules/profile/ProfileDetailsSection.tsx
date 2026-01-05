@@ -1,12 +1,12 @@
 "use client";
 
 import { Avatar } from "@/components/ui/Avatar";
-import { RootState } from "@/store/store";
+import { selectUserSate } from "@/store/features/userSlice";
 import { Mail } from "lucide-react";
 import { useSelector } from "react-redux";
 
 export const ProfileDetailsSection = () => {
-  const user = useSelector((state: RootState) => state.user.data);
+  const { data: user } = useSelector(selectUserSate);
 
   return (
     <div className="p-6">

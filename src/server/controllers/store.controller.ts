@@ -62,6 +62,9 @@ export const updateStore = asyncHandler(
 
     const updateData = await req.json();
 
+    if (!updateData.name)
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Store name is required");
+
     const updatedStore = await Store.findByIdAndUpdate(
       storeId,
       {
@@ -78,6 +81,38 @@ export const updateStore = asyncHandler(
 
     return NextResponse.json(
       new ApiResponse(StatusCodes.OK, updatedStore as StoreDto, "Store updated")
+    );
+  }
+);
+
+export const updateStoreSettings = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined
+  ) => {
+    const { userId } = await context!;
+    const { storeId } = await params!;
+
+    const updateData = await req.json();
+
+    if (!updateData)
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Data is required");
+
+    const set: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(updateData)) {
+      set[`storeSettings.${key}`] = value;
+    }
+
+    const updatedStore = await Store.findByIdAndUpdate(
+      storeId,
+      { $set: set },
+      { new: true }
+    ).select("-accessList");
+
+    return NextResponse.json(
+      new ApiResponse(StatusCodes.OK, updatedStore, "Store settings updated")
     );
   }
 );
