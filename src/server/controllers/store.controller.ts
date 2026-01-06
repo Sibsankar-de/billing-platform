@@ -164,12 +164,23 @@ export const getProductsByStore = asyncHandler(
     const { storeId } = await params!;
 
     const productList = await Product.aggregate([
-      { $match: { storeId: new mongoose.Types.ObjectId(storeId) } },
+      {
+        $match: { storeId: new mongoose.Types.ObjectId(storeId) },
+      },
       {
         $lookup: {
           from: "categories",
           let: { catIds: "$categories" },
-          pipeline: [{ $project: { _id: 1, name: 1 } }],
+          pipeline: [
+            {
+              $match: {
+                $expr: { $in: ["$_id", "$$catIds"] },
+              },
+            },
+            {
+              $project: { _id: 1, name: 1, storeId: 1 },
+            },
+          ],
           as: "categories",
         },
       },

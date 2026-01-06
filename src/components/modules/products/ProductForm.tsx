@@ -9,7 +9,7 @@ import { PriceBreakdownInput } from "./PriceBreakdownInput";
 import { Button } from "../../ui/Button";
 import { CloudCheck, Info } from "lucide-react";
 import { useEffect, useState } from "react";
-import { PricePerQuantityType, ProductDto } from "@/types/dto/productDto";
+import { PricePerQuantityType } from "@/types/dto/productDto";
 import { numToStr } from "@/utils/conversion";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -24,6 +24,7 @@ import { StockInput } from "@/components/ui/StockInput";
 import { Separator } from "@/components/ui/Separator";
 import { ToggleButton } from "@/components/ui/ToggleButton";
 import { CategoryDto } from "@/types/dto/categoryDto";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 
 export const ProductForm = ({ formFor }: { formFor: string }) => {
   const router = useRouter();
@@ -36,11 +37,17 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     createStatus,
     updateStatus,
   } = useSelector(selectProductState);
+  const {
+    data: {
+      currentStore: { storeSettings },
+    },
+  } = useSelector(selectCurrentStoreState);
   const { navigate } = useStoreNavigation();
 
   const [formData, setFormData] = useState<Record<string, any>>({
     name: "",
     sku: "",
+    gtin: "",
     description: "",
     categories: [] as CategoryDto[],
     buyingPricePerQuantity: 0,
@@ -106,17 +113,31 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
           disabled={isLoading}
         />
       </div>
-      <div>
-        <Label htmlFor="sku" className="block text-gray-600 mb-1.5" required>
-          Product SKU
-        </Label>
-        <Input
-          placeholder="Enter sku"
-          id="sku"
-          value={formData.sku}
-          onChange={(e) => handleFormData("sku", e)}
-          disabled={isLoading}
-        />
+      <div className="flex gap-6">
+        <div className="flex-1">
+          <Label htmlFor="sku" className="block text-gray-600 mb-1.5" required>
+            Product SKU
+          </Label>
+          <Input
+            placeholder="Enter sku"
+            id="sku"
+            value={formData.sku}
+            onChange={(e) => handleFormData("sku", e)}
+            disabled={isLoading}
+          />
+        </div>
+        <div className="flex-1">
+          <Label htmlFor="gtin" className="block text-gray-600 mb-1.5">
+            GTIN / UPC / EAN / Barcode
+          </Label>
+          <Input
+            placeholder="Enter GTIN"
+            id="gtin"
+            value={formData.gtin}
+            onChange={(e) => handleFormData("gtin", e)}
+            disabled={isLoading}
+          />
+        </div>
       </div>
       <div>
         <Label htmlFor="description" className="block text-gray-600 mb-1.5">
@@ -183,10 +204,16 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
       <Separator text={"Inventory tracking"} className="mb-8 mt-10" />
 
       <div>
-        <div className="flex items-center gap-3 mb-3">
-          <p>Enable Invantory tracking</p>
-          <Info size={15} className="mr-6" />
+        <div className="flex items-center gap-6 mb-3">
+          <Label
+            className="flex items-center gap-3 mb-0"
+            htmlFor="enable-tracking"
+          >
+            <p>Enable Inventory tracking</p>
+            <Info size={15} />
+          </Label>
           <ToggleButton
+            id="enable-tracking"
             isActive={formData.enableInventoryTracking}
             onChange={(e) => handleFormData("enableInventoryTracking", e)}
           />

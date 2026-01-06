@@ -105,7 +105,7 @@ export const InvoiceSettingsComponent = () => {
           <p className="text-xs text-gray-500">Example: INV-1001, INV-1002</p>
         </div>
         <div className="flex justify-between items-center gap-6">
-          <Label htmlFor="roundup-total">
+          <Label htmlFor="roundup-total" className="mb-0">
             <p>Roundup Total</p>
             <p className="text-sm text-gray-600">eg: 4.5 = 5</p>
           </Label>

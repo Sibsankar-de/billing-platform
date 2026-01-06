@@ -19,6 +19,7 @@ export function ProductSearchInput({
 
   const rules: any = [
     { field: "name", priority: 1000, mode: "prefix" },
+    { field: "gtin", priority: 950, mode: "prefix" },
     { field: "sku", priority: 900, mode: "prefix" },
     { field: "name", priority: 800, mode: "substring" },
     { field: "sku", priority: 700, mode: "substring" },

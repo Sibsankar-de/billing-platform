@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { SearchableInput } from "@/components/ui/SearchableInputDropdown";
 import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
-import { selectStoreState } from "@/store/features/storeSlice";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { CustomerDto } from "@/types/dto/customerDto";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -16,7 +16,7 @@ export const CustomerDetailsForm = ({
 }) => {
   const {
     data: { customerList },
-  } = useSelector(selectStoreState);
+  } = useSelector(selectCurrentStoreState);
 
   const [customerData, setCustomerData] = useState<CustomerDto>({
     name: "",

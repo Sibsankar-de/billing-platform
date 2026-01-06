@@ -37,8 +37,6 @@ export const CategorySelector = ({
   useEffect(() => {
     if (value && value.length > 0) {
       setCategories(value);
-      console.log(value);
-      
     }
   }, [value]);
 

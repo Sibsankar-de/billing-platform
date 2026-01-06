@@ -93,7 +93,7 @@ export const InventorySettingsComponent = () => {
       <div className="space-y-6">
         <div className="">
           <div className="flex justify-between items-center gap-6">
-            <Label htmlFor="stock-tracking">
+            <Label htmlFor="stock-tracking" className="mb-0">
               <p>Enable Stock tracking</p>
               <p className="text-sm text-gray-600">It will track your stock.</p>
             </Label>

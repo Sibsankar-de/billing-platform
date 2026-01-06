@@ -39,11 +39,18 @@ const productSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      index: true,
     },
     sku: {
       type: String,
       required: true,
       trim: true,
+    },
+    gtin: {
+      type: String,
+      trim: true,
+      unique: true,
+      index: true,
     },
     description: {
       type: String,
@@ -79,6 +86,8 @@ const productSchema = new Schema(
   },
   { timestamps: true }
 );
+
+productSchema.index({ name: "text", sku: "text", gtin: "text" });
 
 if (process.env.NODE_ENV === "development" && models.Product) {
   delete models.Product;

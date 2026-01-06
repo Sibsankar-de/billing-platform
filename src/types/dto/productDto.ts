@@ -10,6 +10,7 @@ export type ProductDto = {
   storeId: string;
   name: string;
   sku: string;
+  gtin?: string;
   description?: string;
   categories?: string[];
   buyingPricePerQuantity: number;
