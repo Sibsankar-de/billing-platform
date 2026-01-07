@@ -81,6 +81,14 @@ const invoiceSchema = new Schema(
       type: Number,
       default: 0,
     },
+    dueAmount: {
+      type: Number,
+      default: 0,
+    },
+    paidAmount: {
+      type: Number,
+      default: 0,
+    },
     taxAmmount: {
       type: Number,
       default: 0,
@@ -92,6 +100,10 @@ const invoiceSchema = new Schema(
     totalProfit: {
       type: String,
       default: 0,
+    },
+    roundupTotal: {
+      type: Boolean,
+      default: false,
     },
     status: {
       type: String,

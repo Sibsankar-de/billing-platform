@@ -32,7 +32,7 @@ export function ProductSearchInput({
       inputProps={{ autoFocus: true }}
       getLabel={(p) => p.name}
       onSelect={onSelect}
-      placeholder="Type a product..."
+      placeholder="Type a product name or SKU or GTIN..."
     >
       {(p, i) => (
         <SelectableItem

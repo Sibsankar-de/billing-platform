@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
 import { Label } from "../../ui/Label";
@@ -9,10 +9,15 @@ import { ProductSearchInput } from "./ProductSearchInput";
 import { StockInput } from "../../ui/StockInput";
 import { ProductDto } from "@/types/dto/productDto";
 import { BillItemType } from "@/types/dto/invoiceDto";
-import { calculatePrice, calculateRate } from "@/utils/price-calculator";
+import { calculatePrice } from "@/utils/price-calculator";
 import { useSelector } from "react-redux";
-import { selectStoreState } from "@/store/features/storeSlice";
 import { SecondaryInput } from "../../ui/SecondaryInput";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
+import { ConditionalDiv } from "@/components/ui/ConditionalDiv";
+
+const generateRandomId = () => {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+};
 
 export const BillingForm = ({
   data,
@@ -23,41 +28,45 @@ export const BillingForm = ({
 }) => {
   const {
     data: { currentStore },
-  } = useSelector(selectStoreState);
+  } = useSelector(selectCurrentStoreState);
+  const storeSettings = currentStore?.storeSettings;
+
   const [items, setItems] = useState<BillItemType[]>([
     {
-      id: Date.now(),
-      product: { id: `${Date.now() - 20}`, name: "", sku: "" },
+      id: generateRandomId(),
+      product: { id: generateRandomId(), name: "", sku: "" },
       netQuantity: 0,
       totalPrice: 0,
       totalProfit: 0,
       stockUnit: "",
     },
   ]);
+
   const [calculations, setCalculations] = useState({
     subtotal: 0,
     taxAmount: 0,
     discountAmount: 0,
     total: 0,
+    paidAmount: 0,
+    dueAmount: 0,
+    totalProfit: 0,
+    roundupTotal: storeSettings?.roundupInvoiceTotal || false,
   });
+
+  const [discountRate, setDiscountRate] = useState("");
 
   useEffect(() => {
     if (data?.items) setItems(data.items);
     if (data?.calculations) setCalculations(data.calculations);
   }, [data]);
 
-  const [discount, setDiscount] = useState({
-    discountAmount: "",
-    discountRate: "",
-  });
-
   const addItem = () => {
     setItems([
       ...items,
       {
-        id: Date.now(),
+        id: generateRandomId(),
         product: {
-          id: `${Date.now() - 20}`,
+          id: generateRandomId(),
           name: "",
           sku: "",
         },
@@ -69,7 +78,7 @@ export const BillingForm = ({
     ]);
   };
 
-  const removeItem = (id: number) => {
+  const removeItem = (id: string) => {
     if (items.length > 1) {
       setItems(items.filter((item) => item.id !== id));
     }
@@ -79,36 +88,14 @@ export const BillingForm = ({
     setItems((prev) => {
       const list = [...prev];
       const index = list.findIndex((e) => e.id === item.id);
-
-      if (index !== -1) {
-        list[index] = { ...item };
-      }
-
+      if (index !== -1) list[index] = { ...item };
       return list;
     });
   };
 
-  const handleDiscountChange = (key: keyof typeof discount, value: string) => {
-    if (key === "discountAmount") {
-      setDiscount({
-        discountAmount: value,
-        discountRate: String(
-          calculateRate(Number(calculations.subtotal), Number(value))
-        ),
-      });
-    } else {
-      setDiscount({
-        discountAmount: String((Number(value) * calculations.subtotal) / 100),
-        discountRate: value,
-      });
-    }
-  };
-
-  // keyboard events
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const key = e.key;
-      if (e.ctrlKey && key === "i") {
+      if (e.ctrlKey && e.key === "i") {
         e.preventDefault();
         addItem();
       }
@@ -118,28 +105,23 @@ export const BillingForm = ({
     return () => document.removeEventListener("keydown", handleKeyDown);
   });
 
-  // calculate bill
   useEffect(() => {
     const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
     const tax = 0;
-    const total = subtotal + tax - Number(discount.discountAmount);
-    const discountAmount = (Number(discount.discountRate) * subtotal) / 100;
+    const discountAmount = (Number(discountRate) * subtotal) / 100;
+    const total = Number((subtotal + tax - Number(discountAmount)).toFixed(2));
 
     setCalculations((p) => ({
       ...p,
       subtotal,
       taxAmount: tax,
-      total: Number(total.toFixed(2)),
+      total,
       discountAmount,
+      paidAmount: total,
+      dueAmount: 0,
     }));
-    if (discount.discountAmount != String(discountAmount) && discountAmount > 0)
-      setDiscount((p) => ({
-        ...p,
-        discountAmount: String(discountAmount),
-      }));
-  }, [items, discount]);
+  }, [items, discountRate]);
 
-  // data flow
   useEffect(() => {
     onBillChange({
       items,
@@ -173,11 +155,12 @@ export const BillingForm = ({
                   Quantity
                 </th>
                 <th className="text-center text-gray-700 px-2 py-3 w-32">
-                  Price (&#8377;)
+                  Price (₹)
                 </th>
                 <th className="w-12"></th>
               </tr>
             </thead>
+
             <tbody>
               {items.map((item) => (
                 <BillingSectionRow
@@ -192,63 +175,78 @@ export const BillingForm = ({
           </table>
         </div>
       </div>
+
       {/* Totals */}
       <div className="flex justify-between">
         <div>
           <Label>Discounts</Label>
-          <div className="mb-2">
-            <SecondaryInput
-              type="number"
-              placeholder="Discount percent (%)"
-              field="%"
-              onChange={(e) => handleDiscountChange("discountRate", e)}
-              value={discount.discountRate}
-            />
-          </div>
-          <div>
-            <SecondaryInput
-              type="number"
-              placeholder="Discount amount (₹)"
-              field="&#8377;"
-              onChange={(e) => handleDiscountChange("discountAmount", e)}
-              value={discount.discountAmount}
-            />
-          </div>
+          <SecondaryInput
+            type="number"
+            placeholder="Discount percent (%)"
+            field="%"
+            onChange={(e) => setDiscountRate(e)}
+            value={discountRate}
+          />
         </div>
+
         <div className="w-80">
           <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Subtotal</span>
-              <span className="text-gray-900">
-                &#8377;{calculations.subtotal}
-              </span>
+              <span className="text-gray-900">₹{calculations.subtotal}</span>
             </div>
-            {currentStore?.taxRate && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">
-                  Tax ({currentStore.taxRate}%)
-                </span>
-                <span className="text-gray-900">&#8377;0</span>
-              </div>
-            )}
-            {discount.discountAmount && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">
-                  Discount (
-                  <span className="text-green-600">
-                    {discount.discountRate}%
-                  </span>
-                  )
-                </span>
-                <span className="text-green-600">
-                  - &#8377;{discount.discountAmount}
-                </span>
-              </div>
-            )}
+
+            <ConditionalDiv
+              condition={storeSettings?.defaultTaxRate}
+              className="flex items-center justify-between"
+            >
+              <span className="text-gray-600">
+                Tax ({storeSettings?.defaultTaxRate}%)
+              </span>
+              <span className="text-gray-900">₹0</span>
+            </ConditionalDiv>
+
+            <ConditionalDiv
+              condition={calculations.discountAmount}
+              className="flex items-center justify-between"
+            >
+              <span className="text-gray-600">
+                Discount (
+                <span className="text-green-600">{discountRate}%</span>)
+              </span>
+              <span className="text-green-600">
+                - ₹{calculations.discountAmount}
+              </span>
+            </ConditionalDiv>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-900">Total</span>
-            <span className="text-gray-900">&#8377;{calculations.total}</span>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-900">Total</span>
+              <span className="text-gray-900">₹{calculations.total}</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span>Paid Amount</span>
+              <Input
+                type="number"
+                placeholder="0.00"
+                className="w-32 text-right"
+                value={calculations.paidAmount}
+                onChange={(e) =>
+                  setCalculations((p) => ({
+                    ...p,
+                    paidAmount: Number(e),
+                    dueAmount: p.total - Number(e),
+                  }))
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-gray-900">Due Amount</span>
+              <span className="text-gray-900">₹{calculations.dueAmount}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -262,25 +260,24 @@ function BillingSectionRow({
   onFieldUpdate,
   onRemoveItem,
 }: {
-  id: number;
+  id: string;
   item: BillItemType;
   onFieldUpdate: (doc: BillItemType) => void;
-  onRemoveItem: (id: number) => void;
+  onRemoveItem: (id: string) => void;
 }) {
+  const baseId = useId();
   const [selectedItem, setSelectedItem] = useState<ProductDto | null>(null);
   const [productFields, setProductFields] = useState<BillItemType>(item);
 
   useEffect(() => {
-    if (item !== productFields) {
-      setProductFields(item);
-    }
+    if (item !== productFields) setProductFields(item);
   }, [item]);
 
   useEffect(() => {
     if (selectedItem) {
       const newItem: BillItemType = {
         ...item,
-        id: id,
+        id,
         product: {
           id: selectedItem._id,
           name: selectedItem.name,
@@ -290,6 +287,7 @@ function BillingSectionRow({
         totalPrice: calculatePrice(1, selectedItem.pricePerQuantity),
         stockUnit: selectedItem.stockUnit,
       };
+
       setProductFields(newItem);
       onFieldUpdate(newItem);
     }
@@ -300,15 +298,8 @@ function BillingSectionRow({
       value = parseInt(value) || 0;
     }
 
-    const updated = {
-      ...productFields,
-      id,
-      [key]: value,
-    };
-
-    // update local row state
+    const updated = { ...productFields, id, [key]: value };
     setProductFields(updated);
-
     onFieldUpdate(updated);
 
     if (key === "netQuantity" && selectedItem) {
@@ -323,19 +314,21 @@ function BillingSectionRow({
   };
 
   return (
-    <tr key={item.id} className="border-t border-gray-200">
+    <tr className="border-t border-gray-200">
       <td className="px-2 py-3">
         <ProductSearchInput onSelect={(e) => setSelectedItem(e)} />
       </td>
+
       <td className="px-2 py-3">
         <StockInput
-          id={"bill-quantity-" + item.id}
+          id={`${baseId}-quantity`}
           value={String(productFields.netQuantity)}
           onChange={(e) => handleInputChange("netQuantity", e)}
           unit={selectedItem?.stockUnit}
           className="w-30"
         />
       </td>
+
       <td className="px-2 py-3">
         <Input
           type="number"
@@ -344,6 +337,7 @@ function BillingSectionRow({
           placeholder="0.00"
         />
       </td>
+
       <td className="px-2 py-3">
         <button
           onClick={() => onRemoveItem(item.id)}

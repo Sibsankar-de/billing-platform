@@ -206,6 +206,19 @@ html {
   font-size: var(--font-size);
 }
 
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Chrome / Safari / Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* Animation */
 .dropdown-open-anim {
   animation: dropDwonOpenAnim 0.3s 1;

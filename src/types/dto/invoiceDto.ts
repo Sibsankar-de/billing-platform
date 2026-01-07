@@ -1,7 +1,7 @@
 import { CustomerDto } from "./customerDto";
 
 export type BillItemType = {
-  id: number;
+  id: string;
   product: {
     id: string;
     name: string;
@@ -27,6 +27,9 @@ export type InvoiceDto = {
   discountAmount?: number;
   taxAmount?: number;
   taxRate?: number;
+  dueAmount?: number;
+  paidAmount?: number;
+  roundupTotal?: boolean;
   status?: string;
   createdAt?: Date;
   updatedAt?: Date;
