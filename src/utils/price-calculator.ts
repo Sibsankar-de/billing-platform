@@ -3,8 +3,8 @@ import { PricePerQuantityType } from "@/types/dto/productDto";
 export function calculatePrice(
   quantity: number,
   tiers: PricePerQuantityType[]
-): number {
-  if (tiers.length === 0) return 0;
+): { price: number; profit: number } {
+  if (tiers.length === 0) return { price: 0, profit: 0 };
 
   // sort tiers by quantity ascending
   const sorted = [...tiers].sort((a, b) => a.quantity - b.quantity);
@@ -21,7 +21,11 @@ export function calculatePrice(
   }
 
   const unitPrice = chosen.price / chosen.quantity;
-  return Number((quantity * unitPrice).toFixed(2));
+  const totalPrice = Number((quantity * unitPrice).toFixed(2));
+  const totalProfit = Number(
+    ((chosen.profitMargin / 100) * quantity).toFixed(2)
+  );
+  return { price: totalPrice, profit: totalProfit };
 }
 
 export function calculateProfit(

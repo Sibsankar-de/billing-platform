@@ -2,7 +2,7 @@ export type PricePerQuantityType = {
   id: number;
   price: number;
   quantity: number;
-  profitMargin?: number;
+  profitMargin: number;
 };
 
 export type ProductDto = {

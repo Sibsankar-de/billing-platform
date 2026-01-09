@@ -1,19 +1,17 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
 import { Label } from "../../ui/Label";
-import { ProductSearchInput } from "./ProductSearchInput";
-import { StockInput } from "../../ui/StockInput";
-import { ProductDto } from "@/types/dto/productDto";
 import { BillItemType } from "@/types/dto/invoiceDto";
-import { calculatePrice } from "@/utils/price-calculator";
 import { useSelector } from "react-redux";
 import { SecondaryInput } from "../../ui/SecondaryInput";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { ConditionalDiv } from "@/components/ui/ConditionalDiv";
+import { ToggleButton } from "@/components/ui/ToggleButton";
+import { BillingSectionRow } from "./BillingSectionRow";
 
 const generateRandomId = () => {
   return Math.floor(1000 + Math.random() * 9000).toString();
@@ -50,7 +48,7 @@ export const BillingForm = ({
     paidAmount: 0,
     dueAmount: 0,
     totalProfit: 0,
-    roundupTotal: storeSettings?.roundupInvoiceTotal || false,
+    roundupTotal: false,
   });
 
   const [discountRate, setDiscountRate] = useState("");
@@ -58,7 +56,13 @@ export const BillingForm = ({
   useEffect(() => {
     if (data?.items) setItems(data.items);
     if (data?.calculations) setCalculations(data.calculations);
-  }, [data]);
+    if (storeSettings?.roundupInvoiceTotal) {
+      setCalculations((p) => ({
+        ...p,
+        roundupTotal: storeSettings.roundupInvoiceTotal || false,
+      }));
+    }
+  }, [data, storeSettings]);
 
   const addItem = () => {
     setItems([
@@ -107,9 +111,15 @@ export const BillingForm = ({
 
   useEffect(() => {
     const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+    const subTotalProfit = items.reduce(
+      (sum, item) => sum + item.totalProfit,
+      0
+    );
     const tax = 0;
     const discountAmount = (Number(discountRate) * subtotal) / 100;
-    const total = Number((subtotal + tax - Number(discountAmount)).toFixed(2));
+    let total = Number((subtotal + tax - Number(discountAmount)).toFixed(2));
+
+    if (calculations.roundupTotal) total = Math.round(total);
 
     setCalculations((p) => ({
       ...p,
@@ -119,6 +129,7 @@ export const BillingForm = ({
       discountAmount,
       paidAmount: total,
       dueAmount: 0,
+      totalProfit: subTotalProfit - discountAmount,
     }));
   }, [items, discountRate]);
 
@@ -178,15 +189,29 @@ export const BillingForm = ({
 
       {/* Totals */}
       <div className="flex justify-between">
-        <div>
-          <Label>Discounts</Label>
-          <SecondaryInput
-            type="number"
-            placeholder="Discount percent (%)"
-            field="%"
-            onChange={(e) => setDiscountRate(e)}
-            value={discountRate}
-          />
+        <div className="space-y-4">
+          <div>
+            <Label>Discounts</Label>
+            <SecondaryInput
+              type="number"
+              placeholder="Discount percent (%)"
+              field="%"
+              onChange={(e) => setDiscountRate(e)}
+              value={discountRate}
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <Label htmlFor="round-total" className="mb-0">
+              Roundup total
+            </Label>
+            <ToggleButton
+              id="round-total"
+              isActive={calculations.roundupTotal}
+              onChange={(e) =>
+                setCalculations((p) => ({ ...p, roundupTotal: e }))
+              }
+            />
+          </div>
         </div>
 
         <div className="w-80">
@@ -253,99 +278,3 @@ export const BillingForm = ({
     </div>
   );
 };
-
-function BillingSectionRow({
-  id,
-  item,
-  onFieldUpdate,
-  onRemoveItem,
-}: {
-  id: string;
-  item: BillItemType;
-  onFieldUpdate: (doc: BillItemType) => void;
-  onRemoveItem: (id: string) => void;
-}) {
-  const baseId = useId();
-  const [selectedItem, setSelectedItem] = useState<ProductDto | null>(null);
-  const [productFields, setProductFields] = useState<BillItemType>(item);
-
-  useEffect(() => {
-    if (item !== productFields) setProductFields(item);
-  }, [item]);
-
-  useEffect(() => {
-    if (selectedItem) {
-      const newItem: BillItemType = {
-        ...item,
-        id,
-        product: {
-          id: selectedItem._id,
-          name: selectedItem.name,
-          sku: selectedItem.sku,
-        },
-        netQuantity: 1,
-        totalPrice: calculatePrice(1, selectedItem.pricePerQuantity),
-        stockUnit: selectedItem.stockUnit,
-      };
-
-      setProductFields(newItem);
-      onFieldUpdate(newItem);
-    }
-  }, [selectedItem]);
-
-  const handleInputChange = (key: keyof BillItemType, value: any) => {
-    if (["netQuantity", "totalPrice"].includes(key)) {
-      value = parseInt(value) || 0;
-    }
-
-    const updated = { ...productFields, id, [key]: value };
-    setProductFields(updated);
-    onFieldUpdate(updated);
-
-    if (key === "netQuantity" && selectedItem) {
-      const withTotal = {
-        ...updated,
-        totalPrice: calculatePrice(value, selectedItem.pricePerQuantity),
-      };
-
-      setProductFields(withTotal);
-      onFieldUpdate(withTotal);
-    }
-  };
-
-  return (
-    <tr className="border-t border-gray-200">
-      <td className="px-2 py-3">
-        <ProductSearchInput onSelect={(e) => setSelectedItem(e)} />
-      </td>
-
-      <td className="px-2 py-3">
-        <StockInput
-          id={`${baseId}-quantity`}
-          value={String(productFields.netQuantity)}
-          onChange={(e) => handleInputChange("netQuantity", e)}
-          unit={selectedItem?.stockUnit}
-          className="w-30"
-        />
-      </td>
-
-      <td className="px-2 py-3">
-        <Input
-          type="number"
-          value={String(productFields.totalPrice)}
-          onChange={(e) => handleInputChange("totalPrice", e)}
-          placeholder="0.00"
-        />
-      </td>
-
-      <td className="px-2 py-3">
-        <button
-          onClick={() => onRemoveItem(item.id)}
-          className="p-2 text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </td>
-    </tr>
-  );
-}

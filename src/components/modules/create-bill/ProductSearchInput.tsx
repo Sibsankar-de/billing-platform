@@ -47,7 +47,7 @@ export function ProductSearchInput({
           </div>
           <div>
             <p className="text-green-800">
-              &#8377;{calculatePrice(1, p.pricePerQuantity)} /{" "}
+              &#8377;{calculatePrice(1, p.pricePerQuantity).price} /{" "}
               {convertUnit(p.stockUnit)}
             </p>
           </div>
