@@ -105,6 +105,9 @@ const invoiceSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    note: {
+      type: String,
+    },
     status: {
       type: String,
       enum: invoiceEnums.invoiceStatus,

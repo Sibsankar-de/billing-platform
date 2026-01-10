@@ -1,4 +1,5 @@
 import mongoose, { model, models, Schema } from "mongoose";
+import { customerEnums } from "../enums/customer.enum";
 
 const customerSchema = new Schema(
   {
@@ -25,6 +26,22 @@ const customerSchema = new Schema(
     },
     address: {
       type: String,
+    },
+    totalDue: {
+      type: Number,
+      default: 0,
+    },
+    advance: {
+      type: Number,
+      default: 0,
+    },
+    paymentBehaviour: {
+      type: String,
+      enum: customerEnums.paymentBehaviours,
+    },
+    mark: {
+      type: String,
+      enum: customerEnums.marks,
     },
   },
   { timestamps: true }

@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import { Invoice } from "../models/invoice.model";
 import { Product } from "../models/product.model";
 import { Customer } from "../models/customer.model";
+import { Store } from "../models/store.model";
 
 export const createInvoice = asyncHandler(
   async (
@@ -17,6 +18,21 @@ export const createInvoice = asyncHandler(
     const billData = await req.json();
     const { userId } = await context!;
     const { storeId } = await params!;
+
+    const { invoiceNumber, issueDate, total, subTotal, paidAmount, dueAmount } =
+      billData;
+
+    if (!invoiceNumber || !issueDate)
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Invoice number and issue date is required"
+      );
+
+    if ([total, subTotal, paidAmount, dueAmount].some((e) => e === null))
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Calculated amounts are required"
+      );
 
     if (billData?.billItems.length === 0) {
       throw new ApiError(
@@ -36,12 +52,26 @@ export const createInvoice = asyncHandler(
       );
     }
 
-    const customerDetails = billData?.customerDetails;
-    let customerId = null;
-    if (customerDetails?.fullName || customerDetails?.phoneNumber) {
-      const customer = await Customer.create({
-        ...customerDetails,
-      });
+    const customerDetails = billData.customerDetails;
+    if (!customerDetails.fullName)
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Customer name is required");
+
+    // update the invoice number
+    const store = await Store.findByIdAndUpdate(
+      storeId,
+      {
+        $set: {
+          lastInvoiceNumber: invoiceNumber,
+        },
+      },
+      { new: true }
+    );
+
+    // get or create new customer
+    let customerId = customerDetails?._id;
+
+    if (!customerId) {
+      const customer = await createCustomer(customerDetails);
       customerId = customer[0]._id;
     }
 
@@ -52,23 +82,39 @@ export const createInvoice = asyncHandler(
       ...billData,
     });
 
-    // update all products
-    await Promise.all(
-      billData.billItems.map((item: any) =>
-        Product.updateOne(
-          { _id: item.product.id },
-          {
-            $inc: {
-              totalStock: -item.netQuantity,
-              totalPrice: -item.totalPrice,
-            },
-          }
-        )
-      )
-    );
+    // update
+    await Promise.all([
+      // update all products if inventory tracking enabled
+      ...(store.storeSettingsSchema.enableInventoryTracking
+        ? billData.billItems.map((item: any) =>
+            Product.updateOne(
+              {
+                _id: item.product.id,
+                enabledInventoryTracking: true,
+                totalStock: { $gte: item.netQuantity },
+              },
+              {
+                $inc: { totalStock: -item.netQuantity },
+              }
+            )
+          )
+        : []),
+      // update customer if there is due
+      dueAmount > 0 &&
+        Customer.findByIdAndUpdate(customerId, {
+          $inc: { totalStock: dueAmount },
+        }),
+    ]);
 
     return NextResponse.json(
       new ApiResponse(200, newInvoice, "Invoice created.")
     );
   }
 );
+
+const createCustomer = async (customerDetails: any) => {
+  const customer = await Customer.create({
+    ...customerDetails,
+  });
+  return customer;
+};
