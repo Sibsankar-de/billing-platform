@@ -3,6 +3,7 @@ declare namespace NodeJS {
         PORT?: string;
         CORS_ORIGIN: string;
         MONGO_CONNECTION_URI: string;
+        DB_NAME: string;
         LOG_COOKIE_EXPIRY: number;
         ACCESS_TOKEN_SECRET: string;
         REFRESH_TOKEN_SECRET: string;
