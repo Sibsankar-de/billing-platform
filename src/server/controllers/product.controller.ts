@@ -6,6 +6,7 @@ import { Product } from "../models/product.model";
 import { ApiError } from "../utils/error-handler";
 import { StatusCodes } from "http-status-codes";
 import { Category } from "../models/category.model";
+import { generateGTIN } from "@/utils/gtin-generator";
 
 export const createProduct = asyncHandler(
   async (
@@ -20,6 +21,7 @@ export const createProduct = asyncHandler(
       storeId,
       name,
       sku,
+      gtin,
       buyingPricePerQuantity,
       enableInventoryTracking,
       totalStock,
@@ -62,6 +64,7 @@ export const createProduct = asyncHandler(
       creatorId: userId,
       storeId,
       ...productData,
+      gtin: gtin || generateGTIN(),
       categories: categoryIds,
     });
 
@@ -71,8 +74,10 @@ export const createProduct = asyncHandler(
         "Failed to create store"
       );
 
+    const productWithCategories = await getProductWithCategories(product);
+
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, product, "Product created")
+      new ApiResponse(StatusCodes.OK, productWithCategories, "Product created")
     );
   }
 );
@@ -91,6 +96,7 @@ export const updateProduct = asyncHandler(
       storeId,
       name,
       sku,
+      gtin,
       buyingPricePerQuantity,
       enableInventoryTracking,
       totalStock,
@@ -126,13 +132,18 @@ export const updateProduct = asyncHandler(
         $set: {
           ...productData,
           categories: categoryIds,
+          gtin: gtin || generateGTIN(),
         },
       },
       { new: true }
     );
 
+    const productWithCategories = await getProductWithCategories(
+      updatedProduct
+    );
+
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, updatedProduct, "Product updated")
+      new ApiResponse(StatusCodes.OK, productWithCategories, "Product updated")
     );
   }
 );
@@ -183,3 +194,8 @@ export const deleteProduct = asyncHandler(
     );
   }
 );
+
+const getProductWithCategories = async (product: any) => {
+  const categories = await Category.find({ _id: { $in: product.categories } });
+  return { ...product.toObject(), categories };
+};
