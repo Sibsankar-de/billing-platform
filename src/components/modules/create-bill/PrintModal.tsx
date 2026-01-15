@@ -34,7 +34,7 @@ export const PrintModal = ({
 
       @media print {
         html, body {
-          width: 80mm;
+          width: ${pageSize};
           margin: 0;
           padding: 0;
         }
@@ -45,7 +45,7 @@ export const PrintModal = ({
   return (
     <Modal
       openState={openState}
-      className="min-w-[60vw] space-y-4"
+      className="min-w-[50vw] space-y-4"
       onClose={onClose}
     >
       <div className="flex items-center gap-3 justify-between">
@@ -63,7 +63,7 @@ export const PrintModal = ({
           onChange={(e) => setPageSize(e)}
         />
       </div>
-      <div className="max-h-[80vh] overflow-y-auto">
+      <div className="max-h-[80vh] overflow-y-auto flex justify-center">
         <InvoiceDocument
           invoice={invoiceData}
           ref={invoiceRef}
@@ -71,7 +71,11 @@ export const PrintModal = ({
         />
       </div>
       <div className="flex gap-3 sticky bottom-0">
-        <Button className="w-full justify-center flex-1" onClick={handlePrint}>
+        <Button
+          className="w-full justify-center flex-1"
+          onClick={handlePrint}
+          autoFocus
+        >
           <PrinterCheck size={18} />
           Save & print bill
         </Button>

@@ -15,12 +15,13 @@ export const InvoiceDocument: React.FC<Props> = ({
   ...props
 }) => {
   const customerDetails = invoice.customerDetails;
+  console.log(invoice);
 
   return (
     <div
       id="print-section"
       className={cn(
-        `bg-white text-gray-900 shadow-xl mx-auto my-6 p-8 rounded-lg print:shadow-none print:rounded-none print:m-0 print:p-6 border`
+        `bg-white text-gray-900 p-3 rounded-lg border print:shadow-none print:rounded-none print:m-0 print:border-none`
       )}
       style={{ width: pageSize }}
       {...props}
@@ -36,12 +37,13 @@ export const InvoiceDocument: React.FC<Props> = ({
       </div>
 
       {/* Invoice Info */}
-      <div className="mt-6 grid grid-cols-2 text-sm">
+      <div className="mt-3 text-sm flex justify-between">
         <ConditionalDiv
           condition={customerDetails}
-          className="text-right text-sm"
+          className="text-left text-sm"
         >
-          <p className="font-semibold">{customerDetails?.name}</p>
+          <p className="font-semibold">Bill To:</p>
+          <p className="font-semibold wrap-break-word">{customerDetails?.name}</p>
           <ConditionalDiv condition={customerDetails?.phoneNumber}>
             {customerDetails?.phoneNumber}
           </ConditionalDiv>
@@ -50,7 +52,7 @@ export const InvoiceDocument: React.FC<Props> = ({
 
         <div className="text-right">
           <p>
-            <span className="font-semibold">Issue Date:</span>{" "}
+            <span className="font-semibold">Date:</span>{" "}
             {formatDateStr(invoice?.issueDate).dashedDate}
           </p>
         </div>
@@ -64,7 +66,6 @@ export const InvoiceDocument: React.FC<Props> = ({
               <th className="py-2 px-3">Item</th>
               <th className="py-2 px-3 text-center">Qty</th>
               <th className="py-2 px-3 text-right">Price</th>
-              <th className="py-2 px-3 text-right">Total</th>
             </tr>
           </thead>
 
@@ -75,8 +76,7 @@ export const InvoiceDocument: React.FC<Props> = ({
                 <td className="py-2 px-3 text-center">
                   {item.netQuantity} {item.stockUnit}
                 </td>
-                <td className="py-2 px-3 text-right">{item.totalPrice}</td>
-                <td className="py-2 px-3 text-right">{item.totalPrice}</td>
+                <td className="py-2 px-3 text-right">₹{item.totalPrice}</td>
               </tr>
             ))}
           </tbody>
@@ -84,11 +84,11 @@ export const InvoiceDocument: React.FC<Props> = ({
       </div>
 
       {/* Summary */}
-      <div className="mt-6 flex justify-end">
-        <div className="w-64 text-sm">
+      <div className="mt-6 flex">
+        <div className="w-full text-sm">
           <div className="flex justify-between py-1">
             <span>Subtotal:</span>
-            <span>{invoice.subTotal}</span>
+            <span>₹{invoice.subTotal}</span>
           </div>
 
           <ConditionalDiv
@@ -96,7 +96,7 @@ export const InvoiceDocument: React.FC<Props> = ({
             className="flex justify-between py-1"
           >
             <span>Discount:</span>
-            <span>-{invoice.discountAmount}</span>
+            <span>-₹{invoice.discountAmount}</span>
           </ConditionalDiv>
 
           <ConditionalDiv
@@ -104,12 +104,12 @@ export const InvoiceDocument: React.FC<Props> = ({
             className="flex justify-between py-1"
           >
             <span>Tax ({invoice.taxRate}%):</span>
-            <span>{invoice.taxAmount || 0}</span>
+            <span>₹{invoice.taxAmount || 0}</span>
           </ConditionalDiv>
 
           <div className="flex justify-between font-semibold text-lg border-t mt-2 pt-2">
             <span>Total:</span>
-            <span>{invoice.total}</span>
+            <span>₹{invoice.total}</span>
           </div>
         </div>
       </div>

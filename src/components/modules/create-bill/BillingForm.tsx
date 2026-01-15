@@ -41,7 +41,7 @@ export const BillingForm = ({
   ]);
 
   const [calculations, setCalculations] = useState({
-    subtotal: 0,
+    subTotal: 0,
     taxAmount: 0,
     discountAmount: 0,
     total: 0,
@@ -110,20 +110,20 @@ export const BillingForm = ({
   });
 
   useEffect(() => {
-    const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+    const subTotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
     const subTotalProfit = items.reduce(
       (sum, item) => sum + item.totalProfit,
       0
     );
     const tax = 0;
-    const discountAmount = (Number(discountRate) * subtotal) / 100;
-    let total = Number((subtotal + tax - Number(discountAmount)).toFixed(2));
+    const discountAmount = (Number(discountRate) * subTotal) / 100;
+    let total = Number((subTotal + tax - Number(discountAmount)).toFixed(2));
 
     if (calculations.roundupTotal) total = Math.round(total);
 
     setCalculations((p) => ({
       ...p,
-      subtotal,
+      subTotal,
       taxAmount: tax,
       total,
       discountAmount,
@@ -218,7 +218,7 @@ export const BillingForm = ({
           <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Subtotal</span>
-              <span className="text-gray-900">₹{calculations.subtotal}</span>
+              <span className="text-gray-900">₹{calculations.subTotal}</span>
             </div>
 
             <ConditionalDiv
