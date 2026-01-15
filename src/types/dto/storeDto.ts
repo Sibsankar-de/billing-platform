@@ -17,6 +17,7 @@ export type StoreDto = {
   registrationNumber?: string;
   website?: string;
   taxRate?: number;
+  lastInvoiceNumber?: string;
   storeSettings?: StoreSettingsDto;
   createdAt?: Date;
   updatedAt?: Date;

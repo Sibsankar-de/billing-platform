@@ -4,7 +4,7 @@ interface InvoiceNumberOptions {
   date?: Date;
 }
 
-export function generateInvoiceNumber({
+export function getNextInvoiceNumber({
   prefix,
   lastInvoiceNumber,
   date = new Date(),

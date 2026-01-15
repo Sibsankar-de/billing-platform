@@ -4,6 +4,7 @@ import productReducer from "./features/productSlice";
 import userReducer from "./features/userSlice";
 import storeReducer from "./features/storeSlice";
 import currentStoreReducer from "./features/currentStoreSlice";
+import invoiceReducer from "./features/invoiceSlice";
 
 export function makeStore() {
   return configureStore({
@@ -12,6 +13,7 @@ export function makeStore() {
       user: userReducer,
       store: storeReducer,
       currentStore: currentStoreReducer,
+      invoice: invoiceReducer,
     },
   });
 }

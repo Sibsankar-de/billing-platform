@@ -60,6 +60,7 @@ const invoiceSchema = new Schema(
     invoiceNumber: {
       type: String,
       required: true,
+      index: true,
     },
     issueDate: {
       type: Date,
