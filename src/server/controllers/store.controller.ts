@@ -45,11 +45,7 @@ export const createStore = asyncHandler(
     await store.save();
 
     return NextResponse.json(
-      new ApiResponse(
-        StatusCodes.OK,
-        await populateStoreSettings(store),
-        "Store created successfully!",
-      ),
+      new ApiResponse(StatusCodes.OK, store, "Store created successfully!"),
     );
   },
 );
@@ -77,11 +73,7 @@ export const updateStore = asyncHandler(
     ).select("-accessList");
 
     return NextResponse.json(
-      new ApiResponse(
-        StatusCodes.OK,
-        await populateStoreSettings(updatedStore),
-        "Store updated",
-      ),
+      new ApiResponse(StatusCodes.OK, updatedStore, "Store updated"),
     );
   },
 );
