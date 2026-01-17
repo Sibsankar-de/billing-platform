@@ -8,6 +8,8 @@ import { Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { ProductDeleteModal } from "./ProductDeleteModal";
 import { convertUnit } from "@/utils/conversion";
+import { useSelector } from "react-redux";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 
 export const InventoryProductCard = ({
   index,
@@ -16,6 +18,9 @@ export const InventoryProductCard = ({
   index: number;
   product: ProductDto;
 }) => {
+  const {
+    data: { storeSettings },
+  } = useSelector(selectCurrentStoreState);
   const { navigate } = useStoreNavigation();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   return (
@@ -38,8 +43,13 @@ export const InventoryProductCard = ({
       </td>
       <td className="px-6 py-4 text-center">
         <span className="text-gray-900">
-          <span>&#8377;{Number(product.buyingPricePerQuantity?.toFixed(2))}</span>{" "}
-          <span>/</span> <span>{convertUnit(product.stockUnit)}</span>
+          <span>
+            &#8377;{Number(product.buyingPricePerQuantity?.toFixed(2))}
+          </span>{" "}
+          <span>/</span>{" "}
+          <span>
+            {convertUnit(product.stockUnit, storeSettings.customUnits)}
+          </span>
         </span>
       </td>
       <td className="px-6 py-4">

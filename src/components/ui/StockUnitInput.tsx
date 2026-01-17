@@ -1,6 +1,10 @@
+"use client";
+
 import { unitMap } from "@/constants/UnitMaps";
 import { Select } from "./Select";
 import { SelectOptionType } from "@/types/SelectType";
+import { useSelector } from "react-redux";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 
 export const StockUnitInput = ({
   id,
@@ -14,7 +18,14 @@ export const StockUnitInput = ({
   className?: string;
   disabled?: boolean;
 }) => {
-  const options: SelectOptionType[] = unitMap;
+  const {
+    data: { storeSettings },
+  } = useSelector(selectCurrentStoreState);
+
+  const options: SelectOptionType[] = [
+    ...unitMap,
+    ...(storeSettings.customUnits || []),
+  ];
   return (
     <Select
       id={id}

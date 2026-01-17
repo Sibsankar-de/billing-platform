@@ -2,11 +2,11 @@ import mongoose, { model, models, Schema } from "mongoose";
 
 const customUnitSchema = new Schema(
   {
-    value: {
+    key: {
       type: String,
       required: true,
     },
-    label: {
+    value: {
       type: String,
       required: true,
     },

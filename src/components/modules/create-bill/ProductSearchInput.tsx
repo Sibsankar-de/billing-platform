@@ -7,6 +7,7 @@ import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
 import { SearchableInput } from "@/components/ui/SearchableInputDropdown";
 import { calculatePrice } from "@/utils/price-calculator";
 import { convertUnit } from "@/utils/conversion";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 
 export function ProductSearchInput({
   onSelect,
@@ -16,6 +17,9 @@ export function ProductSearchInput({
   const {
     data: { productList },
   } = useSelector(selectProductState);
+  const {
+    data: { storeSettings },
+  } = useSelector(selectCurrentStoreState);
 
   const rules: any = [
     { field: "name", priority: 1000, mode: "prefix" },
@@ -48,7 +52,7 @@ export function ProductSearchInput({
           <div>
             <p className="text-green-800">
               &#8377;{calculatePrice(1, p.pricePerQuantity).price} /{" "}
-              {convertUnit(p.stockUnit)}
+              {convertUnit(p.stockUnit, storeSettings.customUnits)}
             </p>
           </div>
         </SelectableItem>

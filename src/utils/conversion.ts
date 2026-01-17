@@ -5,7 +5,8 @@ export function numToStr(num: number | undefined) {
   return str === "0" ? "" : str;
 }
 
-export function convertUnit(unit: string) {
-  const found = unitMap.find((u) => u.value === unit);
-  return found ? found.label : unit;
+export function convertUnit(unit: string, customs?: any[]) {
+  const unitList = [...unitMap, ...(customs || [])];
+  const found = unitList.find((u) => u.key === unit);
+  return found ? found.value : unit;
 }

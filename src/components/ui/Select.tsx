@@ -23,7 +23,7 @@ export const Select = ({
   const placeholderRef = useRef<HTMLLabelElement | null>(null);
 
   const normalized = options.map((o) =>
-    typeof o === "string" ? { label: o, value: o } : o
+    typeof o === "string" ? { key: o, value: o } : o,
   );
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export const Select = ({
         className={clsx(
           "w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg h-fit flex items-center justify-between gap-2 relative transition-all duration-200 focus-within:ring-primary focus-within:ring-2",
           isFocused && "ring-primary ring-2",
-          className
+          className,
         )}
         onKeyDown={onKeyDown}
         onClick={handleClick}
@@ -84,19 +84,19 @@ export const Select = ({
           aria-expanded={open}
           className={clsx(
             "w-full resize-y outline-none border-none bg-transparent",
-            disabled && "opacity-50 cursor-not-allowed"
+            disabled && "opacity-50 cursor-not-allowed",
           )}
         >
           <span className="truncate select-none">
             {!selected
               ? placeholder
-              : normalized.find((o) => o.value === selected)?.label ?? selected}
+              : (normalized.find((o) => o.key === selected)?.value ?? selected)}
           </span>
         </div>
         <div
           className={cn(
             "transition-transform duration-200",
-            isFocused ? "rotate-180" : "rotate-0"
+            isFocused ? "rotate-180" : "rotate-0",
           )}
         >
           <ChevronDown size={16} className="text-primary" />
@@ -111,24 +111,23 @@ export const Select = ({
         >
           {normalized.map((opt) => (
             <li
-              key={opt.value}
+              key={opt.key}
               role="option"
-              aria-selected={selected === opt.value}
+              aria-selected={selected === opt.key}
               tabIndex={0}
               className={clsx(
                 "px-4 py-2 hover:bg-accent hover:text-white cursor-pointer",
-                selected === opt.value &&
-                  "font-semibold bg-secondary text-white"
+                selected === opt.key && "font-semibold bg-secondary text-white",
               )}
-              onClick={() => selectValue(opt.value)}
+              onClick={() => selectValue(opt.key)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  selectValue(opt.value);
+                  selectValue(opt.key);
                 }
               }}
             >
-              {opt.label}
+              {opt.value}
             </li>
           ))}
         </ul>

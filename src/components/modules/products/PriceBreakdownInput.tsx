@@ -6,10 +6,12 @@ import { Button } from "../../ui/Button";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { PricePerQuantityType } from "@/types/dto/productDto";
-import { numToStr } from "@/utils/conversion";
+import { convertUnit, numToStr } from "@/utils/conversion";
 import { StockInput } from "../../ui/StockInput";
 import { calculateProfit } from "@/utils/price-calculator";
 import { cn } from "@/components/utils";
+import { useSelector } from "react-redux";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 
 export const PriceBreakdownInput = ({
   value,
@@ -24,7 +26,7 @@ export const PriceBreakdownInput = ({
 }) => {
   const [priceBreakdowns, setPriceBreakdowns] = useState<
     PricePerQuantityType[]
-  >([{ id: 1, price: 0, quantity: 0 }]);
+  >([{ id: 1, price: 0, quantity: 0, profitMargin: 0 }]);
 
   useEffect(() => {
     if (value && value.length > 0) {
@@ -47,6 +49,7 @@ export const PriceBreakdownInput = ({
       id: (lastBreakdown.id || 0) + 1,
       price: 0,
       quantity: 0,
+      profitMargin: 0,
     };
 
     setPriceBreakdowns((prev) => [...prev, newBreakdown]);
@@ -96,7 +99,7 @@ export const PriceBreakdownInput = ({
           ...item,
           profitMargin,
         };
-      })
+      }),
     );
   }, [buyingPricePerItem]);
 
@@ -121,7 +124,7 @@ export const PriceBreakdownInput = ({
                 className="py-2 bg-red-200/50 text-red-400"
                 onClick={() =>
                   setPriceBreakdowns(
-                    priceBreakdowns.filter((bd) => bd.id !== item.id)
+                    priceBreakdowns.filter((bd) => bd.id !== item.id),
                   )
                 }
               >
@@ -191,7 +194,7 @@ function BreakdownItem({
       {inputData.profitMargin !== undefined && (
         <div
           className={cn(
-            "flex flex-col text-[0.8em] text-center px-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700"
+            "flex flex-col text-[0.8em] text-center px-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700",
           )}
         >
           <span>Margin</span>

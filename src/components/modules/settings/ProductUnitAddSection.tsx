@@ -21,8 +21,8 @@ export const ProductUnitAddSection = ({
 
   const [unitList, setUnitList] = useState<CustomUnitType[]>([]);
   const [input, setInput] = useState({
+    key: "",
     value: "",
-    label: "",
   });
 
   const [editItem, setEditItem] = useState<CustomUnitType | null>(null);
@@ -34,19 +34,19 @@ export const ProductUnitAddSection = ({
   }, [storeSettings]);
 
   const handleAddUnit = () => {
-    if (!input.value || !input.label) {
+    if (!input.value || !input.key) {
       toast.warn("Value and label is required!");
       return;
     }
 
-    if (unitList.find((e) => e.value === input.value)) {
-      toast.warn(`Unit with value "${input.value}" already exists`);
+    if (unitList.find((e) => e.key === input.key)) {
+      toast.warn(`Unit with key "${input.key}" already exists`);
       return;
     }
 
     setUnitList((p) => [...p, input]);
     setInput({
-      label: "",
+      key: "",
       value: "",
     });
   };
@@ -54,21 +54,21 @@ export const ProductUnitAddSection = ({
   const handleEdit = () => {
     if (!editItem) return;
 
-    if (!input.value || !input.label) {
+    if (!input.value || !input.key) {
       toast.warn("Value and label is required!");
       return;
     }
     if (
-      editItem.value !== input.value &&
-      unitList.find((e) => e.value === input.value)
+      editItem.key !== input.key &&
+      unitList.find((e) => e.key === input.key)
     ) {
-      toast.warn(`Unit with value "${input.value}" already exists`);
+      toast.warn(`Unit with key "${input.key}" already exists`);
       return;
     }
 
     setUnitList((prev) =>
       prev.map((item) => {
-        if (item.value === editItem.value) {
+        if (item.key === editItem.key) {
           return input;
         }
         return item;
@@ -78,15 +78,15 @@ export const ProductUnitAddSection = ({
     handleCancelEdit();
   };
 
-  const handleDelete = (value: string) => {
-    setUnitList((prev) => prev.filter((item) => item.value !== value));
+  const handleDelete = (key: string) => {
+    setUnitList((prev) => prev.filter((item) => item.key !== key));
     handleCancelEdit();
   };
 
   const handleCancelEdit = () => {
     setEditItem(null);
     setInput({
-      label: "",
+      key: "",
       value: "",
     });
   };
@@ -100,32 +100,26 @@ export const ProductUnitAddSection = ({
       <div className="flex items-center gap-3">
         <div className="flex-1">
           <Input
-            placeholder="Unit value. eg, CARTON"
-            value={input.value}
-            onChange={(e) => setInput((p) => ({ ...p, value: e }))}
+            placeholder="Unit key. eg, CARTON"
+            value={input.key}
+            onChange={(e) => setInput((p) => ({ ...p, key: e }))}
           />
         </div>
         <div className="flex-1">
           <Input
-            placeholder="Unit label. eg, Carton"
-            value={input.label}
-            onChange={(e) => setInput((p) => ({ ...p, label: e }))}
+            placeholder="Unit value. eg, Carton"
+            value={input.value}
+            onChange={(e) => setInput((p) => ({ ...p, value: e }))}
           />
         </div>
 
         {!editItem ? (
-          <Button
-            disabled={!input.value || !input.label}
-            onClick={handleAddUnit}
-          >
+          <Button disabled={!input.value || !input.key} onClick={handleAddUnit}>
             <Plus size={18} />
           </Button>
         ) : (
           <>
-            <Button
-              disabled={!input.value || !input.label}
-              onClick={handleEdit}
-            >
+            <Button disabled={!input.value || !input.key} onClick={handleEdit}>
               <Save size={18} />
             </Button>
             <Button
@@ -145,7 +139,7 @@ export const ProductUnitAddSection = ({
       >
         {unitList.map((item) => (
           <UnitItem
-            key={item.value}
+            key={item.key}
             unitData={item}
             onEdit={(e) => {
               setEditItem(e);
@@ -166,7 +160,7 @@ function UnitItem({
 }: {
   unitData: CustomUnitType;
   onEdit: (item: CustomUnitType) => void;
-  onDelete: (value: string) => void;
+  onDelete: (key: string) => void;
 }) {
   return (
     <div className="flex items-center justify-between">
@@ -175,8 +169,8 @@ function UnitItem({
           <Ruler className="w-5 h-5 text-blue-600" />
         </div>
         <div>
-          <p>{unitData.label}</p>
-          <p className="text-sm">{unitData.value}</p>
+          <p>{unitData.value}</p>
+          <p className="text-sm">{unitData.key}</p>
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -190,7 +184,7 @@ function UnitItem({
         <Button
           variant="outline"
           className="text-red-400"
-          onClick={() => onDelete(unitData.value)}
+          onClick={() => onDelete(unitData.key)}
         >
           <Trash2 size={15} />
         </Button>

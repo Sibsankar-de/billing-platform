@@ -17,9 +17,9 @@ import { useStoreNavigation } from "@/hooks/store-navigation";
 import { ProductDeleteModal } from "./ProductDeleteModal";
 
 const categories: SelectOptionType[] = [
-  { label: "All Categories", value: "" },
-  { label: "Services", value: "Services" },
-  { label: "Subscription", value: "Subscription" },
+  { value: "All Categories", key: "all" },
+  { value: "Services", key: "services" },
+  { value: "Subscription", key: "subscription" },
 ];
 
 const PAGE_SIZE = 15;
@@ -31,7 +31,7 @@ export const InventoryProductList = () => {
   } = useSelector(selectProductState);
 
   const [paginatedData, setPaginatedData] = useState<PageResult<ProductDto>>(
-    {}
+    {},
   );
   const [page, setPage] = useState(1);
 

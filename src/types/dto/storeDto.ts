@@ -1,6 +1,6 @@
 export type CustomUnitType = {
+  key: string;
   value: string;
-  label: string;
 };
 
 export type StoreSettingsDto = {
