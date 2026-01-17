@@ -13,33 +13,7 @@ const accessListUserSchema = new Schema(
       enum: storeEnums.USER_ROLES,
     },
   },
-  { _id: false }
-);
-
-const storeSettingsSchema = new Schema(
-  {
-    enableInventoryTracking: {
-      type: Boolean,
-      default: false,
-    },
-    roundupInvoiceTotal: {
-      type: Boolean,
-      default: false,
-    },
-    defaultDiscountRate: {
-      type: Number,
-      default: 0,
-    },
-    defaultTaxRate: {
-      type: Number,
-      default: 0,
-    },
-    invoiceNumberPrefix: {
-      type: String,
-      default: "INV",
-    },
-  },
-  { _id: false }
+  { _id: false },
 );
 
 const storeSchema = new Schema(
@@ -86,9 +60,12 @@ const storeSchema = new Schema(
       type: [accessListUserSchema],
       required: true,
     },
-    storeSettings: storeSettingsSchema,
+    settingsId: {
+      type: mongoose.Types.ObjectId,
+      ref: "StoreSettings",
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 if (process.env.NODE_ENV === "development" && models.Store) {

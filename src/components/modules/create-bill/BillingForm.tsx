@@ -25,9 +25,8 @@ export const BillingForm = ({
   onBillChange: (e: Record<string, any>) => void;
 }) => {
   const {
-    data: { currentStore },
+    data: { currentStore, storeSettings },
   } = useSelector(selectCurrentStoreState);
-  const storeSettings = currentStore?.storeSettings;
 
   const [items, setItems] = useState<BillItemType[]>([
     {
@@ -113,7 +112,7 @@ export const BillingForm = ({
     const subTotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
     const subTotalProfit = items.reduce(
       (sum, item) => sum + item.totalProfit,
-      0
+      0,
     );
     const tax = 0;
     const discountAmount = (Number(discountRate) * subTotal) / 100;

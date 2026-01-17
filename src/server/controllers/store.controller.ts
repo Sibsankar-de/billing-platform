@@ -10,6 +10,7 @@ import { StoreDto } from "@/types/dto/storeDto";
 import { Customer } from "../models/customer.model";
 import mongoose from "mongoose";
 import { Category } from "../models/category.model";
+import { StoreSettings } from "../models/storeSettings.model";
 
 export const createStore = asyncHandler(
   async (req: NextRequest, context: MiddlewareContext | undefined) => {
@@ -35,27 +36,29 @@ export const createStore = asyncHandler(
       ],
     });
 
-    if (!store)
-      throw new ApiError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to create store"
-      );
+    // create store settings
+    const storeSettings = await StoreSettings.create({
+      storeId: store._id,
+    });
+
+    store.settingsId = storeSettings._id;
+    await store.save();
 
     return NextResponse.json(
       new ApiResponse(
         StatusCodes.OK,
-        store as StoreDto,
-        "Store created successfully!"
-      )
+        await populateStoreSettings(store),
+        "Store created successfully!",
+      ),
     );
-  }
+  },
 );
 
 export const updateStore = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const { userId } = await context!;
     const { storeId } = await params!;
@@ -70,26 +73,32 @@ export const updateStore = asyncHandler(
       {
         ...updateData,
       },
-      { new: true }
+      { new: true },
     ).select("-accessList");
 
-    if (!updatedStore)
-      throw new ApiError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to update store"
-      );
-
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, updatedStore as StoreDto, "Store updated")
+      new ApiResponse(
+        StatusCodes.OK,
+        await populateStoreSettings(updatedStore),
+        "Store updated",
+      ),
     );
-  }
+  },
 );
+
+const populateStoreSettings = async (store: any) => {
+  if (!store.settingsId) return;
+
+  const storeSettings = await StoreSettings.findById(store.settingsId);
+
+  return { ...store.toObject(), storeSettings };
+};
 
 export const updateStoreSettings = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const { userId } = await context!;
     const { storeId } = await params!;
@@ -99,22 +108,24 @@ export const updateStoreSettings = asyncHandler(
     if (!updateData)
       throw new ApiError(StatusCodes.BAD_REQUEST, "Data is required");
 
-    const set: Record<string, any> = {};
-
-    for (const [key, value] of Object.entries(updateData)) {
-      set[`storeSettings.${key}`] = value;
-    }
-
-    const updatedStore = await Store.findByIdAndUpdate(
-      storeId,
-      { $set: set },
-      { new: true }
-    ).select("-accessList");
+    const updatedStoreSettings = await StoreSettings.findOneAndUpdate(
+      { storeId },
+      {
+        $set: {
+          ...updateData,
+        },
+      },
+      { new: true },
+    );
 
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, updatedStore, "Store settings updated")
+      new ApiResponse(
+        StatusCodes.OK,
+        updatedStoreSettings,
+        "Store settings updated",
+      ),
     );
-  }
+  },
 );
 
 export const getStoreList = asyncHandler(
@@ -128,16 +139,16 @@ export const getStoreList = asyncHandler(
     }
 
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, storeList, "Stores fetched")
+      new ApiResponse(StatusCodes.OK, storeList, "Stores fetched"),
     );
-  }
+  },
 );
 
 export const getStoreById = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const { userId } = await context!;
     const { storeId } = await params!;
@@ -149,16 +160,20 @@ export const getStoreById = asyncHandler(
     }
 
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, store, "Store fetched")
+      new ApiResponse(
+        StatusCodes.OK,
+        await populateStoreSettings(store),
+        "Store fetched",
+      ),
     );
-  }
+  },
 );
 
 export const getProductsByStore = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const { userId } = await context!;
     const { storeId } = await params!;
@@ -191,32 +206,32 @@ export const getProductsByStore = asyncHandler(
     }
 
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, productList, "Products fetched")
+      new ApiResponse(StatusCodes.OK, productList, "Products fetched"),
     );
-  }
+  },
 );
 
 export const getCustomerList = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const { storeId } = await params!;
 
     const customerList = await Customer.find({ storeId });
 
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, customerList, "Customer details fetched")
+      new ApiResponse(StatusCodes.OK, customerList, "Customer details fetched"),
     );
-  }
+  },
 );
 
 export const createCategory = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const { storeId } = await params!;
 
@@ -230,32 +245,32 @@ export const createCategory = asyncHandler(
     if (existingCategory) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
-        "Category with this name already exists"
+        "Category with this name already exists",
       );
     }
 
     const category = await Category.create({ name, storeId });
 
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, category, "Category created")
+      new ApiResponse(StatusCodes.OK, category, "Category created"),
     );
-  }
+  },
 );
 
 export const getCategoriesByStore = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const { storeId } = await params!;
 
     const categories = await Category.find({ storeId }).select(
-      "_id name storeId"
+      "_id name storeId",
     );
 
     return NextResponse.json(
-      new ApiResponse(StatusCodes.OK, categories, "Categories fetched")
+      new ApiResponse(StatusCodes.OK, categories, "Categories fetched"),
     );
-  }
+  },
 );

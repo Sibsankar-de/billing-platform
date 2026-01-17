@@ -1,9 +1,15 @@
+export type CustomUnitType = {
+  value: string;
+  label: string;
+};
+
 export type StoreSettingsDto = {
-  enableInventoryTracking?: boolean;
-  roundupInvoiceTotal?: boolean;
+  enableInventoryTracking: boolean;
+  roundupInvoiceTotal: boolean;
   defaultDiscountRate?: number;
   defaultTaxRate?: number;
-  invoiceNumberPrefix?: string;
+  invoiceNumberPrefix: string;
+  customUnits: CustomUnitType[];
 };
 
 export type StoreDto = {
@@ -18,7 +24,7 @@ export type StoreDto = {
   website?: string;
   taxRate?: number;
   lastInvoiceNumber?: string;
-  storeSettings?: StoreSettingsDto;
+  storeSettingsId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

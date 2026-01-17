@@ -4,7 +4,6 @@ import { cn } from "../utils";
 export const Label = ({
   children,
   className,
-  htmlFor,
   required = false,
   ...props
 }: {
@@ -15,11 +14,7 @@ export const Label = ({
   props?: React.ComponentProps<"label">;
 }) => {
   return (
-    <label
-      htmlFor={htmlFor || ""}
-      className={cn("block text-gray-600 mb-1.5", className)}
-      {...props}
-    >
+    <label className={cn("block text-gray-600 mb-1.5", className)} {...props}>
       {children} {required && <span className="text-red-400">*</span>}
     </label>
   );

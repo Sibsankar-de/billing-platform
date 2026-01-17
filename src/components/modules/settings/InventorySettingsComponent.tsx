@@ -13,20 +13,20 @@ import { Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { ProductUnitAddSection } from "./ProductUnitAddSection";
 
 export const InventorySettingsComponent = () => {
   const { storeId } = useStoreNavigation();
 
   const dispatch = useDispatch();
   const {
-    data: {
-      currentStore: { storeSettings },
-    },
+    data: { storeSettings },
     settingsUpdateStatus,
   } = useSelector(selectCurrentStoreState);
 
   const [formData, setFormData] = useState({
     enableInventoryTracking: false,
+    customUnits: [],
   });
 
   function handleFormDataChange(key: keyof typeof formData, value: any) {
@@ -106,6 +106,12 @@ export const InventorySettingsComponent = () => {
               }
             />
           </div>
+        </div>
+        <div>
+          <Label>Add custom Units</Label>
+          <ProductUnitAddSection
+            onChange={(e) => handleFormDataChange("customUnits", e)}
+          />
         </div>
       </div>
     </PrimaryBox>

@@ -16,7 +16,7 @@ import { PrintModal } from "./PrintModal";
 
 export const CreateBillPage = () => {
   const {
-    data: { currentStore },
+    data: { currentStore, storeSettings },
   } = useSelector(selectCurrentStoreState);
 
   const [formData, setFormData] = useState<InvoiceDto>({
@@ -68,13 +68,13 @@ export const CreateBillPage = () => {
 
   // update invoice number
   useEffect(() => {
-    const prefix = currentStore.storeSettings?.invoiceNumberPrefix;
+    const prefix = storeSettings.invoiceNumberPrefix;
     handleFormChange(
       "invoiceNumber",
       getNextInvoiceNumber({
         prefix: prefix || "",
         lastInvoiceNumber: currentStore?.lastInvoiceNumber,
-      })
+      }),
     );
   }, [currentStore]);
 

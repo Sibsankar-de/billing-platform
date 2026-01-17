@@ -38,9 +38,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     updateStatus,
   } = useSelector(selectProductState);
   const {
-    data: {
-      currentStore: { storeSettings },
-    },
+    data: { storeSettings },
   } = useSelector(selectCurrentStoreState);
   const { navigate } = useStoreNavigation();
 

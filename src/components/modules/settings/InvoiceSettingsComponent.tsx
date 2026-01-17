@@ -20,9 +20,7 @@ export const InvoiceSettingsComponent = () => {
 
   const dispatch = useDispatch();
   const {
-    data: {
-      currentStore: { storeSettings },
-    },
+    data: { storeSettings },
     settingsUpdateStatus,
   } = useSelector(selectCurrentStoreState);
 
