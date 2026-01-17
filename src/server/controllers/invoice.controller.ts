@@ -8,12 +8,13 @@ import { Invoice } from "../models/invoice.model";
 import { Product } from "../models/product.model";
 import { Customer } from "../models/customer.model";
 import { Store } from "../models/store.model";
+import { StoreSettings } from "../models/storeSettings.model";
 
 export const createInvoice = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
-    params: Record<string, any> | undefined
+    params: Record<string, any> | undefined,
   ) => {
     const billData = await req.json();
     const { userId } = await context!;
@@ -25,30 +26,30 @@ export const createInvoice = asyncHandler(
     if (!invoiceNumber || !issueDate)
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
-        "Invoice number and issue date is required"
+        "Invoice number and issue date is required",
       );
 
     if ([total, subTotal, paidAmount, dueAmount].some((e) => e === null))
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
-        "Calculated amounts are required"
+        "Calculated amounts are required",
       );
 
     if (billData?.billItems.length === 0) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
-        "Atleast one bill item is required"
+        "Atleast one bill item is required",
       );
     }
 
     if (
       ["invoiceNumber", "issueDate", "subTotal", "total"].some(
-        (e) => billData[e] === null
+        (e) => billData[e] === null,
       )
     ) {
       throw new ApiError(
         StatusCodes.BAD_REQUEST,
-        "All starred fields are required"
+        "All starred fields are required",
       );
     }
 
@@ -64,8 +65,10 @@ export const createInvoice = asyncHandler(
           lastInvoiceNumber: invoiceNumber,
         },
       },
-      { new: true }
+      { new: true },
     );
+
+    const storeSettings = await StoreSettings.findById(store.settingsId);
 
     // get or create new customer
     let customerId = customerDetails?._id;
@@ -85,7 +88,7 @@ export const createInvoice = asyncHandler(
     // update
     await Promise.all([
       // update all products if inventory tracking enabled
-      ...(store.storeSettingsSchema.enableInventoryTracking
+      ...(storeSettings.enableInventoryTracking
         ? billData.billItems.map((item: any) =>
             Product.updateOne(
               {
@@ -95,8 +98,8 @@ export const createInvoice = asyncHandler(
               },
               {
                 $inc: { totalStock: -item.netQuantity },
-              }
-            )
+              },
+            ),
           )
         : []),
       // update customer if there is due
@@ -107,9 +110,9 @@ export const createInvoice = asyncHandler(
     ]);
 
     return NextResponse.json(
-      new ApiResponse(200, newInvoice, "Invoice created.")
+      new ApiResponse(200, newInvoice, "Invoice created."),
     );
-  }
+  },
 );
 
 const createCustomer = async (customerDetails: any) => {

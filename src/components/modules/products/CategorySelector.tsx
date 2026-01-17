@@ -71,7 +71,7 @@ export const CategorySelector = ({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-2xl">
         <SearchableInput
           items={categoryList}
           rules={searchRule}
