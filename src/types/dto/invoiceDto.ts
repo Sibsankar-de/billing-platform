@@ -13,8 +13,7 @@ export type BillItemType = {
   totalProfit: number;
 };
 
-export type InvoiceDto = {
-  _id: string;
+export interface CreateInvoiceDto {
   storeId?: string;
   customerId?: string;
   customerDetails?: CustomerDto;
@@ -33,4 +32,8 @@ export type InvoiceDto = {
   status?: string;
   createdAt?: Date;
   updatedAt?: Date;
-};
+}
+
+export interface InvoiceDto extends CreateInvoiceDto {
+  _id: string;
+}

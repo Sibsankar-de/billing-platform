@@ -1,11 +1,11 @@
 import React from "react";
-import { InvoiceDto } from "@/types/dto/invoiceDto";
+import { CreateInvoiceDto } from "@/types/dto/invoiceDto";
 import { ConditionalDiv } from "../ui/ConditionalDiv";
 import { formatDateStr } from "@/utils/formatDate";
 import { cn } from "../utils";
 
 interface Props extends React.ComponentProps<"div"> {
-  invoice: InvoiceDto;
+  invoice: CreateInvoiceDto;
   pageSize?: string;
 }
 

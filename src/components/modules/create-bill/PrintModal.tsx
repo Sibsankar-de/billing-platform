@@ -6,20 +6,26 @@ import { Label } from "@/components/ui/Label";
 import { Modal } from "@/components/ui/Modal";
 import { Select } from "@/components/ui/Select";
 import { pageSizes } from "@/constants/pageSizeMaps";
-import { InvoiceDto } from "@/types/dto/invoiceDto";
+import { CreateInvoiceDto } from "@/types/dto/invoiceDto";
 import { CloudCheck, PrinterCheck, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 type PrintModalType = {
   openState: boolean;
+  invoiceData: CreateInvoiceDto;
+  isSaving: boolean;
+  isInvoiceSaved: boolean;
+  onSave: (status: string) => void;
   onClose: () => void;
-  invoiceData: InvoiceDto;
 };
 
 export const PrintModal = ({
   openState,
   invoiceData,
+  isInvoiceSaved,
+  isSaving,
+  onSave,
   onClose,
 }: PrintModalType) => {
   const invoiceRef = useRef<HTMLDivElement>(null);
@@ -41,6 +47,13 @@ export const PrintModal = ({
       }
     `,
   });
+
+  const handleSaveAndPrint = () => {
+    if (!isInvoiceSaved) {
+      onSave("PRINTED");
+    }
+    handlePrint();
+  };
 
   return (
     <Modal
@@ -73,13 +86,21 @@ export const PrintModal = ({
       <div className="flex gap-3 sticky bottom-0">
         <Button
           className="w-full justify-center flex-1"
-          onClick={handlePrint}
+          onClick={handleSaveAndPrint}
+          disabled={isSaving}
+          loading={isSaving}
           autoFocus
         >
           <PrinterCheck size={18} />
-          Save & print bill
+          {isInvoiceSaved ? "Print bill" : "Save & print bill"}
         </Button>
-        <Button variant="outline" className="text-green-700 bg-gray-100">
+        <Button
+          variant="outline"
+          className="text-green-700 bg-gray-100"
+          disabled={isSaving || isInvoiceSaved}
+          loading={isSaving}
+          onClick={() => onSave("DRAFTED")}
+        >
           <CloudCheck size={18} />
           Save as Draft
         </Button>

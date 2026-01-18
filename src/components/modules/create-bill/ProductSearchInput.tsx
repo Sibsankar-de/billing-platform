@@ -11,8 +11,10 @@ import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 
 export function ProductSearchInput({
   onSelect,
+  value,
 }: {
   onSelect: (p: ProductDto) => void;
+  value: string;
 }) {
   const {
     data: { productList },
@@ -34,6 +36,7 @@ export function ProductSearchInput({
       items={productList}
       rules={rules}
       inputProps={{ autoFocus: true }}
+      value={value}
       getLabel={(p) => p.name}
       onSelect={onSelect}
       placeholder="Type a product name or SKU or GTIN..."

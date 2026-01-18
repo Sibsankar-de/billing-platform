@@ -88,7 +88,6 @@ const productSchema = new Schema(
 
 productSchema.index({ name: 1 }, { collation: { locale: "en", strength: 2 } });
 productSchema.index({ sku: 1 }, { collation: { locale: "en", strength: 2 } });
-productSchema.index({ gtin: 1 }, { collation: { locale: "en", strength: 2 } });
 
 productSchema.plugin(mongoosePaginate);
 

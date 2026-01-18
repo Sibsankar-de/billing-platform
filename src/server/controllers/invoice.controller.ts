@@ -54,7 +54,7 @@ export const createInvoice = asyncHandler(
     }
 
     const customerDetails = billData.customerDetails;
-    if (!customerDetails.fullName)
+    if (!customerDetails.name)
       throw new ApiError(StatusCodes.BAD_REQUEST, "Customer name is required");
 
     // update the invoice number
@@ -74,8 +74,8 @@ export const createInvoice = asyncHandler(
     let customerId = customerDetails?._id;
 
     if (!customerId) {
-      const customer = await createCustomer(customerDetails);
-      customerId = customer[0]._id;
+      const customer = await createCustomer(storeId, customerDetails);
+      customerId = customer._id;
     }
 
     const newInvoice = await Invoice.create({
@@ -115,8 +115,12 @@ export const createInvoice = asyncHandler(
   },
 );
 
-const createCustomer = async (customerDetails: any) => {
+const createCustomer = async (
+  storeId: string,
+  customerDetails: any,
+): Promise<any> => {
   const customer = await Customer.create({
+    storeId,
     ...customerDetails,
   });
   return customer;

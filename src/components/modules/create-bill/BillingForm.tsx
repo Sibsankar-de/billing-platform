@@ -17,29 +17,26 @@ const generateRandomId = () => {
   return Math.floor(1000 + Math.random() * 9000).toString();
 };
 
-export const BillingForm = ({
-  data,
-  onBillChange,
-}: {
+interface BillingFormProps {
   data?: Record<string, any>;
-  onBillChange: (e: Record<string, any>) => void;
-}) => {
+  onBillChange: (data: Record<string, any>) => void;
+}
+
+export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
   const {
-    data: { currentStore, storeSettings },
+    data: { storeSettings },
   } = useSelector(selectCurrentStoreState);
 
-  const [items, setItems] = useState<BillItemType[]>([
-    {
-      id: generateRandomId(),
-      product: { id: generateRandomId(), name: "", sku: "" },
-      netQuantity: 0,
-      totalPrice: 0,
-      totalProfit: 0,
-      stockUnit: "",
-    },
-  ]);
+  const initialBillItem: BillItemType = {
+    id: generateRandomId(),
+    product: { id: generateRandomId(), name: "", sku: "" },
+    netQuantity: 0,
+    totalPrice: 0,
+    totalProfit: 0,
+    stockUnit: "",
+  };
 
-  const [calculations, setCalculations] = useState({
+  const initialCalculations = {
     subTotal: 0,
     taxAmount: 0,
     discountAmount: 0,
@@ -48,8 +45,10 @@ export const BillingForm = ({
     dueAmount: 0,
     totalProfit: 0,
     roundupTotal: false,
-  });
+  };
 
+  const [items, setItems] = useState<BillItemType[]>([initialBillItem]);
+  const [calculations, setCalculations] = useState(initialCalculations);
   const [discountRate, setDiscountRate] = useState("");
 
   useEffect(() => {

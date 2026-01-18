@@ -57,6 +57,7 @@ const invoiceSchema = new Schema(
     },
     customerId: {
       type: mongoose.Types.ObjectId,
+      ref: "Customer",
     },
     invoiceNumber: {
       type: String,
@@ -128,4 +129,4 @@ if (process.env.NODE_ENV === "development" && models.Invoice) {
 }
 
 export const Invoice =
-  models.Invoice || model<InvoiceModelType>("Invoice", invoiceSchema);
+  models.Invoice || model("Invoice", invoiceSchema);

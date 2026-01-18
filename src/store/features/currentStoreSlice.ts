@@ -4,6 +4,7 @@ import { createApiThunk, setState } from "../utils";
 import api from "@/configs/axios-config";
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { createInvoiceThunk } from "./invoiceSlice";
 
 export const fetchCurrentStore: any = createApiThunk(
   "/current-store/store",
@@ -86,6 +87,10 @@ const currentStoreSlice = createSlice({
         state.settingsUpdateStatus = "success";
         state.data.storeSettings = action.payload;
         state.error = null;
+      })
+      .addCase(createInvoiceThunk.fulfilled, (state, action) => {
+        state.data.currentStore.lastInvoiceNumber =
+          action.payload.invoiceNumber;
       });
   },
 });

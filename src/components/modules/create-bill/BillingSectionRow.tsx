@@ -74,7 +74,10 @@ export function BillingSectionRow({
   return (
     <tr className="border-t border-gray-200">
       <td className="px-2 py-3">
-        <ProductSearchInput onSelect={(e) => setSelectedItem(e)} />
+        <ProductSearchInput
+          onSelect={(e) => setSelectedItem(e)}
+          value={productFields.product.name}
+        />
       </td>
 
       <td className="px-2 py-3">

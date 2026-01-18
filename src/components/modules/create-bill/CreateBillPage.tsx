@@ -6,21 +6,30 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { CloudCheck, PrinterCheck, RotateCcw } from "lucide-react";
 import { BillingForm } from "./BillingForm";
-import { useEffect, useState } from "react";
-import { InvoiceDto } from "@/types/dto/invoiceDto";
+import { useEffect, useRef, useState } from "react";
+import { CreateInvoiceDto } from "@/types/dto/invoiceDto";
 import { formatDateStr } from "@/utils/formatDate";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { getNextInvoiceNumber } from "@/utils/invoicenumber-generator";
 import { PrintModal } from "./PrintModal";
+import { useStoreNavigation } from "@/hooks/store-navigation";
+import {
+  createInvoiceThunk,
+  selectInvoiceState,
+} from "@/store/features/invoiceSlice";
+import { toast } from "react-toastify";
 
 export const CreateBillPage = () => {
+  const { storeId } = useStoreNavigation();
+  const dispatch = useDispatch();
   const {
     data: { currentStore, storeSettings },
   } = useSelector(selectCurrentStoreState);
 
-  const [formData, setFormData] = useState<InvoiceDto>({
-    _id: "",
+  const { createStatus } = useSelector(selectInvoiceState);
+
+  const initialState: CreateInvoiceDto = {
     invoiceNumber: "",
     billItems: [],
     issueDate: new Date(),
@@ -32,7 +41,9 @@ export const CreateBillPage = () => {
     dueAmount: 0,
     taxAmount: 0,
     customerDetails: {},
-  });
+  };
+
+  const [formData, setFormData] = useState<CreateInvoiceDto>(initialState);
 
   const handleFormChange = (key: keyof typeof formData, value: any) => {
     setFormData((prev) => ({
@@ -66,20 +77,74 @@ export const CreateBillPage = () => {
     }));
   };
 
-  // update invoice number
-  useEffect(() => {
-    const prefix = storeSettings.invoiceNumberPrefix;
-    handleFormChange(
-      "invoiceNumber",
-      getNextInvoiceNumber({
-        prefix: prefix || "",
-        lastInvoiceNumber: currentStore?.lastInvoiceNumber,
-      }),
-    );
-  }, [currentStore]);
-
   // handle print modal
   const [openPrintModal, setOpenPrintModal] = useState(false);
+
+  const [isInvoiceSaved, setIsInvoiceSaved] = useState(false);
+
+  const [resetKey, setResetKey] = useState(1);
+
+  const invoiceNumber = getNextInvoiceNumber({
+    prefix: storeSettings.invoiceNumberPrefix || "",
+    lastInvoiceNumber: currentStore?.lastInvoiceNumber,
+  });
+
+  // update invoice number
+  useEffect(() => {
+    if (isInvoiceSaved) return;
+    handleFormChange("invoiceNumber", invoiceNumber);
+  }, [currentStore]);
+
+  // handle invoice save
+  const handleInvoiceSave = (status: string = "DRAFTED") => {
+    if (!storeId || isInvoiceSaved) return;
+    console.log(formData);
+
+    setIsInvoiceSaved(true);
+    dispatch(createInvoiceThunk({ storeId, status, ...formData }))
+      .unwrap()
+      .then(() => {
+        toast.success(`Invoice saved`);
+      })
+      .catch(() => {
+        setIsInvoiceSaved(false);
+      });
+  };
+
+  const handleReset = () => {
+    setIsInvoiceSaved(false);
+    setFormData({
+      ...initialState,
+      invoiceNumber,
+    });
+    setResetKey((p) => p + 1);
+  };
+
+  const isSaving = createStatus === "loading";
+
+  // keyboard events
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        if (!isInvoiceSaved) {
+          handleInvoiceSave();
+        }
+      }
+      if (e.ctrlKey && e.key === "p") {
+        e.preventDefault();
+        setOpenPrintModal(true);
+      }
+      if (e.ctrlKey && e.key === "r") {
+        e.preventDefault();
+        handleReset();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  });
 
   return (
     <>
@@ -87,6 +152,7 @@ export const CreateBillPage = () => {
         {/* Invoice Header */}
         <div className="mb-8">
           <CustomerDetailsForm
+            key={`cf-${resetKey}`}
             onChange={(e) => handleFormChange("customerDetails", e)}
           />
         </div>
@@ -112,21 +178,33 @@ export const CreateBillPage = () => {
           </div>
         </div>
 
-        <BillingForm onBillChange={handleBillchange} />
+        <BillingForm key={`bf-${resetKey}`} onBillChange={handleBillchange} />
 
         <div className="mt-12 flex gap-2">
           <Button
             className="w-full justify-center flex-1"
+            disabled={isSaving}
             onClick={() => setOpenPrintModal(true)}
           >
             <PrinterCheck size={18} />
-            Save & print bill
+            {isInvoiceSaved ? "Print bill" : "Save & print bill"}
           </Button>
-          <Button variant="outline" className="text-green-700 bg-gray-100">
+          <Button
+            variant="outline"
+            className="text-green-700 bg-gray-100"
+            disabled={isSaving || isInvoiceSaved}
+            loading={isSaving}
+            onClick={() => handleInvoiceSave()}
+          >
             <CloudCheck size={18} />
             Save as Draft
           </Button>
-          <Button variant="outline" className="text-red-400 bg-gray-100">
+          <Button
+            variant="outline"
+            disabled={isSaving}
+            className="text-red-400 bg-gray-100"
+            onClick={handleReset}
+          >
             <RotateCcw size={18} />
             Reset
           </Button>
@@ -136,6 +214,9 @@ export const CreateBillPage = () => {
       <PrintModal
         openState={openPrintModal}
         invoiceData={formData}
+        isInvoiceSaved={isInvoiceSaved}
+        isSaving={isSaving}
+        onSave={handleInvoiceSave}
         onClose={() => setOpenPrintModal(false)}
       />
     </>
