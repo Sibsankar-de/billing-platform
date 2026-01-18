@@ -1,6 +1,7 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import mongoose, { model, models, Schema, InferSchemaType } from "mongoose";
 import { pricePerQuantitySchema } from "./product.model";
 import { invoiceEnums } from "../enums/invoice.enum";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const billItemSchema = new Schema(
   {
@@ -39,7 +40,7 @@ const billItemSchema = new Schema(
       default: 0,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const invoiceSchema = new Schema(
@@ -115,11 +116,16 @@ const invoiceSchema = new Schema(
       default: "DRAFTED",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+
+invoiceSchema.plugin(mongoosePaginate);
+
+export type InvoiceModelType = InferSchemaType<typeof invoiceSchema>;
 
 if (process.env.NODE_ENV === "development" && models.Invoice) {
   delete models.Invoice;
 }
 
-export const Invoice = models.Invoice || model("Invoice", invoiceSchema);
+export const Invoice =
+  models.Invoice || model<InvoiceModelType>("Invoice", invoiceSchema);

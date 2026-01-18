@@ -1,4 +1,4 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import mongoose, { model, models, Schema, InferSchemaType } from "mongoose";
 
 const customUnitSchema = new Schema(
   {
@@ -50,9 +50,14 @@ const storeSettingsSchema = new Schema(
   { timestamps: true },
 );
 
+export type StoreSettingsModelType = InferSchemaType<
+  typeof storeSettingsSchema
+>;
+
 if (process.env.NODE_ENV === "development" && models.StoreSettings) {
   delete models.StoreSettings;
 }
 
 export const StoreSettings =
-  models.StoreSettings || model("StoreSettings", storeSettingsSchema);
+  models.StoreSettings ||
+  model<StoreSettingsModelType>("StoreSettings", storeSettingsSchema);

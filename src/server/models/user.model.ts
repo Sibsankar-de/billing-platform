@@ -1,4 +1,4 @@
-import mongoose, { Schema, models } from "mongoose";
+import mongoose, { Schema, models, InferSchemaType } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -40,7 +40,7 @@ const userSchema = new Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // hash the password before storing
@@ -64,7 +64,7 @@ userSchema.methods.generatePasswordResetToken = async function () {
     process.env.PASSWORD_RESET_TOKEN_SECRET,
     {
       expiresIn: "1h",
-    }
+    },
   );
 };
 
@@ -79,7 +79,7 @@ userSchema.methods.getAccessToken = async function (deviceId: string) {
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
+    },
   );
 };
 
@@ -94,7 +94,7 @@ userSchema.methods.getRefreshToken = async function (deviceId: string) {
     process.env.REFRESH_TOKEN_SECRET,
     {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-    }
+    },
   );
 };
 
@@ -109,13 +109,16 @@ userSchema.methods.getLogoutToken = async function (deviceId: string) {
     process.env.LOGOUT_TOKEN_SECRET,
     {
       expiresIn: process.env.LOGOUT_TOKEN_EXPIRY,
-    }
+    },
   );
 };
+
+export type UserModelType = InferSchemaType<typeof userSchema>;
 
 // setting devmode
 if (process.env.NODE_ENV === "development" && models.User) {
   delete models.User;
 }
 
-export const User = models.User || mongoose.model("User", userSchema);
+export const User =
+  models.User || mongoose.model<UserModelType>("User", userSchema);

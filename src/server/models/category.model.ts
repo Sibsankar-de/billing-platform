@@ -1,4 +1,4 @@
-import mongoose, { models, Schema } from "mongoose";
+import mongoose, { models, Schema, InferSchemaType } from "mongoose";
 
 const categorySchema = new Schema(
   {
@@ -13,12 +13,15 @@ const categorySchema = new Schema(
       trim: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+
+export type CategoryModelType = InferSchemaType<typeof categorySchema>;
 
 if (process.env.NODE_ENV === "development" && models.Category) {
   delete models.Category;
 }
 
 export const Category =
-  models.Category || mongoose.model("Category", categorySchema);
+  models.Category ||
+  mongoose.model<CategoryModelType>("Category", categorySchema);

@@ -1,5 +1,6 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import mongoose, { model, models, Schema, InferSchemaType } from "mongoose";
 import { storeEnums } from "../enums/store.enum";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const accessListUserSchema = new Schema(
   {
@@ -68,8 +69,13 @@ const storeSchema = new Schema(
   { timestamps: true },
 );
 
+storeSchema.plugin(mongoosePaginate);
+
+export type StoreModelType = InferSchemaType<typeof storeSchema>;
+
 if (process.env.NODE_ENV === "development" && models.Store) {
   delete models.Store;
 }
 
-export const Store = models.Store || model("Store", storeSchema);
+export const Store =
+  models.Store || model<StoreModelType>("Store", storeSchema);

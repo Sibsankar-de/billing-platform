@@ -1,5 +1,6 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import mongoose, { InferSchemaType, model, models, Schema } from "mongoose";
 import { customerEnums } from "../enums/customer.enum";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const customerSchema = new Schema(
   {
@@ -41,13 +42,18 @@ const customerSchema = new Schema(
       enum: customerEnums.marks,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 customerSchema.index({ name: 1 }, { collation: { locale: "en", strength: 2 } });
+
+customerSchema.plugin(mongoosePaginate);
+
+export type CustomerModelType = InferSchemaType<typeof customerSchema>;
 
 if (process.env.NODE_ENV === "development" && models.Customer) {
   delete models.Customer;
 }
 
-export const Customer = models.Customer || model("Customer", customerSchema);
+export const Customer =
+  models.Customer || model<CustomerModelType>("Customer", customerSchema);

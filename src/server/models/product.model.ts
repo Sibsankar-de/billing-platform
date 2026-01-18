@@ -1,5 +1,6 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import mongoose, { model, models, Schema, InferSchemaType } from "mongoose";
 import { storeEnums } from "../enums/store.enum";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 export const pricePerQuantitySchema = new Schema(
   {
@@ -89,8 +90,12 @@ productSchema.index({ name: 1 }, { collation: { locale: "en", strength: 2 } });
 productSchema.index({ sku: 1 }, { collation: { locale: "en", strength: 2 } });
 productSchema.index({ gtin: 1 }, { collation: { locale: "en", strength: 2 } });
 
+productSchema.plugin(mongoosePaginate);
+
+export type ProductModelType = InferSchemaType<typeof productSchema>;
+
 if (process.env.NODE_ENV === "development" && models.Product) {
   delete models.Product;
 }
 
-export const Product = models.Product || model("Product", productSchema);
+export const Product = models.Product || model<ProductModelType>("Product", productSchema);
