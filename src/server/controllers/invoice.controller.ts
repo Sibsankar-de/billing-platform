@@ -125,3 +125,39 @@ const createCustomer = async (
   });
   return customer;
 };
+
+export const getInvoiceList = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined,
+  ) => {
+    const { storeId } = await params!;
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+
+    let invoices = await Invoice.paginate(
+      { storeId },
+      {
+        page,
+        limit,
+        sort: { createdAt: 1 },
+        populate: [{ path: "customerId" }],
+        lean: true,
+      },
+    );
+
+    invoices.docs = invoices.docs.map((inv) => {
+      const { customerId, ...rest } = inv;
+      return {
+        ...rest,
+        customerDetails: customerId,
+      };
+    });
+
+    return NextResponse.json(
+      new ApiResponse(200, invoices, "Invoice list fetched."),
+    );
+  },
+);

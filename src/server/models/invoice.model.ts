@@ -1,4 +1,10 @@
-import mongoose, { model, models, Schema, InferSchemaType } from "mongoose";
+import mongoose, {
+  model,
+  models,
+  Schema,
+  InferSchemaType,
+  PaginateModel,
+} from "mongoose";
 import { pricePerQuantitySchema } from "./product.model";
 import { invoiceEnums } from "../enums/invoice.enum";
 import mongoosePaginate from "mongoose-paginate-v2";
@@ -129,4 +135,8 @@ if (process.env.NODE_ENV === "development" && models.Invoice) {
 }
 
 export const Invoice =
-  models.Invoice || model("Invoice", invoiceSchema);
+  (models.Invoice as PaginateModel<InvoiceModelType>) ||
+  model<InvoiceModelType, PaginateModel<InvoiceModelType>>(
+    "Invoice",
+    invoiceSchema,
+  );
