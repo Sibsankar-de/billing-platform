@@ -38,7 +38,7 @@ export const createUser = asyncHandler(async (req: NextRequest) => {
 
 // generate tokens
 export const generateAccessAndRefrehToken = async (
-  userId: mongoose.Types.ObjectId
+  userId: mongoose.Types.ObjectId,
 ) => {
   try {
     const user = await User.findById(userId);
@@ -55,7 +55,7 @@ export const generateAccessAndRefrehToken = async (
 
 // cookie options
 const expiresDate = new Date(
-  Date.now() + process.env.LOG_COOKIE_EXPIRY * 24 * 60 * 60 * 1000
+  Date.now() + process.env.LOG_COOKIE_EXPIRY * 24 * 60 * 60 * 1000,
 );
 export const cookieOptions = {
   httpOnly: true,
@@ -81,7 +81,7 @@ export const loginUser = asyncHandler(async (req: NextRequest) => {
   if (!isPasswordOk) throw new ApiError(401, "Invalid password");
 
   const { accessToken, refreshToken } = await generateAccessAndRefrehToken(
-    user?._id
+    user?._id,
   );
 
   (await cookies()).set("accessToken", accessToken, cookieOptions);
@@ -97,7 +97,7 @@ export const logoutUser = asyncHandler(async (req: NextRequest) => {
 
   const verifiedToken = await jwt.verify(
     token,
-    process.env.ACCESS_TOKEN_SECRET
+    process.env.ACCESS_TOKEN_SECRET,
   );
 
   if (
@@ -113,7 +113,7 @@ export const logoutUser = asyncHandler(async (req: NextRequest) => {
     {
       refreshtoken: "",
     },
-    { new: true }
+    { new: true },
   );
 
   (await cookies()).delete("accessToken");
@@ -130,9 +130,9 @@ export const checkAuth = asyncHandler(
     if (userId) isAuthenticated = true;
 
     return NextResponse.json(
-      new ApiResponse(200, { isAuthenticated }, "authentication checked")
+      new ApiResponse(200, { isAuthenticated }, "authentication checked"),
     );
-  }
+  },
 );
 
 // update user
@@ -144,7 +144,7 @@ export const updateUser = asyncHandler(
 
     // check for new email
     const user = await User.findById(userId);
-    if (email !== user.email) {
+    if (email !== user?.email) {
       const userByNewEmail = await User.findOne({ email });
       if (userByNewEmail) throw new ApiError(402, "Email is already in use");
     }
@@ -155,13 +155,13 @@ export const updateUser = asyncHandler(
         userName,
         email,
       },
-      { new: true }
+      { new: true },
     ).select("-password -refreshToken");
 
     return NextResponse.json(
-      new ApiResponse(200, updatedUser, "User details updated")
+      new ApiResponse(200, updatedUser, "User details updated"),
     );
-  }
+  },
 );
 
 // update password
@@ -184,7 +184,7 @@ export const updatePassword = asyncHandler(
     user.save({ validateBeforeSave: false });
 
     return NextResponse.json(new ApiResponse(200, "Password updated"));
-  }
+  },
 );
 
 // update avatar
@@ -203,7 +203,7 @@ export const updateAvatar = asyncHandler(
     const uploadData = await uploadToCloudinary(
       buffer,
       image.name,
-      cloudinaryFolders.USER_AVATAR
+      cloudinaryFolders.USER_AVATAR,
     );
     if (!uploadData) throw new ApiError(402, "Failed to upload avatar");
 
@@ -215,7 +215,7 @@ export const updateAvatar = asyncHandler(
     user.save({ validateBeforeSave: false });
 
     return NextResponse.json(new ApiResponse(200, user, "Avatar updated"));
-  }
+  },
 );
 
 export const validateAndResetPassword = asyncHandler(
@@ -226,7 +226,7 @@ export const validateAndResetPassword = asyncHandler(
 
     const decodedToken = await jwt.verify(
       token,
-      process.env.PASSWORD_RESET_TOKEN_SECRET
+      process.env.PASSWORD_RESET_TOKEN_SECRET,
     );
 
     if (!decodedToken) throw new ApiError(401, "Invalid token");
@@ -239,9 +239,9 @@ export const validateAndResetPassword = asyncHandler(
     await user.save({ validateBeforeSave: false });
 
     return NextResponse.json(
-      new ApiResponse(200, {}, "Password reset successfully")
+      new ApiResponse(200, {}, "Password reset successfully"),
     );
-  }
+  },
 );
 
 // queries
@@ -256,5 +256,5 @@ export const getCurrentUser = asyncHandler(
     if (!user) throw new ApiError(402, "User not found");
 
     return NextResponse.json(new ApiResponse(200, user, "User fetched"));
-  }
+  },
 );

@@ -1,4 +1,12 @@
-import mongoose, { model, models, Schema, InferSchemaType } from "mongoose";
+import mongoose, {
+  model,
+  models,
+  Schema,
+  InferSchemaType,
+  PaginateModel,
+} from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const customUnitSchema = new Schema(
   {
@@ -50,6 +58,9 @@ const storeSettingsSchema = new Schema(
   { timestamps: true },
 );
 
+storeSettingsSchema.plugin(mongoosePaginate);
+storeSettingsSchema.plugin(aggregatePaginate);
+
 export type StoreSettingsModelType = InferSchemaType<
   typeof storeSettingsSchema
 >;
@@ -59,5 +70,8 @@ if (process.env.NODE_ENV === "development" && models.StoreSettings) {
 }
 
 export const StoreSettings =
-  models.StoreSettings ||
-  model<StoreSettingsModelType>("StoreSettings", storeSettingsSchema);
+  (models.StoreSettings as PaginateModel<StoreSettingsModelType>) ||
+  model<StoreSettingsModelType, PaginateModel<StoreSettingsModelType>>(
+    "StoreSettings",
+    storeSettingsSchema,
+  );

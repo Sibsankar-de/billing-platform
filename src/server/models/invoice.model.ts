@@ -8,6 +8,7 @@ import mongoose, {
 import { pricePerQuantitySchema } from "./product.model";
 import { invoiceEnums } from "../enums/invoice.enum";
 import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const billItemSchema = new Schema(
   {
@@ -127,6 +128,7 @@ const invoiceSchema = new Schema(
 );
 
 invoiceSchema.plugin(mongoosePaginate);
+invoiceSchema.plugin(aggregatePaginate);
 
 export type InvoiceModelType = InferSchemaType<typeof invoiceSchema>;
 

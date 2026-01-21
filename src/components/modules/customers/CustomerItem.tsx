@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/components/utils";
 import { CustomerDto } from "@/types/dto/customerDto";
 import { Download, Eye } from "lucide-react";
 import React from "react";
@@ -19,15 +20,23 @@ export const CustomerItem = ({
         <span className="text-gray-900">{customer.name}</span>
       </td>
       <td className="px-6 py-4 text-center">
-        <span className="text-gray-900">{customer.address}</span>
-      </td>
-      <td className="px-6 py-4 text-center">
-        <span className="text-gray-900">{customer.phoneNumber}</span>
-      </td>
-      <td className="px-6 py-4 text-center">
-        <span className="text-gray-900">
-          &#8377;{customer.totalInvoices || 0}
+        <span
+          className={cn(customer.address ? "text-gray-900" : "text-gray-400")}
+        >
+          {customer.address || "Not provided"}
         </span>
+      </td>
+      <td className="px-6 py-4 text-center">
+        <span
+          className={cn(
+            customer.phoneNumber ? "text-gray-900" : "text-gray-400",
+          )}
+        >
+          {customer.phoneNumber || "Not provided"}
+        </span>
+      </td>
+      <td className="px-6 py-4 text-center">
+        <span className="text-gray-900">{customer.totalInvoices || 0}</span>
       </td>
       <td className="px-6 py-4 text-center">
         <span className={customer.totalDue ? "text-red-400" : "text-gray-900"}>

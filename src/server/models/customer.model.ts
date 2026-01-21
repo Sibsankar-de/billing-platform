@@ -1,6 +1,14 @@
-import mongoose, { InferSchemaType, model, models, Schema } from "mongoose";
+import mongoose, {
+  AggregatePaginateModel,
+  InferSchemaType,
+  model,
+  models,
+  PaginateModel,
+  Schema,
+} from "mongoose";
 import { customerEnums } from "../enums/customer.enum";
 import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const customerSchema = new Schema(
   {
@@ -48,12 +56,16 @@ const customerSchema = new Schema(
 customerSchema.index({ name: 1 }, { collation: { locale: "en", strength: 2 } });
 
 customerSchema.plugin(mongoosePaginate);
+customerSchema.plugin(aggregatePaginate);
 
 export type CustomerModelType = InferSchemaType<typeof customerSchema>;
+type CustomerModel = PaginateModel<CustomerModelType> &
+  AggregatePaginateModel<CustomerModelType>;
 
 if (process.env.NODE_ENV === "development" && models.Customer) {
   delete models.Customer;
 }
 
 export const Customer =
-  models.Customer || model<CustomerModelType>("Customer", customerSchema);
+  (models.Customer as CustomerModel) ||
+  model<CustomerModelType, CustomerModel>("Customer", customerSchema);

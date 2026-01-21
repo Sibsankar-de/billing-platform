@@ -1,6 +1,21 @@
-import mongoose, { Schema, models, InferSchemaType } from "mongoose";
+import mongoose, {
+  Schema,
+  models,
+  InferSchemaType,
+  PaginateModel,
+} from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
+
+interface UserMethods {
+  checkPassword(password: string): Promise<boolean>;
+  generatePasswordResetToken(): Promise<string>;
+  getAccessToken(): Promise<string>;
+  getRefreshToken(): Promise<string>;
+  getLogoutToken(): Promise<string>;
+}
 
 const userSchema = new Schema(
   {
@@ -69,12 +84,11 @@ userSchema.methods.generatePasswordResetToken = async function () {
 };
 
 // generate accesstoken
-userSchema.methods.getAccessToken = async function (deviceId: string) {
+userSchema.methods.getAccessToken = async function () {
   return await jwt.sign(
     {
       _id: this._id,
       email: this.email,
-      deviceId: deviceId || "",
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -84,12 +98,11 @@ userSchema.methods.getAccessToken = async function (deviceId: string) {
 };
 
 // generate refreshtoken
-userSchema.methods.getRefreshToken = async function (deviceId: string) {
+userSchema.methods.getRefreshToken = async function () {
   return await jwt.sign(
     {
       _id: this._id,
       email: this.email,
-      deviceId: deviceId || "",
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
@@ -99,12 +112,11 @@ userSchema.methods.getRefreshToken = async function (deviceId: string) {
 };
 
 // generate logout token
-userSchema.methods.getLogoutToken = async function (deviceId: string) {
+userSchema.methods.getLogoutToken = async function () {
   return await jwt.sign(
     {
       _id: this._id,
       email: this.email,
-      deviceId: deviceId || "",
     },
     process.env.LOGOUT_TOKEN_SECRET,
     {
@@ -113,7 +125,10 @@ userSchema.methods.getLogoutToken = async function (deviceId: string) {
   );
 };
 
-export type UserModelType = InferSchemaType<typeof userSchema>;
+userSchema.plugin(mongoosePaginate);
+userSchema.plugin(aggregatePaginate);
+
+export type UserModelType = InferSchemaType<typeof userSchema> & UserMethods;
 
 // setting devmode
 if (process.env.NODE_ENV === "development" && models.User) {
@@ -121,4 +136,8 @@ if (process.env.NODE_ENV === "development" && models.User) {
 }
 
 export const User =
-  models.User || mongoose.model<UserModelType>("User", userSchema);
+  (models.User as PaginateModel<UserModelType>) ||
+  mongoose.model<UserModelType, PaginateModel<UserModelType>>(
+    "User",
+    userSchema,
+  );

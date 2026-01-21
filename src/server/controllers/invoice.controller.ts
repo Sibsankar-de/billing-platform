@@ -68,7 +68,7 @@ export const createInvoice = asyncHandler(
       { new: true },
     );
 
-    const storeSettings = await StoreSettings.findById(store.settingsId);
+    const storeSettings = await StoreSettings.findById(store?.settingsId);
 
     // get or create new customer
     let customerId = customerDetails?._id;
@@ -88,7 +88,7 @@ export const createInvoice = asyncHandler(
     // update
     await Promise.all([
       // update all products if inventory tracking enabled
-      ...(storeSettings.enableInventoryTracking
+      ...(storeSettings?.enableInventoryTracking
         ? billData.billItems.map((item: any) =>
             Product.updateOne(
               {

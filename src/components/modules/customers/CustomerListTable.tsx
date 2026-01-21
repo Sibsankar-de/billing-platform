@@ -13,25 +13,30 @@ import { useStoreNavigation } from "@/hooks/store-navigation";
 import { PageState } from "@/types/PageableType";
 import { InvoiceDto } from "@/types/dto/invoiceDto";
 import { pageLimits } from "@/constants/pageLimits";
+import {
+  fetchCustomerListThunk,
+  selectCustomerState,
+} from "@/store/features/customerSlice";
+import { CustomerDto } from "@/types/dto/customerDto";
+import { CustomerItem } from "./CustomerItem";
 
 export const CustomerListTable = () => {
   const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
   const {
-    data: { invoiceListData },
-    status: invoiceFetchStatus,
-  } = useSelector(selectInvoiceState);
+    data: { customerListData },
+  } = useSelector(selectCustomerState);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageData, setPageData] = useState<PageState<InvoiceDto> | null>(null);
+  const [pageData, setPageData] = useState<PageState<CustomerDto> | null>(null);
 
   useEffect(() => {
-    if (!invoiceListData.pages[currentPage]) {
+    if (!customerListData.pages[currentPage]) {
       dispatch(
-        fetchInvoiceListThunk({
+        fetchCustomerListThunk({
           storeId,
           page: currentPage,
-          limit: pageLimits.INVOICE_LIST,
+          limit: pageLimits.CUSTOMER_LIST,
         }),
       )
         .unwrap()
@@ -42,11 +47,11 @@ export const CustomerListTable = () => {
   }, [dispatch, storeId, currentPage]);
 
   useEffect(() => {
-    const data = invoiceListData.pages[currentPage] || null;
+    const data = customerListData.pages[currentPage] || null;
     if (data) {
       setPageData(data);
     }
-  }, [invoiceListData, currentPage]);
+  }, [customerListData, currentPage]);
 
   return (
     <div>
@@ -86,10 +91,13 @@ export const CustomerListTable = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {pageData?.docs.map((invoice) => (
-                <InvoiceListItem key={invoice._id} invoice={invoice} />
-              ))} */}
-              
+              {pageData?.docs.map((customer, index) => (
+                <CustomerItem
+                  key={customer._id}
+                  customer={customer}
+                  sno={index + 1}
+                />
+              ))}
             </tbody>
           </table>
         </div>
@@ -97,7 +105,7 @@ export const CustomerListTable = () => {
 
       {/* pagination  */}
       <Pagination
-        totalPage={invoiceListData.totalPages}
+        totalPage={customerListData.totalPages}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />

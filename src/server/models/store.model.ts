@@ -7,6 +7,7 @@ import mongoose, {
 } from "mongoose";
 import { storeEnums } from "../enums/store.enum";
 import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const accessListUserSchema = new Schema(
   {
@@ -76,6 +77,7 @@ const storeSchema = new Schema(
 );
 
 storeSchema.plugin(mongoosePaginate);
+storeSchema.plugin(aggregatePaginate);
 
 export type StoreModelType = InferSchemaType<typeof storeSchema>;
 
