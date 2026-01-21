@@ -4,4 +4,6 @@ export type CustomerDto = {
   phoneNumber?: string;
   email?: string;
   address?: string;
+  totalDue?: number;
+  totalInvoices?: number;
 };

@@ -33,6 +33,10 @@ export const createStore = asyncHandler(
           userId,
           role: "ADMIN",
         },
+        {
+          userId,
+          role: "OWNER",
+        },
       ],
     });
 

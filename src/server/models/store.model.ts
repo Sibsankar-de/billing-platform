@@ -1,4 +1,10 @@
-import mongoose, { model, models, Schema, InferSchemaType } from "mongoose";
+import mongoose, {
+  model,
+  models,
+  Schema,
+  InferSchemaType,
+  PaginateModel,
+} from "mongoose";
 import { storeEnums } from "../enums/store.enum";
 import mongoosePaginate from "mongoose-paginate-v2";
 
@@ -78,4 +84,5 @@ if (process.env.NODE_ENV === "development" && models.Store) {
 }
 
 export const Store =
-  models.Store || model<StoreModelType>("Store", storeSchema);
+  (models.Store as PaginateModel<StoreModelType>) ||
+  model<StoreModelType, PaginateModel<StoreModelType>>("Store", storeSchema);

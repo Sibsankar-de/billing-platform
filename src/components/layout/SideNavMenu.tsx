@@ -3,7 +3,7 @@
 import { NavMenuType } from "@/types/NavMenuTypes";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, FileText, Package, Receipt } from "lucide-react";
+import { LayoutDashboard, FileText, Package, Receipt, Users } from "lucide-react";
 import { Button } from "../ui/Button";
 
 export const SideNavMenu = () => {
@@ -11,6 +11,7 @@ export const SideNavMenu = () => {
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "billing", label: "Create Bill", icon: Receipt },
     { id: "invoices", label: "Invoices", icon: FileText },
+    { id: "customers", label: "Customers", icon: Users },
     { id: "inventory", label: "Inventory", icon: Package },
   ];
 
