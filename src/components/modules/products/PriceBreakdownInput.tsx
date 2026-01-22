@@ -6,12 +6,9 @@ import { Button } from "../../ui/Button";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { PricePerQuantityType } from "@/types/dto/productDto";
-import { convertUnit, numToStr } from "@/utils/conversion";
 import { StockInput } from "../../ui/StockInput";
 import { calculateProfit } from "@/utils/price-calculator";
 import { cn } from "@/components/utils";
-import { useSelector } from "react-redux";
-import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 
 export const PriceBreakdownInput = ({
   value,
@@ -36,6 +33,7 @@ export const PriceBreakdownInput = ({
 
   function handleAddNewBreakdown() {
     const lastBreakdown = priceBreakdowns[priceBreakdowns.length - 1];
+    // Check if the last item has valid data before adding new
     if (
       priceBreakdowns.length === 0 ||
       !lastBreakdown.price ||
@@ -58,9 +56,7 @@ export const PriceBreakdownInput = ({
   function handleUpdateBreakdown(breakdown: PricePerQuantityType) {
     const { id, price, quantity } = breakdown;
 
-    // Always clone
     const breakdownlist = [...priceBreakdowns];
-
     const editIndex = breakdownlist.findIndex((e) => e.id === id);
 
     if (editIndex === -1) return;
@@ -75,7 +71,6 @@ export const PriceBreakdownInput = ({
     // calculate profit using UPDATED values
     if (price > 0 && quantity > 0 && buyingPricePerItem) {
       const costPerItem = price / quantity;
-
       const profitMargin = calculateProfit(buyingPricePerItem, costPerItem);
 
       breakdownlist[editIndex] = {
@@ -110,7 +105,7 @@ export const PriceBreakdownInput = ({
           <div key={item.id} className="flex gap-3 items-center max-w-2xl mb-2">
             <BreakdownItem
               item={item}
-              id={item.id}
+              id={item.id!}
               onInputChange={handleUpdateBreakdown}
               unit={unit}
             />
@@ -149,21 +144,45 @@ function BreakdownItem({
   item: PricePerQuantityType;
   unit?: string;
 }) {
-  const [inputData, setInputData] = useState<PricePerQuantityType>(item);
+  // 1. Local state for string inputs
+  const [localInputs, setLocalInputs] = useState({
+    price: item.price ? String(item.price) : "",
+    quantity: item.quantity ? String(item.quantity) : "",
+  });
 
   useEffect(() => {
-    if (item !== inputData) setInputData(item);
-  }, [item]);
+    setLocalInputs((prev) => {
+      const newInputs = { ...prev };
+      let hasChanged = false;
 
-  const handleInputChange = (key: keyof PricePerQuantityType, input: any) => {
-    setInputData({
-      ...inputData,
-      [key]: Number(input),
+      // Check Price
+      const currentLocalPrice = parseFloat(prev.price || "0");
+      if (item.price !== currentLocalPrice) {
+        newInputs.price = item.price ? String(item.price) : "";
+        hasChanged = true;
+      }
+
+      // Check Quantity
+      const currentLocalQty = parseFloat(prev.quantity || "0");
+      if (item.quantity !== currentLocalQty) {
+        newInputs.quantity = item.quantity ? String(item.quantity) : "";
+        hasChanged = true;
+      }
+
+      return hasChanged ? newInputs : prev;
     });
+  }, [item.price, item.quantity]);
+
+  const handleLocalChange = (key: "price" | "quantity", value: string) => {
+    setLocalInputs((prev) => ({ ...prev, [key]: value }));
+
+    const numValue = parseFloat(value);
+    const safeValue = isNaN(numValue) ? 0 : numValue;
+
     onInputChange({
-      ...inputData,
+      ...item,
       id: id,
-      [key]: Number(input),
+      [key]: safeValue,
     });
   };
 
@@ -180,26 +199,26 @@ function BreakdownItem({
         placeholder="Enter price"
         id={"price-" + id}
         className="flex-1"
-        onChange={(e) => handleInputChange("price", e)}
-        value={numToStr(inputData.price)}
+        value={localInputs.price}
+        onChange={(e) => handleLocalChange("price", e)}
       />
       <p className="text-gray-500">/</p>
       <StockInput
         id={"stock-" + id}
         placeholder="Enter quantity"
-        onChange={(e) => handleInputChange("quantity", e)}
-        value={numToStr(inputData.quantity)}
+        value={localInputs.quantity}
+        onChange={(e) => handleLocalChange("quantity", e)}
         unit={unit}
       />
-      {inputData.profitMargin !== undefined && (
+      {item.profitMargin !== undefined && (
         <div
           className={cn(
             "flex flex-col text-[0.8em] text-center px-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-700",
           )}
         >
           <span>Margin</span>
-          <span className={cn(getColor(inputData.profitMargin))}>
-            {inputData.profitMargin}%
+          <span className={cn(getColor(item.profitMargin))}>
+            {item.profitMargin}%
           </span>
         </div>
       )}

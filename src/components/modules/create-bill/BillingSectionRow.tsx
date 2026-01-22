@@ -102,6 +102,7 @@ export function BillingSectionRow({
       <td className="px-2 py-3">
         <StockInput
           id={`${baseId}-quantity`}
+          placeholder="0.00"
           value={localInputs.netQuantity}
           onChange={(e) => handleInputChange("netQuantity", e)}
           unit={selectedItem?.stockUnit}
@@ -112,9 +113,9 @@ export function BillingSectionRow({
       <td className="px-2 py-3">
         <Input
           type="number"
+          placeholder="0.00"
           value={localInputs.totalPrice}
           onChange={(e) => handleInputChange("totalPrice", e)}
-          placeholder="0.00"
         />
       </td>
 

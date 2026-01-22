@@ -10,7 +10,6 @@ import { Button } from "../../ui/Button";
 import { CloudCheck, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PricePerQuantityType } from "@/types/dto/productDto";
-import { numToStr } from "@/utils/conversion";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addNewProductThunk,
@@ -42,6 +41,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
   } = useSelector(selectCurrentStoreState);
   const { navigate } = useStoreNavigation();
 
+  // Data state (Numeric values for backend)
   const [formData, setFormData] = useState<Record<string, any>>({
     name: "",
     sku: "",
@@ -55,11 +55,27 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     pricePerQuantity: [] as PricePerQuantityType[],
   });
 
+  // UI State (String values for Inputs)
+  const [localInputs, setLocalInputs] = useState({
+    buyingPricePerQuantity: "",
+    totalStock: "",
+  });
+
   useEffect(() => {
     if (formFor === "edit" && productId) {
       const product = productList.find((e) => e._id === productId);
       if (!product) return;
+
       setFormData(product);
+
+      setLocalInputs({
+        buyingPricePerQuantity:
+          product.buyingPricePerQuantity !== undefined
+            ? String(product.buyingPricePerQuantity)
+            : "",
+        totalStock:
+          product.totalStock !== undefined ? String(product.totalStock) : "",
+      });
     }
   }, [productList, productId, formFor]);
 
@@ -69,6 +85,18 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
       [key]: value,
     }));
   }
+
+  const handleNumberChange = (key: keyof typeof formData, rawValue: string) => {
+    setLocalInputs((prev) => ({
+      ...prev,
+      [key]: rawValue,
+    }));
+
+    const numValue = parseFloat(rawValue);
+    const safeValue = isNaN(numValue) ? 0 : numValue;
+
+    handleFormData(key, safeValue);
+  };
 
   const handleCreateProduct = () => {
     if (!formData || !storeId) return;
@@ -174,10 +202,8 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
             type="number"
             placeholder="Enter price for 1 unit"
             id="price"
-            value={numToStr(formData.buyingPricePerQuantity)}
-            onChange={(e) =>
-              handleFormData("buyingPricePerQuantity", Number(e))
-            }
+            value={localInputs.buyingPricePerQuantity}
+            onChange={(e) => handleNumberChange("buyingPricePerQuantity", e)}
             disabled={isLoading}
           />
         </div>
@@ -228,9 +254,9 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
             type="number"
             id="stock"
             placeholder="Enter stock"
-            value={numToStr(formData.totalStock)}
+            value={localInputs.totalStock}
             unit={formData.stockUnit}
-            onChange={(e) => handleFormData("totalStock", Number(e))}
+            onChange={(e) => handleNumberChange("totalStock", e)}
             disabled={!formData.enableInventoryTracking || isLoading}
           />
         </div>
