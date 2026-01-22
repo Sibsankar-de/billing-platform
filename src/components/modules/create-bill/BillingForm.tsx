@@ -114,7 +114,9 @@ export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
       0,
     );
     const tax = 0;
-    const discountAmount = (Number(discountRate) * subTotal) / 100;
+    const discountAmount = Number(
+      ((Number(discountRate) * subTotal) / 100).toFixed(4),
+    );
     let total = Number((subTotal + tax - Number(discountAmount)).toFixed(2));
 
     if (calculations.roundupTotal) total = Math.round(total);
@@ -129,7 +131,7 @@ export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
       dueAmount: 0,
       totalProfit: subTotalProfit - discountAmount,
     }));
-  }, [items, discountRate]);
+  }, [items, discountRate, calculations.roundupTotal]);
 
   useEffect(() => {
     onBillChange({

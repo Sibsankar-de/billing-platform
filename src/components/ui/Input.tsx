@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { cn } from "../utils";
 import { Eye, EyeOff, OctagonAlert } from "lucide-react";
 
-export interface InputType
-  extends Omit<React.ComponentProps<"input">, "onChange"> {
+export interface InputType extends Omit<
+  React.ComponentProps<"input">,
+  "onChange"
+> {
   onChange?: (e: string) => void;
   isInvalid?: boolean;
   icon?: React.ReactElement;
@@ -37,16 +39,17 @@ export const Input = ({
         type={showPassword ? "text" : type}
         placeholder={placeholder || ""}
         value={value}
-        onChange={(e) => onChange?.(e.target.value)}
         className={cn(
           "w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200",
           isInvalid && "border-red-300 focus:ring-red-200 pr-10",
           isTypePassword && "pr-10",
           icon && "pl-10",
           disabled && "bg-gray-100 cursor-not-allowed",
-          className
+          className,
         )}
         disabled={disabled}
+        onChange={(e) => onChange?.(e.target.value)}
+        onWheel={(e) => e.currentTarget.blur()}
         {...props}
       />
       {isTypePassword && (
