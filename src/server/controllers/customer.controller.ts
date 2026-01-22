@@ -30,23 +30,6 @@ export const getCustomersPaged = asyncHandler(
       {
         $addFields: {
           totalInvoices: { $size: "$invoices" },
-
-          totalDue: {
-            $sum: {
-              $map: {
-                input: "$invoices",
-                as: "inv",
-                in: {
-                  $cond: [
-                    { $gt: ["$$inv.dueAmount", 0] },
-                    "$$inv.dueAmount",
-                    0,
-                  ],
-                },
-              },
-            },
-          },
-
           dueCount: {
             $size: {
               $filter: {

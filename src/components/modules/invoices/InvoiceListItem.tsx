@@ -5,7 +5,13 @@ import { Download, Eye, Pen } from "lucide-react";
 import { InvoiceDueEditModal } from "./InvoiceDueEditModal";
 import { useState } from "react";
 
-export const InvoiceListItem = ({ invoice }: { invoice: InvoiceDto }) => {
+export const InvoiceListItem = ({
+  invoice,
+  page,
+}: {
+  invoice: InvoiceDto;
+  page: number;
+}) => {
   const [editOpen, setEditOpen] = useState(false);
   return (
     <>
@@ -54,6 +60,8 @@ export const InvoiceListItem = ({ invoice }: { invoice: InvoiceDto }) => {
       <InvoiceDueEditModal
         openState={editOpen}
         onClose={() => setEditOpen(false)}
+        invoice={invoice}
+        page={page}
       />
     </>
   );

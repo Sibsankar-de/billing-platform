@@ -86,7 +86,11 @@ export const InvoiceListTable = () => {
             </thead>
             <tbody>
               {pageData?.docs.map((invoice) => (
-                <InvoiceListItem key={invoice._id} invoice={invoice} />
+                <InvoiceListItem
+                  key={invoice._id}
+                  invoice={invoice}
+                  page={currentPage}
+                />
               ))}
             </tbody>
           </table>

@@ -26,8 +26,8 @@ export interface CreateInvoiceDto {
   discountAmount?: number;
   taxAmount?: number;
   taxRate?: number;
-  dueAmount?: number;
-  paidAmount?: number;
+  dueAmount: number;
+  paidAmount: number;
   roundupTotal?: boolean;
   status?: string;
   createdAt?: Date;
