@@ -87,7 +87,7 @@ const invoiceSchema = new Schema(
       type: Number,
       required: true,
     },
-    discountAmmount: {
+    discountAmount: {
       type: Number,
       default: 0,
     },
@@ -99,7 +99,7 @@ const invoiceSchema = new Schema(
       type: Number,
       default: 0,
     },
-    taxAmmount: {
+    taxAmount: {
       type: Number,
       default: 0,
     },

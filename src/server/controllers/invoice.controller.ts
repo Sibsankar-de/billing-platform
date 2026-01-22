@@ -105,7 +105,7 @@ export const createInvoice = asyncHandler(
       // update customer if there is due
       dueAmount > 0 &&
         Customer.findByIdAndUpdate(customerId, {
-          $inc: { totalStock: dueAmount },
+          $inc: { totalDue: dueAmount },
         }),
     ]);
 
@@ -125,6 +125,51 @@ const createCustomer = async (
   });
   return customer;
 };
+
+export const updateInvoiceDueAmount = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined,
+  ) => {
+    const { userId } = await context!;
+    const { invoiceId } = await params!;
+    const { paidAmount } = await req.json();
+
+    if (paidAmount === null || paidAmount === undefined || paidAmount <= 0) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Paid amount must be greater than zero",
+      );
+    }
+
+    const invoice = await Invoice.findByIdAndUpdate(
+      invoiceId,
+      {
+        $inc: {
+          paidAmount: paidAmount,
+          dueAmount: -paidAmount,
+        },
+      },
+      { new: true },
+    );
+
+    if (!invoice) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Invoice not found");
+    }
+
+    // update customer due amount
+    if (invoice.dueAmount >= 0) {
+      await Customer.findByIdAndUpdate(invoice.customerId, {
+        $inc: { totalDue: -paidAmount },
+      });
+    }
+
+    return NextResponse.json(
+      new ApiResponse(200, invoice, "Due amount updated."),
+    );
+  },
+);
 
 export const getInvoiceList = asyncHandler(
   async (

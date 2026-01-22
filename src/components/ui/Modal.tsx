@@ -52,23 +52,23 @@ export const Modal = ({
   return createPortal(
     <div
       className={clsx(
-        "fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-60 backdrop-blur-[5px] fade-in",
-        closing && "fade-out"
+        `fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] 
+        flex items-center justify-center z-60 backdrop-blur-[5px] fade-in`,
+        closing && "fade-out",
       )}
       onClick={() => onClose && onClose()}
-      //   onKeyDown={handleKeyDown}
     >
       <div
         className={clsx(
           "min-w-[15em] min-h-[5em] bg-background p-3 rounded-xl dropdown-open-anim",
           className,
-          closing && "dropdown-close-anim"
+          closing && "dropdown-close-anim",
         )}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };

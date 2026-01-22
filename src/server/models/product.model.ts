@@ -82,8 +82,7 @@ const productSchema = new Schema(
     },
     stockUnit: {
       type: String,
-      required: true,
-      enum: storeEnums.STOCK_UNIT,
+      required: true
     },
     pricePerQuantity: {
       type: [pricePerQuantitySchema],

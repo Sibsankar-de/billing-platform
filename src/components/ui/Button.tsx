@@ -3,6 +3,9 @@
 import { ClassValue } from "clsx";
 import { cn } from "../utils";
 import { Loader } from "./loader";
+import { Tooltip } from "react-tooltip";
+import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
 
 export interface ButtonType extends React.ComponentProps<"button"> {
   children?: React.ReactNode;
@@ -13,6 +16,8 @@ export interface ButtonType extends React.ComponentProps<"button"> {
   variant?: "nav" | "primary" | "none" | "secondary" | "outline" | "dark";
   disabled?: boolean;
   loading?: boolean;
+  tooltip?: string;
+  tooltipId?: string;
 }
 
 export const Button = ({
@@ -24,17 +29,27 @@ export const Button = ({
   disabled = false,
   type = "button",
   loading = false,
+  tooltip,
+  tooltipId = "button-tooltip",
   ...props
 }: ButtonType) => {
   const variants: Record<string, ClassValue> = {
     nav: "",
     primary: "bg-primary text-primary-foreground hover:bg-primary/90",
     outline:
-      "border border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground",
+      "border border-border bg-background text-foreground hover:bg-accent/50 hover:text-accent-foreground",
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
     dark: "bg-black text-white hover:bg-gray-800",
     none: "hover:brightness-95",
   };
+
+  // wait until mount
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <button
       type={type}
@@ -46,11 +61,13 @@ export const Button = ({
         "transition-all duration-150 active:translate-y-0.5 active:brightness-90",
         variants[variant],
         loading && "bg-gray-300",
-        className
+        className,
       )}
       id={id}
       onClick={(e) => onClick?.(e)}
       disabled={disabled}
+      data-tooltip-id={tooltipId}
+      data-tooltip-content={tooltip}
       {...props}
     >
       {children}
@@ -61,12 +78,18 @@ export const Button = ({
           className={cn(
             "absolute w-full h-full inset-0 flex justify-center items-center",
             "bg-gray-300",
-            "border-none! rounded-lg! transition-none! pointer-events-none!"
+            "border-none! rounded-lg! transition-none! pointer-events-none!",
           )}
         >
           <Loader className="border-white border-t-primary" size={22} />
         </div>
       )}
+
+      {mounted &&
+        createPortal(
+          <Tooltip id={tooltipId} place="bottom" delayShow={800} />,
+          document.body,
+        )}
     </button>
   );
 };

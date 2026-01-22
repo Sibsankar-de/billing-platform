@@ -27,14 +27,14 @@ export const fetchInvoiceListThunk: any = createApiThunk(
   "/invoices/list",
   async (payload: any) =>
     await api.get(
-      `/invoice/${payload.storeId}/list?page=${payload.page}&limit=${payload.limit}`,
+      `/invoices/${payload.storeId}/list?page=${payload.page}&limit=${payload.limit}`,
     ),
 );
 
 export const createInvoiceThunk: any = createApiThunk(
   "/invoices/create",
   async (payload: any) =>
-    await api.post(`/invoice/${payload.storeId}/create`, payload),
+    await api.post(`/invoices/${payload.storeId}/create`, payload),
 );
 
 const invoiceSlice = createSlice({
