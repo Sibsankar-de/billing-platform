@@ -13,6 +13,7 @@ import {
 import { Input, InputType } from "./Input";
 import { Dropdown } from "./Dropdown";
 import { cn } from "../utils";
+import { SliderLoader } from "./loader";
 
 type Ctx<T> = {
   focusedIndex: number;
@@ -34,6 +35,7 @@ type Props<T> = {
   value: string;
   inputProps?: InputType;
   closeOnEmpty?: boolean;
+  isLoading?: boolean;
   onChange: (value: string) => void;
   onSelect: (item: T) => void;
   getLabel: (item: T) => string;
@@ -45,6 +47,7 @@ export function SelectableInputDropdown<T>({
   value,
   inputProps,
   closeOnEmpty = false,
+  isLoading = false,
   onChange,
   onSelect,
   getLabel,
@@ -113,14 +116,20 @@ export function SelectableInputDropdown<T>({
 
         <Dropdown
           openState={open}
-          className="w-full mt-1 p-1 max-h-60 overflow-y-auto"
+          className="w-full mt-1 p-0! max-h-60 overflow-y-auto"
           onClose={() => setOpen(false)}
         >
-          <ul ref={ulRef}>{children(items)}</ul>
+          <SliderLoader
+            className="w-full bg-transparent! absolute! top-0"
+            isVisible={isLoading}
+          />
+          <div className="w-full p-1 pt-2">
+            <ul ref={ulRef}>{children(items)}</ul>
 
-          {!items.length && (
-            <p className="p-2 text-center text-gray-600">No results found!</p>
-          )}
+            {!items.length && (
+              <p className="p-2 text-center text-gray-600">No results found!</p>
+            )}
+          </div>
         </Dropdown>
       </div>
     </SearchWrapperContext.Provider>
@@ -149,7 +158,7 @@ export function SelectableItem<T>({
         "p-2 px-3 rounded cursor-pointer",
         index === focusedIndex && "bg-accent!",
         (selected as any)?._id === (item as any)._id && "bg-muted",
-        className
+        className,
       )}
       onClick={() => handleSelect(item)}
       {...props}

@@ -12,7 +12,7 @@ import {
   selectProductState,
 } from "@/store/features/productSlice";
 import { useParams } from "next/navigation";
-import { SearchableInput } from "@/components/ui/SearchableInputDropdown";
+import { LocalSearchableInput } from "@/components/ui/LocalSearchableInputDropdown";
 import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
 
 export const CategorySelector = ({
@@ -72,7 +72,7 @@ export const CategorySelector = ({
   return (
     <div>
       <div className="flex items-center gap-2 w-2xl">
-        <SearchableInput
+        <LocalSearchableInput
           items={categoryList}
           rules={searchRule}
           value={inputValue}
@@ -91,7 +91,7 @@ export const CategorySelector = ({
               <p>{p.name}</p>
             </SelectableItem>
           )}
-        </SearchableInput>
+        </LocalSearchableInput>
         <Button
           className="py-2"
           onClick={handleAddCategory}

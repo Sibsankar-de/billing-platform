@@ -53,7 +53,10 @@ const customerSchema = new Schema(
   { timestamps: true },
 );
 
-customerSchema.index({ name: 1 }, { collation: { locale: "en", strength: 2 } });
+customerSchema.index(
+  { storeId: 1, name: 1 },
+  { collation: { locale: "en", strength: 2 } },
+);
 
 customerSchema.plugin(mongoosePaginate);
 customerSchema.plugin(aggregatePaginate);

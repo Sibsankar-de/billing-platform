@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { SearchableInput } from "@/components/ui/SearchableInputDropdown";
+import { LocalSearchableInput } from "@/components/ui/LocalSearchableInputDropdown";
 import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { CustomerDto } from "@/types/dto/customerDto";
@@ -45,7 +45,7 @@ export const CustomerDetailsForm = ({
   return (
     <div className="space-y-2">
       <Label>Bill To</Label>
-      <SearchableInput
+      <LocalSearchableInput
         items={customerList}
         rules={searchRule}
         placeholder="Enter name"
@@ -63,7 +63,7 @@ export const CustomerDetailsForm = ({
             {p.phoneNumber && <p>{p.phoneNumber}</p>}
           </SelectableItem>
         )}
-      </SearchableInput>
+      </LocalSearchableInput>
       <Input
         placeholder="Phone number"
         value={customerData.phoneNumber}

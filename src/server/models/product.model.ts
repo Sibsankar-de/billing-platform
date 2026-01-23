@@ -82,7 +82,7 @@ const productSchema = new Schema(
     },
     stockUnit: {
       type: String,
-      required: true
+      required: true,
     },
     pricePerQuantity: {
       type: [pricePerQuantitySchema],
@@ -92,8 +92,18 @@ const productSchema = new Schema(
   { timestamps: true },
 );
 
-productSchema.index({ name: 1 }, { collation: { locale: "en", strength: 2 } });
-productSchema.index({ sku: 1 }, { collation: { locale: "en", strength: 2 } });
+productSchema.index(
+  { storeId: 1, name: 1 },
+  { collation: { locale: "en", strength: 2 } },
+);
+productSchema.index(
+  { storeId: 1, sku: 1 },
+  { collation: { locale: "en", strength: 2 } },
+);
+productSchema.index(
+  { storeId: 1, gtin: 1 },
+  { collation: { locale: "en", strength: 2 } },
+);
 
 productSchema.plugin(mongoosePaginate);
 productSchema.plugin(aggregatePaginate);

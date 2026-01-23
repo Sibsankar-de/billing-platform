@@ -1,13 +1,18 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { selectProductState } from "@/store/features/productSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  searchProductsThunk,
+  selectProductState,
+} from "@/store/features/productSlice";
 import { ProductDto } from "@/types/dto/productDto";
 import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
-import { SearchableInput } from "@/components/ui/SearchableInputDropdown";
 import { calculatePrice } from "@/utils/price-calculator";
 import { convertUnit } from "@/utils/conversion";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
+import { useState } from "react";
+import { SearchableInput } from "@/components/ui/SearchableInput";
+import { useStoreNavigation } from "@/hooks/store-navigation";
 
 export function ProductSearchInput({
   onSelect,
@@ -16,50 +21,62 @@ export function ProductSearchInput({
   onSelect: (p: ProductDto) => void;
   value: string;
 }) {
-  const {
-    data: { productList },
-  } = useSelector(selectProductState);
+  const { storeId } = useStoreNavigation();
+  const dispatch = useDispatch();
+  const { searchStatus } = useSelector(selectProductState);
   const {
     data: { storeSettings },
   } = useSelector(selectCurrentStoreState);
 
-  const rules: any = [
-    { field: "name", priority: 1000, mode: "prefix" },
-    { field: "gtin", priority: 950, mode: "prefix" },
-    { field: "sku", priority: 900, mode: "prefix" },
-    { field: "name", priority: 800, mode: "substring" },
-    { field: "sku", priority: 700, mode: "substring" },
-  ];
+  const [input, setInput] = useState("");
+  const [searchList, setSearchList] = useState<ProductDto[]>([]);
+
+  const handleSearch = (query: string) => {
+    if (!query || !query.trim() || query.trim().length < 2) return;
+
+    dispatch(searchProductsThunk({ storeId, query }))
+      .unwrap()
+      .then((res: any) => {
+        setSearchList(res);
+      });
+  };
+
+  const isSearching = searchStatus === "loading";
 
   return (
     <SearchableInput
-      items={productList}
-      rules={rules}
-      inputProps={{ autoFocus: true }}
-      value={value}
+      items={searchList}
+      value={input}
+      inputProps={{ placeholder: "Type product name/sku/gtin" }}
+      closeOnEmpty={false}
+      minCharsToSearch={2}
+      trimQuery
+      isLoading={isSearching}
+      onSearch={handleSearch}
       getLabel={(p) => p.name}
       onSelect={onSelect}
-      placeholder="Type a product name or SKU or GTIN..."
     >
-      {(p, i) => (
-        <SelectableItem
-          key={p._id}
-          item={p}
-          index={i}
-          className="flex justify-between"
-        >
-          <div>
-            <p className="text-[15px]">{p.name}</p>
-            <p className="text-sm text-gray-600">{p.sku}</p>
-          </div>
-          <div>
-            <p className="text-green-800">
-              &#8377;{calculatePrice(1, p.pricePerQuantity).price} /{" "}
-              {convertUnit(p.stockUnit, storeSettings.customUnits)}
-            </p>
-          </div>
-        </SelectableItem>
-      )}
+      {(items) =>
+        items.map((p, i) => (
+          <SelectableItem
+            key={p._id}
+            item={p}
+            index={i}
+            className="flex justify-between"
+          >
+            <div>
+              <p className="text-[15px]">{p.name}</p>
+              <p className="text-sm text-gray-600">{p.sku}</p>
+            </div>
+            <div>
+              <p className="text-green-800">
+                &#8377;{calculatePrice(1, p.pricePerQuantity).price} /{" "}
+                {convertUnit(p.stockUnit, storeSettings.customUnits)}
+              </p>
+            </div>
+          </SelectableItem>
+        ))
+      }
     </SearchableInput>
   );
 }

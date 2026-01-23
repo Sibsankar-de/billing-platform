@@ -19,7 +19,7 @@ type SearchableInputDropdownProps<T extends Record<string, any>> = {
   children: (item: T, index: number) => ReactNode;
 };
 
-export function SearchableInput<T extends Record<string, any>>({
+export function LocalSearchableInput<T extends Record<string, any>>({
   items,
   rules,
   limit = 25,
