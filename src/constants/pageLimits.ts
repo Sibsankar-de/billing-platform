@@ -1,4 +1,7 @@
 export const pageLimits = {
-    INVOICE_LIST: 15,
-    CUSTOMER_LIST: 15,
-}
+  INVOICE_LIST: 15,
+  CUSTOMER_LIST: 15,
+  CUSTOMER_SEARCH: 10,
+  PRODUCT_LIST: 20,
+  PRODUCT_SEARCH: 10,
+};

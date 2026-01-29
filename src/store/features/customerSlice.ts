@@ -12,6 +12,14 @@ export const fetchCustomerListThunk: any = createApiThunk(
     ),
 );
 
+export const customerSearchThunk: any = createApiThunk(
+  "/customers/search",
+  async (payload: any) =>
+    await api.get(
+      `/search/${payload.storeId}/customers?query=${payload.query}&page=${payload.page}&limit=${payload.limit}`,
+    ),
+);
+
 const initialState = {
   data: {
     customerListData: {
@@ -19,9 +27,15 @@ const initialState = {
       totalDocs: 0,
       totalPages: 0,
     },
+    customerSearchData: {
+      pages: {} as PaginatedPages<CustomerDto>,
+      totalDocs: 0,
+      totalPages: 0,
+    },
   },
   status: "idle",
   createStatus: "idle",
+  searchStatus: "idle",
   error: null,
 };
 
@@ -47,6 +61,16 @@ const customerSlice = createSlice({
           totalDocs: action.payload.totalDocs,
           totalPages: action.payload.totalPages,
         };
+        state.error = null;
+      })
+      .addCase(customerSearchThunk.pending, (state, action) =>
+        setState(state, action, "searchStatus"),
+      )
+      .addCase(customerSearchThunk.rejected, (state, action) =>
+        setState(state, action, "searchStatus"),
+      )
+      .addCase(customerSearchThunk.fulfilled, (state, action) => {
+        state.searchStatus = "success";
         state.error = null;
       });
   },

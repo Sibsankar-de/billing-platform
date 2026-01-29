@@ -123,7 +123,7 @@ export function SelectableInputDropdown<T>({
             className="w-full bg-transparent! absolute! top-0"
             isVisible={isLoading}
           />
-          <div className="w-full p-1 pt-2">
+          <div className="w-full p-1">
             <ul ref={ulRef}>{children(items)}</ul>
 
             {!items.length && (

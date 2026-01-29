@@ -45,7 +45,7 @@ export function SliderLoader({
       className={`w-full h-1 bg-gray-200 rounded-full overflow-hidden relative ${className}`}
     >
       <div
-        className={`absolute h-full w-full bg-linear-to-r from-blue-400 via-blue-500 to-blue-600 rounded-full transition-transform duration-1000 ${
+        className={`absolute h-full w-full bg-linear-to-r from-primary/30 via-primary/50 to-primary rounded-full transition-transform duration-1000 ${
           visible ? "animate-slide" : "opacity-0"
         }`}
         style={{
