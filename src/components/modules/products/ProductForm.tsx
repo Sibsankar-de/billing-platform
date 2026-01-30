@@ -13,6 +13,7 @@ import { PricePerQuantityType } from "@/types/dto/productDto";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addNewProductThunk,
+  getProductDetailsThunk,
   selectProductState,
   updateProductThunk,
 } from "@/store/features/productSlice";
@@ -31,11 +32,8 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
   const storeId = params?.store_id;
   const productId = params?.product_id;
   const dispatch = useDispatch();
-  const {
-    data: { productList },
-    createStatus,
-    updateStatus,
-  } = useSelector(selectProductState);
+  const { getStatus, createStatus, updateStatus } =
+    useSelector(selectProductState);
   const {
     data: { storeSettings },
   } = useSelector(selectCurrentStoreState);
@@ -63,21 +61,24 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
 
   useEffect(() => {
     if (formFor === "edit" && productId) {
-      const product = productList.find((e) => e._id === productId);
-      if (!product) return;
+      dispatch(getProductDetailsThunk({ productId }))
+        .unwrap()
+        .then((product: any) => {
+          setFormData(product);
 
-      setFormData(product);
-
-      setLocalInputs({
-        buyingPricePerQuantity:
-          product.buyingPricePerQuantity !== undefined
-            ? String(product.buyingPricePerQuantity)
-            : "",
-        totalStock:
-          product.totalStock !== undefined ? String(product.totalStock) : "",
-      });
+          setLocalInputs({
+            buyingPricePerQuantity:
+              product.buyingPricePerQuantity !== undefined
+                ? String(product.buyingPricePerQuantity)
+                : "",
+            totalStock:
+              product.totalStock !== undefined
+                ? String(product.totalStock)
+                : "",
+          });
+        });
     }
-  }, [productList, productId, formFor]);
+  }, [productId, formFor]);
 
   function handleFormData(key: keyof typeof formData, value: any) {
     setFormData((prev) => ({
@@ -123,7 +124,11 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     else handleUpdateProduct();
   };
 
-  const isLoading = createStatus === "loading" || updateStatus === "loading";
+  const isSubmitting = createStatus === "loading" || updateStatus === "loading";
+  const isLoading =
+    getStatus === "loading" ||
+    createStatus === "loading" ||
+    updateStatus === "loading";
 
   return (
     <div className="space-y-4">
@@ -285,7 +290,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
         <Button
           onClick={handleSaveProduct}
           disabled={isLoading}
-          loading={isLoading}
+          loading={isSubmitting}
         >
           <CloudCheck size={17} />
           Save product

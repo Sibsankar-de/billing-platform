@@ -32,14 +32,8 @@ export const StoreContextProvider = ({
     if (storeId) {
       dispatch(fetchCurrentStore(storeId));
 
-      if (listStatus === "idle" || listStatus === "success") {
-        dispatch(fetchProducts(storeId));
-      }
       if (categoryStatus === "idle") {
         dispatch(fetchCategoriesThunk(storeId));
-      }
-      if (customerStatus === "idle") {
-        dispatch(fetchCustomerList(storeId));
       }
     }
   }, [storeId, dispatch]);

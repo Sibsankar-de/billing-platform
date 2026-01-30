@@ -173,29 +173,39 @@ export const getProductsByStore = asyncHandler(
   ) => {
     const { userId } = await context!;
     const { storeId } = await params!;
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
 
-    const productList = await Product.aggregate([
-      {
-        $match: { storeId: new mongoose.Types.ObjectId(storeId) },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          let: { catIds: "$categories" },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $in: ["$_id", "$$catIds"] },
-              },
-            },
-            {
-              $project: { _id: 1, name: 1, storeId: 1 },
-            },
-          ],
-          as: "categories",
+    const productList = await Product.aggregatePaginate(
+      [
+        {
+          $match: { storeId: new mongoose.Types.ObjectId(storeId) },
         },
+        {
+          $lookup: {
+            from: "categories",
+            let: { catIds: "$categories" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $in: ["$_id", "$$catIds"] },
+                },
+              },
+              {
+                $project: { _id: 1, name: 1, storeId: 1 },
+              },
+            ],
+            as: "categories",
+          },
+        },
+      ],
+      {
+        page,
+        limit,
+        sort: { createdAt: -1 },
       },
-    ]);
+    );
 
     if (!productList) {
       throw new ApiError(StatusCodes.BAD_REQUEST, "Failed to get list");

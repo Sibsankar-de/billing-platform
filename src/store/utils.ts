@@ -88,3 +88,27 @@ export function transformPaginatedResponse<T>(
     },
   };
 }
+
+export function setPagedDataToState<T>(
+  state: WritableDraft<any>,
+  action: { type: string; payload: any },
+  dataKey: string,
+  key: string,
+): void {
+  state[key] = "success";
+  state.error = null;
+
+  const { docs, pageable } = transformPaginatedResponse<T>(action.payload);
+
+  state.data[dataKey] = {
+    pages: {
+      ...state.data[dataKey].pages,
+      [pageable.page]: {
+        docs: docs as T[],
+        pageable,
+      },
+    },
+    totalDocs: action.payload.totalDocs,
+    totalPages: action.payload.totalPages,
+  };
+}

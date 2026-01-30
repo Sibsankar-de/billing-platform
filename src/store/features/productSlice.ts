@@ -1,13 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createApiThunk, setState } from "../utils";
+import { createApiThunk, setPagedDataToState, setState } from "../utils";
 import api from "@/configs/axios-config";
 import { ProductDto } from "@/types/dto/productDto";
 import { RootState } from "../store";
 import { CategoryDto } from "@/types/dto/categoryDto";
+import { PaginatedPages } from "@/types/PageableType";
 
 export const fetchProducts: any = createApiThunk(
   "products/list",
-  async (storeId) => await api.get(`/stores/${storeId}/product-list`),
+  async (payload) =>
+    await api.get(
+      `/stores/${payload.storeId}/product-list?page=${payload.page}&limit=${payload.limit}`,
+    ),
+);
+
+export const getProductDetailsThunk: any = createApiThunk(
+  "products/details",
+  async (payload) => await api.get(`/products/${payload.productId}`),
 );
 
 export const addNewProductThunk: any = createApiThunk(
@@ -49,10 +58,15 @@ export const searchProductsThunk: any = createApiThunk(
 
 const initialState = {
   data: {
-    productList: [] as ProductDto[],
+    productList: {
+      pages: {} as PaginatedPages<ProductDto>,
+      totalDocs: 0,
+      totalPages: 0,
+    },
     categoryList: [] as CategoryDto[],
   },
   status: "idle",
+  getStatus: "idle",
   createStatus: "idle",
   updateStatus: "idle",
   deleteStatus: "idle",
@@ -69,11 +83,9 @@ const productSlice = createSlice({
     builder
       .addCase(fetchProducts.pending, setState)
       .addCase(fetchProducts.rejected, setState)
-      .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.status = "success";
-        state.error = null;
-        state.data.productList = action.payload;
-      })
+      .addCase(fetchProducts.fulfilled, (state, action) =>
+        setPagedDataToState(state, action, "productList", "status"),
+      )
       .addCase(addNewProductThunk.pending, (state, action) =>
         setState(state, action, "createStatus"),
       )
@@ -83,7 +95,6 @@ const productSlice = createSlice({
       .addCase(addNewProductThunk.fulfilled, (state, action) => {
         state.createStatus = "success";
         state.error = null;
-        state.data.productList.push(action.payload);
       })
       .addCase(updateProductThunk.pending, (state, action) =>
         setState(state, action, "updateStatus"),
@@ -94,13 +105,13 @@ const productSlice = createSlice({
       .addCase(updateProductThunk.fulfilled, (state, action) => {
         state.updateStatus = "success";
         state.error = null;
-        const updatedProduct = action.payload;
-        const p_index = state.data.productList.findIndex(
-          (p) => p._id === updatedProduct._id,
-        );
-        if (p_index !== -1) {
-          state.data.productList[p_index] = updatedProduct;
-        }
+        // const updatedProduct = action.payload;
+        // const p_index = state.data.productList.findIndex(
+        //   (p) => p._id === updatedProduct._id,
+        // );
+        // if (p_index !== -1) {
+        //   state.data.productList[p_index] = updatedProduct;
+        // }
       })
 
       .addCase(deleteProductThunk.pending, (state, action) =>
@@ -112,9 +123,9 @@ const productSlice = createSlice({
       .addCase(deleteProductThunk.fulfilled, (state, action) => {
         state.deleteStatus = "success";
         state.error = null;
-        state.data.productList = state.data.productList.filter(
-          (e) => e._id !== action.payload?.productId,
-        );
+        // state.data.productList = state.data.productList.filter(
+        //   (e) => e._id !== action.payload?.productId,
+        // );
       })
       .addCase(fetchCategoriesThunk.pending, (state, action) =>
         setState(state, action, "categoryStatus"),
@@ -146,6 +157,16 @@ const productSlice = createSlice({
       )
       .addCase(searchProductsThunk.fulfilled, (state, action) => {
         state.searchStatus = "success";
+        state.error = null;
+      })
+      .addCase(getProductDetailsThunk.pending, (state, action) =>
+        setState(state, action, "getStatus"),
+      )
+      .addCase(getProductDetailsThunk.rejected, (state, action) =>
+        setState(state, action, "getStatus"),
+      )
+      .addCase(getProductDetailsThunk.fulfilled, (state, action) => {
+        state.getStatus = "success";
         state.error = null;
       });
   },

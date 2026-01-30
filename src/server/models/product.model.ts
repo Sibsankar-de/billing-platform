@@ -8,6 +8,7 @@ import mongoose, {
 import { storeEnums } from "../enums/store.enum";
 import mongoosePaginate from "mongoose-paginate-v2";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { AggregatePaginateModel } from "mongoose";
 
 export const pricePerQuantitySchema = new Schema(
   {
@@ -109,14 +110,13 @@ productSchema.plugin(mongoosePaginate);
 productSchema.plugin(aggregatePaginate);
 
 export type ProductModelType = InferSchemaType<typeof productSchema>;
+type ProductModel = PaginateModel<ProductModelType> &
+  AggregatePaginateModel<ProductModelType>;
 
 if (process.env.NODE_ENV === "development" && models.Product) {
   delete models.Product;
 }
 
 export const Product =
-  (models.Product as PaginateModel<ProductModelType>) ||
-  model<ProductModelType, PaginateModel<ProductModelType>>(
-    "Product",
-    productSchema,
-  );
+  (models.Product as ProductModel) ||
+  model<ProductModelType, ProductModel>("Product", productSchema);

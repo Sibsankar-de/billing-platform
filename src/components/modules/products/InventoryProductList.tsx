@@ -7,14 +7,16 @@ import { useEffect, useState } from "react";
 import { InventoryProductCard } from "./InventoryProductCard";
 import { SelectOptionType } from "@/types/SelectType";
 import { Pagination } from "@/components/ui/Pagination";
-import { useSelector } from "react-redux";
-import { useParams } from "next/navigation";
-import { selectProductState } from "@/store/features/productSlice";
-import { getTotalPages, PageResult, paginate } from "@/utils/paginate";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchProducts,
+  selectProductState,
+} from "@/store/features/productSlice";
 import { ProductDto } from "@/types/dto/productDto";
 import { Button } from "@/components/ui/Button";
 import { useStoreNavigation } from "@/hooks/store-navigation";
-import { ProductDeleteModal } from "./ProductDeleteModal";
+import { PageState } from "@/types/PageableType";
+import { pageLimits } from "@/constants/pageLimits";
 
 const categories: SelectOptionType[] = [
   { value: "All Categories", key: "all" },
@@ -25,25 +27,37 @@ const categories: SelectOptionType[] = [
 const PAGE_SIZE = 15;
 
 export const InventoryProductList = () => {
-  const { navigate } = useStoreNavigation();
+  const { storeId, navigate } = useStoreNavigation();
+  const dispatch = useDispatch();
   const {
     data: { productList },
   } = useSelector(selectProductState);
 
-  const [paginatedData, setPaginatedData] = useState<PageResult<ProductDto>>(
-    {},
-  );
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageData, setPageData] = useState<PageState<ProductDto> | null>(null);
 
   useEffect(() => {
-    if (page != paginatedData?.page) {
-      const paginatedResult = paginate(productList, PAGE_SIZE, page);
-      setPaginatedData(paginatedResult);
-      setPage(paginatedResult.page || 1);
+    if (!productList.pages[currentPage]) {
+      dispatch(
+        fetchProducts({
+          storeId,
+          page: currentPage,
+          limit: pageLimits.PRODUCT_LIST,
+        }),
+      )
+        .unwrap()
+        .then((res: any) => {
+          setCurrentPage(res.page);
+        });
     }
-  }, [page, productList]);
+  }, [dispatch, storeId, currentPage]);
 
-  const totalPage = getTotalPages(productList.length, PAGE_SIZE);
+  useEffect(() => {
+    const data = productList.pages?.[currentPage] || null;
+    if (data) {
+      setPageData(data);
+    }
+  }, [productList, currentPage]);
 
   return (
     <div>
@@ -87,7 +101,7 @@ export const InventoryProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {productList.map((product, index) => (
+              {pageData?.docs.map((product, index) => (
                 <InventoryProductCard
                   key={product._id}
                   product={product}
@@ -96,7 +110,7 @@ export const InventoryProductList = () => {
               ))}
             </tbody>
           </table>
-          {productList.length === 0 && (
+          {pageData?.docs.length === 0 && (
             <div className="flex items-center justify-center flex-col gap-3 w-full p-3">
               <p>No products found in your inventory!</p>
               <Button onClick={() => navigate("/inventory/add-product")}>
@@ -109,9 +123,9 @@ export const InventoryProductList = () => {
       </div>
 
       <Pagination
-        currentPage={page}
-        totalPage={totalPage}
-        onPageChange={(e) => setPage(e)}
+        totalPage={productList.totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
       />
     </div>
   );
