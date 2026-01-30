@@ -16,23 +16,31 @@ export const fetchProducts: any = createApiThunk(
 
 export const getProductDetailsThunk: any = createApiThunk(
   "products/details",
-  async (payload) => await api.get(`/products/${payload.productId}`),
+  async (payload) =>
+    await api.get(`/products/${payload.storeId}/${payload.productId}`),
 );
 
 export const addNewProductThunk: any = createApiThunk(
   "/products/create",
-  async (payload) => await api.post("/products/create", payload),
+  async (payload) =>
+    await api.post(`/products/${payload.storeId}/create`, payload),
 );
 
 export const updateProductThunk: any = createApiThunk(
   "/products/update",
   async (payload) =>
-    await api.post(`/products/${payload.productId}/update`, payload),
+    await api.post(
+      `/products/${payload.storeId}/${payload.productId}/update`,
+      payload,
+    ),
 );
 
 export const deleteProductThunk: any = createApiThunk(
   "/products/delete",
-  async (payload) => await api.delete(`/products/${payload.productId}/delete`),
+  async (payload) =>
+    await api.delete(
+      `/products/${payload.storeId}/${payload.productId}/delete`,
+    ),
 );
 
 export const fetchCategoriesThunk: any = createApiThunk(

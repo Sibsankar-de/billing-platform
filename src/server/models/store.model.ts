@@ -19,6 +19,7 @@ const accessListUserSchema = new Schema(
     role: {
       type: String,
       enum: storeEnums.USER_ROLES,
+      required: true,
     },
   },
   { _id: false },

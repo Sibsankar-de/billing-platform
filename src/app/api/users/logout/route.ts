@@ -5,6 +5,6 @@ import { runMiddlewares } from "@/server/utils/middlewareControll";
 import { verifyAuth } from "@/server/middlewares/auth.middleware";
 
 export const GET = withDbAndCors(async (req: NextRequest) => {
-    const context = runMiddlewares(req, [verifyAuth])
+    const context = await runMiddlewares(req, [verifyAuth])
     return await logoutUser(req);
 }) 

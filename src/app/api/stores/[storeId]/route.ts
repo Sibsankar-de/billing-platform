@@ -5,7 +5,7 @@ import { verifyAuth } from "@/server/middlewares/auth.middleware";
 import { getStoreById } from "@/server/controllers/store.controller";
 
 export const GET = withDbAndCors(async (req: NextRequest, { params }) => {
-  const context = runMiddlewares(req, [verifyAuth]);
+  const context = await runMiddlewares(req, [verifyAuth]);
 
   return await getStoreById(req, context, params);
 });

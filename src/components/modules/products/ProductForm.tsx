@@ -61,7 +61,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
 
   useEffect(() => {
     if (formFor === "edit" && productId) {
-      dispatch(getProductDetailsThunk({ productId }))
+      dispatch(getProductDetailsThunk({ productId, storeId }))
         .unwrap()
         .then((product: any) => {
           setFormData(product);
@@ -111,7 +111,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
 
   const handleUpdateProduct = () => {
     if (!formData || !storeId) return;
-    dispatch(updateProductThunk({ ...formData, productId }))
+    dispatch(updateProductThunk({ ...formData, productId, storeId }))
       .unwrap()
       .then(() => {
         toast.success("Product updated");

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Modal } from "@/components/ui/Modal";
+import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   deleteProductThunk,
   selectProductState,
@@ -23,6 +24,7 @@ export function ProductDeleteModal({
   onClose: () => void;
   product: ProductDto;
 }) {
+  const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
   const { deleteStatus } = useSelector(selectProductState);
 
@@ -37,7 +39,7 @@ export function ProductDeleteModal({
       return;
     }
 
-    dispatch(deleteProductThunk({ productId: product?._id }))
+    dispatch(deleteProductThunk({ productId: product?._id, storeId }))
       .unwrap()
       .then(() => {
         toast.success("Product removed successfully!");

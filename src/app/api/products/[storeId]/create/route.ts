@@ -2,16 +2,12 @@ import { withDbAndCors } from "@/server/utils/withDbAndCors";
 import { NextRequest } from "next/server";
 import { runMiddlewares } from "@/server/utils/middlewareControll";
 import { verifyAuth } from "@/server/middlewares/auth.middleware";
-import { getCustomerList } from "@/server/controllers/store.controller";
+import { createProduct } from "@/server/controllers/product.controller";
 import { userRoles } from "@/server/enums/store.enum";
 import { verifyStoreAccess } from "@/server/middlewares/verifyStoreAccess.middleware";
 
-export const GET = withDbAndCors(async (req: NextRequest, { params }) => {
-  const allowed_roles = [
-    userRoles.ADMIN,
-    userRoles.OWNER,
-    userRoles.MANAGER
-  ];
+export const POST = withDbAndCors(async (req: NextRequest, { params }) => {
+  const allowed_roles = [userRoles.ADMIN, userRoles.OWNER, userRoles.MANAGER];
   const context = await runMiddlewares(
     req,
     [
@@ -22,5 +18,5 @@ export const GET = withDbAndCors(async (req: NextRequest, { params }) => {
     params,
   );
 
-  return await getCustomerList(req, context, params);
+  return await createProduct(req, context);
 });
