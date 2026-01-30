@@ -24,8 +24,6 @@ const categories: SelectOptionType[] = [
   { value: "Subscription", key: "subscription" },
 ];
 
-const PAGE_SIZE = 15;
-
 export const InventoryProductList = () => {
   const { storeId, navigate } = useStoreNavigation();
   const dispatch = useDispatch();

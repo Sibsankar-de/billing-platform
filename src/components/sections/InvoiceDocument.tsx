@@ -15,7 +15,6 @@ export const InvoiceDocument: React.FC<Props> = ({
   ...props
 }) => {
   const customerDetails = invoice.customerDetails;
-  console.log(invoice);
 
   return (
     <div
@@ -70,7 +69,7 @@ export const InvoiceDocument: React.FC<Props> = ({
           </thead>
 
           <tbody>
-            {invoice.billItems.map((item) => (
+            {invoice.billItems?.map((item) => (
               <tr key={item.id} className="border-b">
                 <td className="py-2 px-3">{item.product.name}</td>
                 <td className="py-2 px-3 text-center">

@@ -14,6 +14,7 @@ type SearchableInputProps<T> = {
   getLabel: (item: T) => string;
   onSelect: (item: T) => void;
   onSearch: (query: string) => void;
+  onChange?: (e: string) => void;
   children: (items: T[]) => ReactNode;
   minCharsToSearch?: number;
   trimQuery?: boolean;
@@ -28,6 +29,7 @@ export function SearchableInput<T>({
   inputProps,
   getLabel,
   onSearch,
+  onChange,
   onSelect,
   children,
   minCharsToSearch = 1,
@@ -81,6 +83,7 @@ export function SearchableInput<T>({
 
     lastInputValueRef.current = nextRawValue;
     setInput(nextRawValue);
+    onChange?.(nextRawValue);
 
     cancelPendingSearch();
 

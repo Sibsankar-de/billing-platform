@@ -10,16 +10,18 @@ import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
 import { calculatePrice } from "@/utils/price-calculator";
 import { convertUnit } from "@/utils/conversion";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SearchableInput } from "@/components/ui/SearchableInput";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 
 export function ProductSearchInput({
   onSelect,
   value,
+  index,
 }: {
   onSelect: (p: ProductDto) => void;
   value: string;
+  index: number;
 }) {
   const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
@@ -41,13 +43,29 @@ export function ProductSearchInput({
       });
   };
 
+  // key board event
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    const handleKeyEvent = (e: KeyboardEvent) => {
+      const key = e.key;
+      if (e.ctrlKey && key === "f" && inputRef.current) {
+        e.preventDefault();
+        inputRef.current.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyEvent);
+    return () => document.removeEventListener("keydown", handleKeyEvent);
+  }, []);
+
   const isSearching = searchStatus === "loading";
 
   return (
     <SearchableInput
       items={searchList}
       value={input}
-      inputProps={{ placeholder: "Type product name/sku/gtin" }}
+      placeholder="Type product name/sku/gtin"
+      inputProps={{ ref: inputRef, autoFocus: index > 0 }}
       closeOnEmpty={false}
       minCharsToSearch={2}
       trimQuery

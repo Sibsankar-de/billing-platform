@@ -1,5 +1,6 @@
 "use client";
 
+import { ConditionalDiv } from "@/components/ui/ConditionalDiv";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { LocalSearchableInput } from "@/components/ui/LocalSearchableInputDropdown";
@@ -44,8 +45,6 @@ export const CustomerDetailsForm = ({
   const handleSearch = (query: string) => {
     if (!query || !query.trim() || query.trim().length < 2) return;
 
-    handleFormChange("name", query);
-
     dispatch(
       customerSearchThunk({
         storeId,
@@ -73,6 +72,7 @@ export const CustomerDetailsForm = ({
       <SearchableInput
         items={searchList}
         placeholder="Enter name"
+        inputProps={{ autoFocus: true }}
         minCharsToSearch={2}
         trimQuery
         isLoading={isSearching}
@@ -83,12 +83,24 @@ export const CustomerDetailsForm = ({
           setCustomerData(data);
         }}
         onSearch={handleSearch}
+        onChange={(e) => handleFormChange("name", e)}
       >
         {(item) =>
           item.map((p, i) => (
-            <SelectableItem key={i} item={p} index={i}>
-              <p>{p.name}</p>
-              {p.phoneNumber && <p>{p.phoneNumber}</p>}
+            <SelectableItem
+              key={i}
+              item={p}
+              index={i}
+              className="flex justify-between"
+            >
+              <div>
+                <p>{p.name}</p>
+                {p.phoneNumber && <p className="text-sm">{p.phoneNumber}</p>}
+              </div>
+              <ConditionalDiv condition={p.totalDue}>
+                <span className="text-sm">Due:</span>{" "}
+                <span className="text-red-400">₹{p.totalDue}</span>
+              </ConditionalDiv>
             </SelectableItem>
           ))
         }

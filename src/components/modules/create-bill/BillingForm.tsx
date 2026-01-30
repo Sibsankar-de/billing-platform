@@ -12,6 +12,7 @@ import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { ConditionalDiv } from "@/components/ui/ConditionalDiv";
 import { ToggleButton } from "@/components/ui/ToggleButton";
 import { BillingSectionRow } from "./BillingSectionRow";
+import { roundToDecimal } from "@/utils/conversion";
 
 const generateRandomId = () => {
   return Math.floor(1000 + Math.random() * 9000).toString();
@@ -29,7 +30,7 @@ export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
 
   const initialBillItem: BillItemType = {
     id: generateRandomId(),
-    product: { id: generateRandomId(), name: "", sku: "" },
+    product: { id: "", name: "", sku: "" },
     netQuantity: 0,
     totalPrice: 0,
     totalProfit: 0,
@@ -68,7 +69,7 @@ export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
       {
         id: generateRandomId(),
         product: {
-          id: generateRandomId(),
+          id: "",
           name: "",
           sku: "",
         },
@@ -108,16 +109,18 @@ export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
   });
 
   useEffect(() => {
-    const subTotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+    const subTotal = roundToDecimal(
+      items.reduce((sum, item) => sum + item.totalPrice, 0),
+    );
     const subTotalProfit = items.reduce(
       (sum, item) => sum + item.totalProfit,
       0,
     );
     const tax = 0;
-    const discountAmount = Number(
-      ((Number(discountRate) * subTotal) / 100).toFixed(4),
+    const discountAmount = roundToDecimal(
+      (Number(discountRate) * subTotal) / 100,
     );
-    let total = Number((subTotal + tax - Number(discountAmount)).toFixed(2));
+    let total = roundToDecimal(subTotal + tax - Number(discountAmount));
 
     if (calculations.roundupTotal) total = Math.round(total);
 
@@ -134,8 +137,9 @@ export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
   }, [items, discountRate, calculations.roundupTotal]);
 
   useEffect(() => {
+    const filteredItems = items.filter((e) => e.product.id != "");
     onBillChange({
-      items,
+      items: filteredItems,
       calculations,
     });
   }, [items, calculations]);
@@ -173,11 +177,12 @@ export const BillingForm = ({ data, onBillChange }: BillingFormProps) => {
             </thead>
 
             <tbody>
-              {items.map((item) => (
+              {items.map((item, index) => (
                 <BillingSectionRow
                   id={item.id}
                   key={item.id}
                   item={item}
+                  index={index}
                   onFieldUpdate={updateItem}
                   onRemoveItem={removeItem}
                 />

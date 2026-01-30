@@ -98,7 +98,6 @@ export const CreateBillPage = () => {
   // handle invoice save
   const handleInvoiceSave = (status: string = "DRAFTED") => {
     if (!storeId || isInvoiceSaved) return;
-    console.log(formData);
 
     setIsInvoiceSaved(true);
     dispatch(createInvoiceThunk({ storeId, status, ...formData }))

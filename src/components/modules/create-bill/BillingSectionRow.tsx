@@ -12,11 +12,13 @@ import { ProductDto } from "@/types/dto/productDto";
 export function BillingSectionRow({
   id,
   item,
+  index,
   onFieldUpdate,
   onRemoveItem,
 }: {
   id: string;
   item: BillItemType;
+  index: number;
   onFieldUpdate: (doc: BillItemType) => void;
   onRemoveItem: (id: string) => void;
 }) {
@@ -96,6 +98,7 @@ export function BillingSectionRow({
         <ProductSearchInput
           onSelect={(e) => setSelectedItem(e)}
           value={productFields.product.name}
+          index={index}
         />
       </td>
 
