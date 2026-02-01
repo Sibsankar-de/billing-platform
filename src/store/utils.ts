@@ -5,7 +5,6 @@ import {
 } from "@/types/PageableType";
 import { PaginateResponseType } from "@/types/PaginatedResponseType";
 import { createAsyncThunk, WritableDraft } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
 
 export const createApiThunk = (
   type: string,
@@ -17,7 +16,11 @@ export const createApiThunk = (
       return response.data.data;
     } catch (err) {
       const error = err as any;
-      return rejectWithValue(error.response?.data || error.message);
+      const errorData = {
+        data: error?.response?.data,
+        status: error?.response?.status,
+      };
+      return rejectWithValue(errorData);
     }
   });
 };
@@ -37,7 +40,6 @@ export const setState = (
   } else if (action.type.endsWith("/rejected")) {
     state[key] = "failed";
     state.error = action.payload;
-    toast.error(action.payload?.message || "Something went wrong!");
   }
 };
 
@@ -47,7 +49,6 @@ export function concatPaginatedData<T>(
 ): PaginatedListData<T> {
   const pages = listData.pages;
 
-  // ✅ If no pages exist, create page 1
   if (Object.keys(pages).length === 0) {
     return {
       ...listData,
@@ -60,7 +61,6 @@ export function concatPaginatedData<T>(
     };
   }
 
-  // ✅ Find the last page
   const lastPage = Math.max(...Object.keys(pages).map(Number));
 
   return {
@@ -69,7 +69,7 @@ export function concatPaginatedData<T>(
       ...pages,
       [lastPage]: {
         ...pages[lastPage],
-        docs: [...pages[lastPage].docs, doc], // ✅ add doc at last
+        docs: [...pages[lastPage].docs, doc],
       },
     },
   };

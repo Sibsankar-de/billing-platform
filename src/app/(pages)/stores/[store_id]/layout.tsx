@@ -1,4 +1,6 @@
+import { AccessDeniedComponent } from "@/components/layout/AccessDeniedComponent";
 import { HeaderNavbar, Sidebar } from "@/components/layout/navbar";
+import { MainContentProvider } from "@/components/modules/main/MainContentProvider";
 import { StoreContextProvider } from "@/components/modules/store/storeContext";
 import React from "react";
 
@@ -13,7 +15,9 @@ export default function StoreLayout({
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <HeaderNavbar />
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto">
+            <MainContentProvider>{children}</MainContentProvider>
+          </main>
         </div>
       </div>
     </StoreContextProvider>
