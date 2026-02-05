@@ -5,17 +5,14 @@ import { selectGlobalErrorState } from "@/store/features/globalErrorSlice";
 import React, { createContext } from "react";
 import { useSelector } from "react-redux";
 
-const MainContentContext = createContext<null>(null);
+const StoreContentContext = createContext<null>(null);
 
-export const MainContentProvider = ({
+export const StoreContentProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const { data: globalError } = useSelector(selectGlobalErrorState);
-
-  console.log(globalError);
-  
 
   function getChildren() {
     switch (globalError?.status) {
@@ -27,8 +24,8 @@ export const MainContentProvider = ({
     }
   }
   return (
-    <MainContentContext.Provider value={null}>
+    <StoreContentContext.Provider value={null}>
       {getChildren()}
-    </MainContentContext.Provider>
+    </StoreContentContext.Provider>
   );
 };
