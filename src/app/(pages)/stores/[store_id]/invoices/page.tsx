@@ -1,8 +1,8 @@
 import { InvoiceListTable } from "@/components/modules/invoices/InvoiceListTable";
+import { InvoiceSummarySection } from "@/components/modules/invoices/InvoiceSummarySection";
 import { PageContainer } from "@/components/sections/PageContainer";
 
 export default function InvoicesPage() {
-
   return (
     <PageContainer>
       <div className="mb-8">
@@ -10,24 +10,7 @@ export default function InvoicesPage() {
         <p className="text-gray-600">View and manage all your invoices</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <p className="text-gray-600 mb-1">Total Paid</p>
-          <h2 className="text-gray-900 mb-2">$18,500.00</h2>
-          <p className="text-green-600 text-sm">124 invoices</p>
-        </div>
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <p className="text-gray-600 mb-1">Pending Payment</p>
-          <h2 className="text-gray-900 mb-2">$35,700.00</h2>
-          <p className="text-amber-600 text-sm">86 invoices</p>
-        </div>
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <p className="text-gray-600 mb-1">Overdue</p>
-          <h2 className="text-gray-900 mb-2">$6,100.00</h2>
-          <p className="text-red-600 text-sm">18 invoices</p>
-        </div>
-      </div>
+      <InvoiceSummarySection />
 
       <InvoiceListTable />
     </PageContainer>

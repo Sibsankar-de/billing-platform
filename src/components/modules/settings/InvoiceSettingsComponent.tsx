@@ -4,13 +4,14 @@ import { PrimaryBox } from "@/components/sections/PrimaryBox";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { Separator } from "@/components/ui/Separator";
 import { ToggleButton } from "@/components/ui/ToggleButton";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   selectCurrentStoreState,
   updateStoreSettingsThunk,
 } from "@/store/features/currentStoreSlice";
-import { FileText } from "lucide-react";
+import { Building2, FileText, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -113,6 +114,38 @@ export const InvoiceSettingsComponent = () => {
             disabled={isUpdating}
             onChange={(e) => handleFormDataChange("roundupInvoiceTotal", e)}
           />
+        </div>
+
+        <Separator text="Invoice Branding" className="my-10" />
+
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="invoiceStoreName">Store name in Invoice</Label>
+            <Input id="invoiceStoreName" placeholder="Write the name" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="invoiceFooter">Invoice Footer</Label>
+            <Input id="invoiceFooter" placeholder="Write the footer line. eg, Thank you!" />
+          </div>
+
+          <div className="space-y-4">
+            <Label>Store Logo</Label>
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+                <Building2 className="w-8 h-8 text-gray-400" />
+              </div>
+              <div className="flex-1">
+                <Button variant="outline" className="gap-2">
+                  <Upload className="w-4 h-4" />
+                  Upload Logo
+                </Button>
+                <p className="text-sm text-gray-500 mt-2">
+                  Recommended size: 200x200px. Max file size: 2MB
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </PrimaryBox>

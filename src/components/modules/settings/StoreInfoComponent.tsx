@@ -165,26 +165,6 @@ export const StoreInfoComponent = () => {
           />
         </div>
       </div>
-
-      <Separator className="my-6" />
-
-      <div className="space-y-4">
-        <Label>Store Logo</Label>
-        <div className="flex items-center gap-4">
-          <div className="w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-            <Building2 className="w-8 h-8 text-gray-400" />
-          </div>
-          <div className="flex-1">
-            <Button variant="outline" className="gap-2">
-              <Upload className="w-4 h-4" />
-              Upload Logo
-            </Button>
-            <p className="text-sm text-gray-500 mt-2">
-              Recommended size: 200x200px. Max file size: 2MB
-            </p>
-          </div>
-        </div>
-      </div>
     </PrimaryBox>
   );
 };

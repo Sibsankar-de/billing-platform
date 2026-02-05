@@ -9,6 +9,7 @@ import { Product } from "../models/product.model";
 import { Customer } from "../models/customer.model";
 import { Store } from "../models/store.model";
 import { StoreSettings } from "../models/storeSettings.model";
+import mongoose from "mongoose";
 
 export const createInvoice = asyncHandler(
   async (
@@ -204,5 +205,37 @@ export const getInvoiceList = asyncHandler(
     return NextResponse.json(
       new ApiResponse(200, invoices, "Invoice list fetched."),
     );
+  },
+);
+
+export const getInvoiceSummary = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined,
+  ) => {
+    const { storeId } = await params!;
+
+    const summaryAgg = await Invoice.aggregate([
+      { $match: { storeId: new mongoose.Types.ObjectId(storeId) } },
+      {
+        $group: {
+          _id: null,
+          totalInvoices: { $sum: 1 },
+          totalRevenue: { $sum: "$total" },
+          totalDue: { $sum: "$dueAmount" },
+          totalPaid: { $sum: "$paidAmount" },
+        },
+      },
+    ]);
+
+    console.log(summaryAgg);
+
+    const summary =
+      summaryAgg.length > 0
+        ? summaryAgg[0]
+        : { totalInvoices: 0, totalRevenue: 0, totalDue: 0, totalPaid: 0 };
+
+    return NextResponse.json(new ApiResponse(200, summary, "Summary fetched."));
   },
 );

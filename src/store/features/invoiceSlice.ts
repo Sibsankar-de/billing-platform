@@ -9,6 +9,7 @@ import {
 } from "../utils";
 import api from "@/configs/axios-config";
 import { PaginatedPages } from "@/types/PageableType";
+import { InvoiceSummary } from "@/types/InvoiceSummaryType";
 
 const initialState = {
   data: {
@@ -17,10 +18,17 @@ const initialState = {
       totalDocs: 0,
       totalPages: 0,
     },
+    summaryData: {
+      totalInvoices: 0,
+      totalRevenue: 0,
+      totalDue: 0,
+      totalPaid: 0,
+    } as InvoiceSummary,
   },
   status: "idle",
   createStatus: "idle",
   updateStatus: "idle",
+  summaryStatus: "idle",
   error: null,
 };
 
@@ -45,6 +53,11 @@ export const updateInvoiceDueThunk: any = createApiThunk(
       `/invoices/${payload.storeId}/${payload.invoiceId}/update-due`,
       payload,
     ),
+);
+
+export const fetchInvoiceSummaryThunk: any = createApiThunk(
+  "/invoices/summary",
+  async (payload: any) => await api.get(`/invoices/${payload.storeId}/summary`),
 );
 
 const invoiceSlice = createSlice({
@@ -106,6 +119,17 @@ const invoiceSlice = createSlice({
       )
       .addCase(updateInvoiceDueThunk.fulfilled, (state, action) => {
         state.updateStatus = "success";
+        state.error = null;
+      })
+      .addCase(fetchInvoiceSummaryThunk.pending, (state, action) =>
+        setState(state, action, "summaryStatus"),
+      )
+      .addCase(fetchInvoiceSummaryThunk.rejected, (state, action) =>
+        setState(state, action, "summaryStatus"),
+      )
+      .addCase(fetchInvoiceSummaryThunk.fulfilled, (state, action) => {
+        state.summaryStatus = "success";
+        state.data.summaryData = action.payload;
         state.error = null;
       });
   },

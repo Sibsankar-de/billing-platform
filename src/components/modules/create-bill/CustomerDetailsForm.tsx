@@ -3,7 +3,6 @@
 import { ConditionalDiv } from "@/components/ui/ConditionalDiv";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { LocalSearchableInput } from "@/components/ui/LocalSearchableInputDropdown";
 import { SearchableInput } from "@/components/ui/SearchableInput";
 import { SelectableItem } from "@/components/ui/SelectableInputDropdown";
 import { pageLimits } from "@/constants/pageLimits";
@@ -83,7 +82,9 @@ export const CustomerDetailsForm = ({
           setCustomerData(data);
         }}
         onSearch={handleSearch}
-        onChange={(e) => handleFormChange("name", e)}
+        onChange={(e) => {
+          handleFormChange("name", e);
+        }}
       >
         {(item) =>
           item.map((p, i) => (
@@ -113,7 +114,7 @@ export const CustomerDetailsForm = ({
       <Input
         placeholder="Address"
         value={customerData.address}
-        onChange={(e) => handleFormChange("phoneNumber", e)}
+        onChange={(e) => handleFormChange("address", e)}
       />
     </div>
   );
