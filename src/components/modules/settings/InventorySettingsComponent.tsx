@@ -9,7 +9,6 @@ import {
   selectCurrentStoreState,
   updateStoreSettingsThunk,
 } from "@/store/features/currentStoreSlice";
-import { Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -65,55 +64,46 @@ export const InventorySettingsComponent = () => {
   const isUpdating = settingsUpdateStatus === "loading";
 
   return (
-    <PrimaryBox>
-      <div className="flex justify-between gap-3">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-            <Package className="w-5 h-5 text-green-600" />
+    <div className="space-y-6">
+      <PrimaryBox>
+        <div className="space-y-6">
+          <div className="">
+            <div className="flex justify-between items-center gap-6">
+              <Label htmlFor="stock-tracking" className="mb-0">
+                <p>Enable Stock tracking</p>
+                <p className="text-sm text-gray-600">
+                  It will track your stock.
+                </p>
+              </Label>
+              <ToggleButton
+                id="stock-tracking"
+                isActive={formData.enableInventoryTracking}
+                disabled={isUpdating}
+                onChange={(e) =>
+                  handleFormDataChange("enableInventoryTracking", e)
+                }
+              />
+            </div>
           </div>
           <div>
-            <h2 className="text-gray-900">Inventory Settings</h2>
-            <p className="text-sm text-gray-600">
-              Configure stock tracking and others
-            </p>
-          </div>
-        </div>
-        <div>
-          <Button
-            variant="dark"
-            onClick={handleSaveChanges}
-            disabled={isUpdating}
-            loading={isUpdating}
-          >
-            Save Changes
-          </Button>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        <div className="">
-          <div className="flex justify-between items-center gap-6">
-            <Label htmlFor="stock-tracking" className="mb-0">
-              <p>Enable Stock tracking</p>
-              <p className="text-sm text-gray-600">It will track your stock.</p>
-            </Label>
-            <ToggleButton
-              id="stock-tracking"
-              isActive={formData.enableInventoryTracking}
-              disabled={isUpdating}
-              onChange={(e) =>
-                handleFormDataChange("enableInventoryTracking", e)
-              }
+            <Label>Add custom Units</Label>
+            <ProductUnitAddSection
+              onChange={(e) => handleFormDataChange("customUnits", e)}
             />
           </div>
         </div>
-        <div>
-          <Label>Add custom Units</Label>
-          <ProductUnitAddSection
-            onChange={(e) => handleFormDataChange("customUnits", e)}
-          />
-        </div>
+      </PrimaryBox>
+
+      <div className="flex justify-end">
+        <Button
+          variant="dark"
+          onClick={handleSaveChanges}
+          disabled={isUpdating}
+          loading={isUpdating}
+        >
+          Save Changes
+        </Button>
       </div>
-    </PrimaryBox>
+    </div>
   );
 };

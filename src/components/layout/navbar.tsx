@@ -9,20 +9,23 @@ import {
   User,
 } from "lucide-react";
 import { NavMenuType } from "@/types/NavMenuTypes";
-import { SideNavMenu, SideNavMenuItem } from "./SideNavMenu";
+import { SideNavMenu, NavMenuItem } from "./SideNavMenu";
 import { useSelector } from "react-redux";
 import { selectUserSate } from "@/store/features/userSlice";
 import { Avatar } from "../ui/Avatar";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { useState } from "react";
+import { SettingsNavDropdown } from "./SettingsNavDropdown";
 
 const settingsItem: NavMenuType = {
   id: "settings",
   label: "Settings",
+  basePath: "/settings",
   icon: Settings,
 };
 
 export function Sidebar() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
       <div className="p-6 border-b border-gray-200">
@@ -42,8 +45,15 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-gray-200">
-        <ul>
-          <SideNavMenuItem item={settingsItem} />
+        <ul className="relative">
+          <SettingsNavDropdown
+            openState={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
+          />
+          <NavMenuItem
+            item={settingsItem}
+            onClick={() => setSettingsOpen((p) => !p)}
+          />
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
             <HelpCircle className="w-5 h-5" />
             <span>Help</span>
