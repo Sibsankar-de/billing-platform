@@ -27,6 +27,10 @@ export const InvoiceSettingsComponent = () => {
   const [formData, setFormData] = useState({
     invoiceNumberPrefix: "",
     roundupInvoiceTotal: false,
+    invoiceStoreName: "",
+    invoiceStoreAddress: "",
+    invoiceFooterNote: "",
+    invoiceStoreLogoUrl: "",
   });
 
   function handleFormDataChange(key: keyof typeof formData, value: any) {
@@ -105,14 +109,21 @@ export const InvoiceSettingsComponent = () => {
 
         <div className="space-y-2">
           <Label htmlFor="invoiceStoreName">Store name in Invoice</Label>
-          <Input id="invoiceStoreName" placeholder="Write the name" />
+          <Input
+            id="invoiceStoreName"
+            placeholder="Write the name"
+            value={formData.invoiceStoreName}
+            onChange={(e) => handleFormDataChange("invoiceStoreName", e)}
+          />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="invoiceFooter">Invoice Footer</Label>
+          <Label htmlFor="invoiceFooter">Invoice Footer note</Label>
           <Input
             id="invoiceFooter"
             placeholder="Write the footer line. eg, Thank you!"
+            value={formData.invoiceFooterNote}
+            onChange={(e) => handleFormDataChange("invoiceFooterNote", e)}
           />
         </div>
 

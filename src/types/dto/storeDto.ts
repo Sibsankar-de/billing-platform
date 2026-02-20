@@ -4,6 +4,10 @@ export type CustomUnitType = {
 };
 
 export type StoreSettingsDto = {
+  invoiceStoreName: string;
+  invoiceStoreAddress: string;
+  invoiceFooterNote: string;
+  invoiceStoreLogoUrl: string;
   enableInventoryTracking: boolean;
   roundupInvoiceTotal: boolean;
   defaultDiscountRate?: number;

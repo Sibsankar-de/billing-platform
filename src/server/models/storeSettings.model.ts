@@ -30,6 +30,22 @@ const storeSettingsSchema = new Schema(
       required: true,
       unique: true,
     },
+    invoiceStoreName: {
+      type: String,
+      default: "",
+    },
+    invoiceStoreAddress: {
+      type: String,
+      default: "",
+    },
+    invoiceFooterNote: {
+      type: String,
+      default: "",
+    },
+    invoiceStoreLogoUrl: {
+      type: String,
+      default: "",
+    },
     enableInventoryTracking: {
       type: Boolean,
       default: false,
