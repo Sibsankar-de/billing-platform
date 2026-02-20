@@ -5,7 +5,7 @@ import { ApiError } from "./error-handler";
 
 type RouteHandler = (
   req: NextRequest,
-  context: { params: Record<string, string> },
+  context: { params: Record<string, any> },
 ) => Promise<NextResponse>;
 
 export const withDbAndCors =

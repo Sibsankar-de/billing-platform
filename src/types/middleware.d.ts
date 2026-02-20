@@ -10,5 +10,5 @@ export type MiddlewareContext = {
 export type Middleware = (
   req: NextRequest,
   context: MiddlewareContext,
-  params?: Record<string, string>,
+  params?: Record<any, string>,
 ) => Promise<MiddlewareContext>;

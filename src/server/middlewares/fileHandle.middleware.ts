@@ -1,5 +1,5 @@
+import { MiddlewareContext } from "@/types/middleware";
 import { NextRequest } from "next/server";
-import { MiddlewareContext } from "../../../types/middleware";
 
 export const fileHandle = async (req: NextRequest, context: MiddlewareContext): Promise<MiddlewareContext> => {
     const contentType = req.headers.get('content-type') || '';

@@ -5,7 +5,7 @@ import { ApiError } from "./error-handler";
 export async function runMiddlewares(
   req: NextRequest,
   middlewares: Middleware[],
-  params?: Record<string, string>,
+  params?: Record<any, string>,
 ): Promise<MiddlewareContext> {
   let context: MiddlewareContext = {};
 
