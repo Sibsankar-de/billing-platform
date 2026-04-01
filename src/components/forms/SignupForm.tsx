@@ -9,6 +9,8 @@ import { Checkbox } from "../ui/Checkbox";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import AuthContext from "@/contexts/AuthContext";
+import { GoogleIcon } from "../icons/GoogleIcon";
+import { Separator } from "../ui/Separator";
 
 export const SignupForm = () => {
   const { registerUser } = useContext(AuthContext)!;
@@ -60,7 +62,7 @@ export const SignupForm = () => {
           e.preventDefault();
           handleSignUp();
         }}
-        className="space-y-6"
+        className="space-y-4"
       >
         {/* Email Field */}
         <div className="space-y-2">
@@ -146,6 +148,15 @@ export const SignupForm = () => {
           loading={isLoading}
         >
           Sign Up
+        </Button>
+
+        {/* Divider */}
+        <Separator text="Or continue with" className="my-7" />
+
+        {/* Google Button */}
+        <Button variant="outline" className="w-full justify-center">
+          <GoogleIcon />
+          Google
         </Button>
       </form>
     </div>

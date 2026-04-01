@@ -7,6 +7,8 @@ import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import AuthContext from "@/contexts/AuthContext";
 import { toast } from "react-toastify";
+import { Separator } from "../ui/Separator";
+import { GoogleIcon } from "../icons/GoogleIcon";
 
 export const LoginForm = () => {
   const { loginUser } = useContext(AuthContext)!;
@@ -47,7 +49,7 @@ export const LoginForm = () => {
           e.preventDefault();
           handleLogin();
         }}
-        className="space-y-6"
+        className="space-y-4"
       >
         {/* Email Field */}
         <div className="space-y-2">
@@ -98,6 +100,15 @@ export const LoginForm = () => {
           loading={isLoading}
         >
           Log In
+        </Button>
+
+        {/* Divider */}
+        <Separator text="Or continue with" className="my-7" />
+
+        {/* Google Button */}
+        <Button variant="outline" className="w-full justify-center">
+          <GoogleIcon />
+          Google
         </Button>
       </form>
     </div>

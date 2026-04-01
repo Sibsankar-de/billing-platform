@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Receipt,
-  Settings,
-  HelpCircle,
-  Search,
-  Bell,
-  User,
-} from "lucide-react";
+import { Settings, HelpCircle, Search, Bell } from "lucide-react";
 import { NavMenuType } from "@/types/NavMenuTypes";
 import { SideNavMenu, NavMenuItem } from "./SideNavMenu";
 import { useSelector } from "react-redux";
@@ -16,6 +9,7 @@ import { Avatar } from "../ui/Avatar";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { useState } from "react";
 import { SettingsNavDropdown } from "./SettingsNavDropdown";
+import { AppLogoFull } from "../ui/AppLogo";
 
 const settingsItem: NavMenuType = {
   id: "settings",
@@ -28,18 +22,6 @@ export function Sidebar() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <Receipt className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-gray-900">BillPro</h1>
-            <p className="text-xs text-gray-500">Billing Management</p>
-          </div>
-        </div>
-      </div>
-
       <nav className="flex-1 p-4">
         <SideNavMenu />
       </nav>
@@ -65,11 +47,14 @@ export function Sidebar() {
 }
 
 export function HeaderNavbar() {
-  const user = useSelector(selectUserSate).data;
+  const { data: user } = useSelector(selectUserSate);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   return (
-    <header className="bg-white border-b border-gray-200 px-8 py-2.5 sticky top-0 z-50">
+    <header className="bg-white border-b border-gray-200 px-8 py-2 sticky top-0 z-50">
       <div className="flex items-center justify-between">
+        <AppLogoFull size={120} />
+
         <div className="flex-1 max-w-xl">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />

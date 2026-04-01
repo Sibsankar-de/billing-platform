@@ -36,12 +36,12 @@ export const Avatar = ({
   const user = useSelector(selectUserSate).data;
   userName = userName || user?.userName;
   src = src || user?.avatar;
-  
+
   return (
     <div
       className={cn(
         "w-12 h-12 relative rounded-full overflow-hidden",
-        className
+        className,
       )}
       style={{ width: `${size}px`, height: `${size}px` }}
     >
