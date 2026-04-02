@@ -111,20 +111,6 @@ userSchema.methods.getRefreshToken = async function () {
   );
 };
 
-// generate logout token
-userSchema.methods.getLogoutToken = async function () {
-  return await jwt.sign(
-    {
-      _id: this._id,
-      email: this.email,
-    },
-    process.env.LOGOUT_TOKEN_SECRET,
-    {
-      expiresIn: process.env.LOGOUT_TOKEN_EXPIRY,
-    },
-  );
-};
-
 userSchema.plugin(mongoosePaginate);
 userSchema.plugin(aggregatePaginate);
 
