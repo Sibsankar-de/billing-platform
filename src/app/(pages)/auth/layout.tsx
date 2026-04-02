@@ -1,5 +1,5 @@
 import { AppLogo, AppLogoFull } from "@/components/ui/AppLogo";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -16,9 +16,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <AppLogoFull size={200} />
             </div>
           </div>
-          {/* <span className="text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">
-            EaseInv
-          </span> */}
         </div>
 
         <div className="relative z-10 max-w-lg mb-12">

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-type ModalProps = {
+export type ModalProps = {
   children?: React.ReactNode;
   className?: string;
   onClose?: () => void;

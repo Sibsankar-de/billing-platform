@@ -4,6 +4,7 @@ import { formatDateStr } from "@/utils/formatDate";
 import { Download, Eye, Pen } from "lucide-react";
 import { InvoiceDueEditModal } from "./InvoiceDueEditModal";
 import { useState } from "react";
+import { InvoiceViewModal } from "./InvoiceViewModal";
 
 export const InvoiceListItem = ({
   invoice,
@@ -13,6 +14,8 @@ export const InvoiceListItem = ({
   page: number;
 }) => {
   const [editOpen, setEditOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
+
   return (
     <>
       <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -47,7 +50,12 @@ export const InvoiceListItem = ({
             >
               <Pen className="w-4 h-4" />
             </Button>
-            <Button variant="outline" className="p-2" tooltip="View or print">
+            <Button
+              variant="outline"
+              className="p-2"
+              tooltip="View or print"
+              onClick={() => setViewOpen(true)}
+            >
               <Eye className="w-4 h-4" />
             </Button>
             <Button variant="outline" className="p-2" tooltip="Download">
@@ -59,9 +67,15 @@ export const InvoiceListItem = ({
 
       <InvoiceDueEditModal
         openState={editOpen}
-        onClose={() => setEditOpen(false)}
         invoice={invoice}
         page={page}
+        onClose={() => setEditOpen(false)}
+      />
+
+      <InvoiceViewModal
+        openState={viewOpen}
+        invoice={invoice}
+        onClose={() => setViewOpen(false)}
       />
     </>
   );

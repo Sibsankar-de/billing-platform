@@ -36,10 +36,6 @@ export function Sidebar() {
             item={settingsItem}
             onClick={() => setSettingsOpen((p) => !p)}
           />
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-            <HelpCircle className="w-5 h-5" />
-            <span>Help</span>
-          </button>
         </ul>
       </div>
     </aside>
@@ -51,7 +47,7 @@ export function HeaderNavbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
-    <header className="bg-white border-b border-gray-200 px-8 py-2 sticky top-0 z-50">
+    <header className="bg-white border-b border-gray-200 px-8 py-2 sticky top-0 z-50 h-fit">
       <div className="flex items-center justify-between">
         <AppLogoFull size={120} />
 

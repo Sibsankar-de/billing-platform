@@ -11,8 +11,9 @@ import { Separator } from "../ui/Separator";
 import { GoogleIcon } from "../icons/GoogleIcon";
 
 export const LoginForm = () => {
-  const { loginUser } = useContext(AuthContext)!;
+  const { loginUser, loginWithGoogle } = useContext(AuthContext)!;
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -42,6 +43,12 @@ export const LoginForm = () => {
     await loginUser(formData);
     setIsLoading(false);
   }
+
+  async function handleGoogleLogin() {
+    setIsGoogleLoading(true);
+    await loginWithGoogle();
+  }
+
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
       <form
@@ -63,7 +70,7 @@ export const LoginForm = () => {
               placeholder="Enter your email"
               icon={<Mail className="w-5 h-5 text-gray-400" />}
               required
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
           </div>
         </div>
@@ -80,7 +87,7 @@ export const LoginForm = () => {
               placeholder="Enter your password"
               icon={<Lock className="w-5 h-5 text-gray-400" />}
               required
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
           </div>
         </div>
@@ -96,7 +103,7 @@ export const LoginForm = () => {
         <Button
           type="submit"
           className="w-full justify-center"
-          disabled={isLoading}
+          disabled={isLoading || isGoogleLoading}
           loading={isLoading}
         >
           Log In
@@ -106,7 +113,13 @@ export const LoginForm = () => {
         <Separator text="Or continue with" className="my-7" />
 
         {/* Google Button */}
-        <Button variant="outline" className="w-full justify-center">
+        <Button
+          variant="outline"
+          className="w-full justify-center"
+          disabled={isLoading || isGoogleLoading}
+          loading={isGoogleLoading}
+          onClick={handleGoogleLogin}
+        >
           <GoogleIcon />
           Google
         </Button>

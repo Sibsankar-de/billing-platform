@@ -6,6 +6,7 @@ import { requestHandler } from "@/utils/api-request";
 import React, { createContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { fetchCurrentUser } from "@/store/features/userSlice";
+import { useRouter } from "next/navigation";
 
 type AuthContextTypes = {
   isAuthenticated: boolean;
@@ -13,12 +14,14 @@ type AuthContextTypes = {
   registerUser: (payload: any) => void;
   loginUser: (payload: any) => void;
   logoutUser: () => void;
+  loginWithGoogle: () => void;
 };
 
 const AuthContext = createContext<AuthContextTypes | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(false);
@@ -50,6 +53,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   });
 
+  const loginWithGoogle = requestHandler(async () => {
+    await router.push("/api/oauth/authenticate/google");
+  });
+
   return (
     <AuthContext.Provider
       value={{
@@ -58,6 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         registerUser,
         loginUser,
         logoutUser,
+        loginWithGoogle,
       }}
     >
       {children}

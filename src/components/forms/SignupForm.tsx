@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Lock, Mail, User } from "lucide-react";
 import { Label } from "../ui/Label";
 import { Input } from "../ui/Input";
@@ -13,8 +13,9 @@ import { GoogleIcon } from "../icons/GoogleIcon";
 import { Separator } from "../ui/Separator";
 
 export const SignupForm = () => {
-  const { registerUser } = useContext(AuthContext)!;
+  const { registerUser, loginWithGoogle } = useContext(AuthContext)!;
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     userName: "",
@@ -55,6 +56,11 @@ export const SignupForm = () => {
     setIsLoading(false);
   }
 
+  async function handleGoogleLogin() {
+    setIsGoogleLoading(true);
+    await loginWithGoogle();
+  }
+
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
       <form
@@ -78,7 +84,7 @@ export const SignupForm = () => {
               placeholder="Enter your name"
               icon={<User className="w-5 h-5 text-gray-400" />}
               required
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
           </div>
         </div>
@@ -96,7 +102,7 @@ export const SignupForm = () => {
               placeholder="Enter your email"
               icon={<Mail className="w-5 h-5 text-gray-400" />}
               required
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
           </div>
         </div>
@@ -115,7 +121,7 @@ export const SignupForm = () => {
               placeholder="Enter your password"
               icon={<Lock className="w-5 h-5 text-gray-400" />}
               required
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             />
           </div>
         </div>
@@ -144,7 +150,7 @@ export const SignupForm = () => {
         <Button
           type="submit"
           className="w-full justify-center"
-          disabled={isLoading}
+          disabled={isLoading || isGoogleLoading}
           loading={isLoading}
         >
           Sign Up
@@ -154,7 +160,13 @@ export const SignupForm = () => {
         <Separator text="Or continue with" className="my-7" />
 
         {/* Google Button */}
-        <Button variant="outline" className="w-full justify-center">
+        <Button
+          variant="outline"
+          className="w-full justify-center"
+          disabled={isLoading || isGoogleLoading}
+          loading={isGoogleLoading}
+          onClick={handleGoogleLogin}
+        >
           <GoogleIcon />
           Google
         </Button>
