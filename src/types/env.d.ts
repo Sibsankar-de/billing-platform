@@ -13,6 +13,7 @@ declare namespace NodeJS {
     CLOUDINARY_CLOUD_NAME: string;
     CLOUDINARY_API_SECRET: string;
     CLOUDINARY_API_KEY: string;
+    CLOUDINARY_FOLDER: string;
     GOOGLE_CALLBACK_URI: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
