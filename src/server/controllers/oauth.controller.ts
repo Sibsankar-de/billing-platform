@@ -1,3 +1,4 @@
+import "server-only";
 import { OAuth2Client } from "google-auth-library";
 import { asyncHandler } from "../utils/asynchandler";
 import { NextRequest, NextResponse } from "next/server";

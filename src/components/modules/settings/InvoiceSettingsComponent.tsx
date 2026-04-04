@@ -4,13 +4,16 @@ import { PrimaryBox } from "@/components/sections/PrimaryBox";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { LogoUploader } from "@/components/ui/LogoUploader";
 import { ToggleButton } from "@/components/ui/ToggleButton";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   selectCurrentStoreState,
   updateStoreSettingsThunk,
+  uploadQRCodeThunk,
+  uploadStoreLogoThunk,
 } from "@/store/features/currentStoreSlice";
-import { Building2, Palette, Upload } from "lucide-react";
+import { Building2, Landmark, Palette, ScanQrCode, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -22,6 +25,8 @@ export const InvoiceSettingsComponent = () => {
   const {
     data: { storeSettings },
     settingsUpdateStatus,
+    logoUploadStatus,
+    qrUploadStatus,
   } = useSelector(selectCurrentStoreState);
 
   const [formData, setFormData] = useState({
@@ -31,12 +36,34 @@ export const InvoiceSettingsComponent = () => {
     invoiceStoreAddress: "",
     invoiceFooterNote: "",
     invoiceStoreLogoUrl: "",
+    invoicePaymentQrCode: "",
+    invoiceBankDetails: {
+      accountName: "",
+      accountNumber: "",
+      bankName: "",
+      bankCode: "",
+    },
   });
+
+  const invoiceBankDetails = formData.invoiceBankDetails;
 
   function handleFormDataChange(key: keyof typeof formData, value: any) {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
+    }));
+  }
+
+  function handleBankDetailsChange(
+    key: keyof typeof formData.invoiceBankDetails,
+    value: string,
+  ) {
+    setFormData((prev) => ({
+      ...prev,
+      invoiceBankDetails: {
+        ...prev.invoiceBankDetails,
+        [key]: value,
+      },
     }));
   }
 
@@ -66,7 +93,35 @@ export const InvoiceSettingsComponent = () => {
     }
   };
 
+  const handleLogoUpload = (file: File | undefined) => {
+    if (!file || !storeId) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append("storeLogo", file);
+    dispatch(uploadStoreLogoThunk({ storeId, formData }))
+      .unwrap()
+      .then(() => {
+        toast.success("Store logo uploaded!");
+      });
+  };
+
+  const handleQrUpload = (file: File | undefined) => {
+    if (!file || !storeId) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append("qrCode", file);
+    dispatch(uploadQRCodeThunk({ storeId, formData }))
+      .unwrap()
+      .then(() => {
+        toast.success("QR code uploaded!");
+      });
+  };
+
   const isUpdating = settingsUpdateStatus === "loading";
+  const isLogoUploading = logoUploadStatus === "loading";
+  const isQrUploading = qrUploadStatus === "loading";
 
   return (
     <div className="space-y-6">
@@ -129,20 +184,66 @@ export const InvoiceSettingsComponent = () => {
 
         <div className="space-y-4">
           <Label>Store Logo</Label>
-          <div className="flex items-center gap-4">
-            <div className="w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-              <Building2 className="w-8 h-8 text-gray-400" />
-            </div>
-            <div className="flex-1">
-              <Button variant="outline" className="gap-2">
-                <Upload className="w-4 h-4" />
-                Upload Logo
-              </Button>
-              <p className="text-sm text-gray-500 mt-2">
-                Recommended size: 200x200px. Max file size: 2MB
-              </p>
-            </div>
+          <LogoUploader
+            id="store-logo"
+            buttonText="Upload Logo"
+            fallbackIcon={Building2}
+            imagePreviewUrl={formData.invoiceStoreLogoUrl}
+            isUploading={isLogoUploading}
+            onFileSelect={handleLogoUpload}
+          />
+        </div>
+      </PrimaryBox>
+
+      <PrimaryBox className="space-y-6">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+            <Landmark className="w-5 h-5 text-green-600" />
           </div>
+          <div>
+            <h2 className="text-gray-900">Banking</h2>
+            <p className="text-sm text-gray-600">Configure invoice banking</p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="invoiceBankDetals">Bank account details</Label>
+          <Input
+            id="invoiceBankDetals"
+            placeholder="Account Name"
+            value={invoiceBankDetails.accountName}
+            onChange={(e) => handleBankDetailsChange("accountName", e)}
+          />
+          <Input
+            id="accountNumber"
+            placeholder="Account number"
+            value={invoiceBankDetails.accountNumber}
+            onChange={(e) => handleBankDetailsChange("accountNumber", e)}
+          />
+          <Input
+            id="bankName"
+            placeholder="Bank Name"
+            value={invoiceBankDetails.bankName}
+            onChange={(e) => handleBankDetailsChange("bankName", e)}
+          />
+          <Input
+            id="bankCode"
+            placeholder="Bank Code / IFSC code"
+            value={invoiceBankDetails.bankCode}
+            onChange={(e) => handleBankDetailsChange("bankCode", e)}
+          />
+        </div>
+
+        <div className="space-y-4">
+          <Label>Payment QR code</Label>
+          <LogoUploader
+            id="qr-code"
+            buttonText="Upload QR code"
+            fallbackIcon={ScanQrCode}
+            imagePreviewUrl={formData.invoicePaymentQrCode}
+            isUploading={isQrUploading}
+            onFileSelect={handleQrUpload}
+          />
         </div>
       </PrimaryBox>
 

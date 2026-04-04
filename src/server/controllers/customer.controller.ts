@@ -1,3 +1,4 @@
+import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { asyncHandler } from "../utils/asynchandler";
 import { MiddlewareContext } from "@/types/middleware";

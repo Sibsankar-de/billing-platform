@@ -22,6 +22,16 @@ const customUnitSchema = new Schema(
   { _id: false },
 );
 
+const invoiceBankDetailsSchema = new Schema(
+  {
+    accountName: { type: String, default: "" },
+    accountNumber: { type: String, default: "" },
+    bankName: { type: String, default: "" },
+    bankCode: { type: String, default: "" },
+  },
+  { _id: false },
+);
+
 const storeSettingsSchema = new Schema(
   {
     storeId: {
@@ -65,6 +75,11 @@ const storeSettingsSchema = new Schema(
     invoiceNumberPrefix: {
       type: String,
       default: "INV",
+    },
+    invoiceBankDetails: invoiceBankDetailsSchema,
+    invoicePaymentQrCode: {
+      type: String,
+      default: "",
     },
     customUnits: {
       type: [customUnitSchema],

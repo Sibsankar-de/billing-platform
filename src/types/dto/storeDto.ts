@@ -13,6 +13,13 @@ export type StoreSettingsDto = {
   defaultDiscountRate?: number;
   defaultTaxRate?: number;
   invoiceNumberPrefix: string;
+  invoicePaymentQrCode: string;
+  invoiceBankDetails: {
+    accountName: string;
+    accountNumber: string;
+    bankName: string;
+    bankCode: string;
+  };
   customUnits: CustomUnitType[];
 };
 

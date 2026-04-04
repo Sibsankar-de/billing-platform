@@ -1,3 +1,4 @@
+import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { asyncHandler } from "../utils/asynchandler";
 import { MiddlewareContext } from "@/types/middleware";
@@ -6,11 +7,12 @@ import { Store } from "../models/store.model";
 import { ApiError } from "../utils/error-handler";
 import { StatusCodes } from "http-status-codes";
 import { Product } from "../models/product.model";
-import { StoreDto } from "@/types/dto/storeDto";
 import { Customer } from "../models/customer.model";
 import mongoose from "mongoose";
 import { Category } from "../models/category.model";
 import { StoreSettings } from "../models/storeSettings.model";
+import { uploadToCloudinary } from "../utils/coludinary-upload";
+import { cloudinaryFolders } from "../constants/cloudinary.constant";
 
 export const createStore = asyncHandler(
   async (req: NextRequest, context: MiddlewareContext | undefined) => {
@@ -119,6 +121,95 @@ export const updateStoreSettings = asyncHandler(
         StatusCodes.OK,
         updatedStoreSettings,
         "Store settings updated",
+      ),
+    );
+  },
+);
+
+export const uploadStoreLogo = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined,
+  ) => {
+    const { userId, files } = await context!;
+    const { storeId } = await params!;
+
+    const storeLogo = files?.storeLogo;
+    if (!storeLogo || !(storeLogo instanceof File)) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Store logo file is required",
+      );
+    }
+
+    const buffer = Buffer.from(await storeLogo.arrayBuffer());
+    const logoUrl = (
+      await uploadToCloudinary(
+        buffer,
+        storeLogo.name,
+        cloudinaryFolders.STORE_LOGO,
+      )
+    ).url;
+
+    await StoreSettings.findOneAndUpdate(
+      { storeId },
+      {
+        $set: {
+          invoiceStoreLogoUrl: logoUrl,
+        },
+      },
+      { new: true },
+    );
+
+    return NextResponse.json(
+      new ApiResponse(
+        StatusCodes.OK,
+        { logoUrl },
+        "Logo uploaded successfully!",
+      ),
+    );
+  },
+);
+
+export const uploadInvoicePaymentQrCode = asyncHandler(
+  async (
+    req: NextRequest,
+    context: MiddlewareContext | undefined,
+    params: Record<string, any> | undefined,
+  ) => {
+    const { userId, files } = await context!;
+    const { storeId } = await params!;
+
+    const qrCodeFile = files?.qrCode;
+    if (!qrCodeFile || !(qrCodeFile instanceof File)) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, "QR code file is required");
+    }
+
+    const buffer = Buffer.from(await qrCodeFile.arrayBuffer());
+    const qrCodeUrl = (
+      await uploadToCloudinary(
+        buffer,
+        qrCodeFile.name,
+        cloudinaryFolders.PAYMENT_QR,
+      )
+    ).url;
+
+    await StoreSettings.findOneAndUpdate(
+      { storeId },
+      {
+        $set: {
+          invoicePaymentQrCode: qrCodeUrl,
+        },
+      },
+      { new: true },
+    );
+
+    return NextResponse.json(
+      new ApiResponse(
+        StatusCodes.OK,
+        { qrCodeUrl },
+        "QR code uploaded successfully!",
       ),
     );
   },

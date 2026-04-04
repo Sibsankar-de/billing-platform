@@ -28,6 +28,26 @@ export const updateStoreSettingsThunk: any = createApiThunk(
     await api.post(`/stores/${data.storeId}/update-settings`, data.updateData),
 );
 
+export const uploadStoreLogoThunk: any = createApiThunk(
+  "/current-store/upload-store-logo",
+  async (data: { storeId: string; formData: FormData }) =>
+    await api.post(`/stores/${data.storeId}/upload-logo`, data.formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+);
+
+export const uploadQRCodeThunk: any = createApiThunk(
+  "/current-store/upload-qr-logo",
+  async (data: { storeId: string; formData: FormData }) =>
+    await api.post(`/stores/${data.storeId}/upload-qr`, data.formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+);
+
 const initialState = {
   data: {
     currentStore: {} as StoreDto,
@@ -38,6 +58,8 @@ const initialState = {
   customerStatus: "idle",
   storeUpdateStatus: "idle",
   settingsUpdateStatus: "idle",
+  logoUploadStatus: "idle",
+  qrUploadStatus: "idle",
   error: null,
 };
 
@@ -91,6 +113,29 @@ const currentStoreSlice = createSlice({
       .addCase(createInvoiceThunk.fulfilled, (state, action) => {
         state.data.currentStore.lastInvoiceNumber =
           action.payload.invoiceNumber;
+      })
+      .addCase(uploadStoreLogoThunk.pending, (state, action) =>
+        setState(state, action, "logoUploadStatus"),
+      )
+      .addCase(uploadStoreLogoThunk.rejected, (state, action) =>
+        setState(state, action, "logoUploadStatus"),
+      )
+      .addCase(uploadStoreLogoThunk.fulfilled, (state, action) => {
+        state.logoUploadStatus = "success";
+        state.data.storeSettings.invoiceStoreLogoUrl = action.payload.logoUrl;
+        state.error = null;
+      })
+      .addCase(uploadQRCodeThunk.pending, (state, action) =>
+        setState(state, action, "qrUploadStatus"),
+      )
+      .addCase(uploadQRCodeThunk.rejected, (state, action) =>
+        setState(state, action, "qrUploadStatus"),
+      )
+      .addCase(uploadQRCodeThunk.fulfilled, (state, action) => {
+        state.qrUploadStatus = "success";
+        state.data.storeSettings.invoicePaymentQrCode =
+          action.payload.qrCodeUrl;
+        state.error = null;
       });
   },
 });
