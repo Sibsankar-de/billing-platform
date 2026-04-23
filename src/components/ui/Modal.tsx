@@ -52,9 +52,9 @@ export const Modal = ({
   return createPortal(
     <div
       className={clsx(
-        `fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] 
-        flex items-center justify-center z-60 backdrop-blur-[5px] fade-in`,
-        closing && "fade-out",
+      `fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] 
+      flex items-start justify-center z-60 backdrop-blur-[5px] fade-in pt-8 overflow-y-auto`,
+      closing && "fade-out",
       )}
       onClick={() => onClose && onClose()}
     >

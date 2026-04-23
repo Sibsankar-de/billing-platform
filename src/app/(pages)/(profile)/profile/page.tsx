@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { HeaderNavbar } from "@/components/layout/navbar";
 import { ProfileDetailsSection } from "@/components/modules/profile/ProfileDetailsSection";
 import { StoreListSection } from "@/components/modules/profile/StoreListSection";
+
+export const metadata: Metadata = {
+  title: "Profile and Stores",
+  description:
+    "Manage your account details, review your connected stores, and organize business workspaces in EaseInv.",
+};
 
 export default function ProfilePage() {
   return (

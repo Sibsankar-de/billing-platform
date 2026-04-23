@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { LoginForm } from '@/components/forms/LoginForm'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+    title: "Login",
+    description: "Login to your EaseInv account to manage invoices, inventory, customers, and store operations.",
+}
 
 export default function LoginPage() {
     return (

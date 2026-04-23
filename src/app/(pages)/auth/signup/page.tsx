@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { SignupForm } from '@/components/forms/SignupForm'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+    title: "Sign Up",
+    description: "Create your EaseInv account and start managing billing, inventory, and customers in one place.",
+}
 
 export default function SignupPage() {
     return (

@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { InventorySettingsComponent } from "@/components/modules/settings/InventorySettingsComponent";
 import { PageContainer } from "@/components/sections/PageContainer";
 import { Package } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Inventory Settings",
+  description:
+    "Adjust inventory behavior, stock tracking preferences, and related store configuration.",
+};
 
 export default function InventorySettings() {
   return (

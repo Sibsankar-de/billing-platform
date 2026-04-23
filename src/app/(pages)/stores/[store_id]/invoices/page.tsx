@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { InvoiceListTable } from "@/components/modules/invoices/InvoiceListTable";
 import { InvoiceSummarySection } from "@/components/modules/invoices/InvoiceSummarySection";
 import { PageContainer } from "@/components/sections/PageContainer";
+
+export const metadata: Metadata = {
+  title: "Invoices",
+  description:
+    "Track invoice status, monitor summaries, and manage the full invoice history for your store.",
+};
 
 export default function InvoicesPage() {
   return (

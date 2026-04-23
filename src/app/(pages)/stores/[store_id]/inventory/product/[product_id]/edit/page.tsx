@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { ProductForm } from "@/components/modules/products/ProductForm";
 import { PageContainer } from "@/components/sections/PageContainer";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Edit Product",
+  description:
+    "Update product information, pricing, and inventory settings for an existing item.",
+};
 
 export default function ProductEditPage() {
   return (

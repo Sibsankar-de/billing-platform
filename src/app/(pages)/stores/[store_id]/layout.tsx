@@ -1,7 +1,17 @@
+import type { Metadata } from "next";
 import { HeaderNavbar, Sidebar } from "@/components/layout/navbar";
 import { StoreContentProvider } from "@/components/modules/store/StoreContentProvider";
 import { StoreContextProvider } from "@/components/modules/store/storeContext";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Store Workspace",
+    template: "%s | EaseInv",
+  },
+  description:
+    "Manage invoices, products, customers, and store settings from your EaseInv business workspace.",
+};
 
 export default function StoreLayout({
   children,

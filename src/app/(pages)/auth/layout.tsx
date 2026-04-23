@@ -1,5 +1,19 @@
+import type { Metadata } from "next";
 import { AppLogo, AppLogoFull } from "@/components/ui/AppLogo";
 import { ReactNode } from "react";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Account Access",
+    template: "%s | EaseInv",
+  },
+  description:
+    "Securely sign in to your EaseInv account or create a new one to manage billing and inventory.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (

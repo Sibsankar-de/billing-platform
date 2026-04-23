@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { InventorySettingsComponent } from "@/components/modules/settings/InventorySettingsComponent";
 import { InvoiceSettingsComponent } from "@/components/modules/settings/InvoiceSettingsComponent";
 import { StoreInfoComponent } from "@/components/modules/settings/StoreInfoComponent";
 import { PageContainer } from "@/components/sections/PageContainer";
+
+export const metadata: Metadata = {
+  title: "Store Settings",
+  description:
+    "Manage store information, invoice preferences, and inventory-related settings for your business.",
+};
 
 export default function page() {
   return (

@@ -76,7 +76,7 @@ export const PrintModal = ({
           onChange={(e) => setPageSize(e)}
         />
       </div>
-      <div className="max-h-[80vh] overflow-y-auto flex justify-center">
+      <div className="max-h-[70vh] overflow-y-auto flex justify-center">
         <InvoiceDocument
           invoice={invoiceData}
           ref={invoiceRef}

@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { BillingForm } from "@/components/modules/create-bill/BillingForm";
 import { CreateBillPage } from "@/components/modules/create-bill/CreateBillPage";
 import { PageContainer } from "@/components/sections/PageContainer";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Create Invoice",
+  description:
+    "Create, review, and generate professional invoices for your customers from your store workspace.",
+};
 
 export default function BillingPage() {
   return (

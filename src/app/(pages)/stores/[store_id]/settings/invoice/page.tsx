@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { InventorySettingsComponent } from "@/components/modules/settings/InventorySettingsComponent";
 import { InvoiceSettingsComponent } from "@/components/modules/settings/InvoiceSettingsComponent";
 import { PageContainer } from "@/components/sections/PageContainer";
 import { FileText } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Invoice Settings",
+  description:
+    "Configure invoice numbering, default invoice content, and billing document preferences.",
+};
 
 export default function InvoiceSettings() {
   return (

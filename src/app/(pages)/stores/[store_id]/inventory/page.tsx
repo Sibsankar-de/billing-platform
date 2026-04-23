@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import { Button } from '@/components/ui/Button'
 import { PageContainer } from '@/components/sections/PageContainer'
 import { Plus } from 'lucide-react'
 import { InventoryProductList } from '@/components/modules/products/InventoryProductList'
 import Link from 'next/link'
 
+export const metadata: Metadata = {
+    title: "Inventory",
+    description: "Manage your product catalog, pricing, and stock details for this store.",
+}
 
 export default async function ProductsPage({ params }: { params: Record<string, any> }) {
     const { store_id } = await params;

@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { StoreInfoComponent } from "@/components/modules/settings/StoreInfoComponent";
 import { PageContainer } from "@/components/sections/PageContainer";
 import { Store } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "General Settings",
+  description:
+    "Update store information, contact details, and business identity settings for this workspace.",
+};
 
 export default function GeneralSettings() {
   return (

@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { CustomerListTable } from "@/components/modules/customers/CustomerListTable";
 import { InvoiceListTable } from "@/components/modules/invoices/InvoiceListTable";
 import { PageContainer } from "@/components/sections/PageContainer";
+
+export const metadata: Metadata = {
+  title: "Customers",
+  description:
+    "View, search, and manage customer records connected to your store's billing activity.",
+};
 
 export default function CustomersPage() {
   return (
