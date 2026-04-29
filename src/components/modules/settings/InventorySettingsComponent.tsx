@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { ProductUnitAddSection } from "./ProductUnitAddSection";
+import { FormSkeleton } from "@/components/ui/Skeleton";
 
 export const InventorySettingsComponent = () => {
   const { storeId } = useStoreNavigation();
@@ -20,6 +21,7 @@ export const InventorySettingsComponent = () => {
   const dispatch = useDispatch();
   const {
     data: { storeSettings },
+    status,
     settingsUpdateStatus,
   } = useSelector(selectCurrentStoreState);
 
@@ -62,6 +64,10 @@ export const InventorySettingsComponent = () => {
   };
 
   const isUpdating = settingsUpdateStatus === "loading";
+
+  if (status === "loading") {
+    return <FormSkeleton rows={3} />;
+  }
 
   return (
     <div className="space-y-6">

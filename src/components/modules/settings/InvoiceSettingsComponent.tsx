@@ -17,6 +17,7 @@ import { Building2, Landmark, Palette, ScanQrCode, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { FormSkeleton } from "@/components/ui/Skeleton";
 
 export const InvoiceSettingsComponent = () => {
   const { storeId } = useStoreNavigation();
@@ -24,6 +25,7 @@ export const InvoiceSettingsComponent = () => {
   const dispatch = useDispatch();
   const {
     data: { storeSettings },
+    status,
     settingsUpdateStatus,
     logoUploadStatus,
     qrUploadStatus,
@@ -122,6 +124,10 @@ export const InvoiceSettingsComponent = () => {
   const isUpdating = settingsUpdateStatus === "loading";
   const isLogoUploading = logoUploadStatus === "loading";
   const isQrUploading = qrUploadStatus === "loading";
+
+  if (status === "loading") {
+    return <FormSkeleton rows={6} />;
+  }
 
   return (
     <div className="space-y-6">

@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import { PageState } from "@/types/PageableType";
 import { pageLimits } from "@/constants/pageLimits";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 
 const categories: SelectOptionType[] = [
   { value: "All Categories", key: "all" },
@@ -29,6 +30,7 @@ export const InventoryProductList = () => {
   const dispatch = useDispatch();
   const {
     data: { productList },
+    status,
   } = useSelector(selectProductState);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,41 +83,49 @@ export const InventoryProductList = () => {
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-4">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left text-primary px-6 py-4">Sno</th>
-                <th className="text-left text-gray-700 px-6 py-4">
-                  Product Name
-                </th>
-                <th className="text-center text-gray-700 px-6 py-4">SKU</th>
-                <th className="text-center text-gray-700 px-6 py-4">
-                  Date added
-                </th>
-                <th className="text-center text-gray-700 px-6 py-4">
-                  Price / Qty
-                </th>
-                <th className="text-center text-gray-700 px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageData?.docs.map((product, index) => (
-                <InventoryProductCard
-                  key={product._id}
-                  product={product}
-                  index={index + 1}
-                />
-              ))}
-            </tbody>
-          </table>
-          {pageData?.docs.length === 0 && (
-            <div className="flex items-center justify-center flex-col gap-3 w-full p-3">
-              <p>No products found in your inventory!</p>
-              <Button onClick={() => navigate("/inventory/add-product")}>
-                <Plus size={17} />
-                Add new product
-              </Button>
-            </div>
+          {status === "loading" ? (
+            <TableSkeleton columns={6} rows={pageLimits.PRODUCT_LIST} />
+          ) : (
+            <>
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left text-primary px-6 py-4">Sno</th>
+                    <th className="text-left text-gray-700 px-6 py-4">
+                      Product Name
+                    </th>
+                    <th className="text-center text-gray-700 px-6 py-4">SKU</th>
+                    <th className="text-center text-gray-700 px-6 py-4">
+                      Date added
+                    </th>
+                    <th className="text-center text-gray-700 px-6 py-4">
+                      Price / Qty
+                    </th>
+                    <th className="text-center text-gray-700 px-6 py-4">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageData?.docs.map((product, index) => (
+                    <InventoryProductCard
+                      key={product._id}
+                      product={product}
+                      index={index + 1}
+                    />
+                  ))}
+                </tbody>
+              </table>
+              {pageData?.docs.length === 0 && (
+                <div className="flex items-center justify-center flex-col gap-3 w-full p-3">
+                  <p>No products found in your inventory!</p>
+                  <Button onClick={() => navigate("/inventory/add-product")}>
+                    <Plus size={17} />
+                    Add new product
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

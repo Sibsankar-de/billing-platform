@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { FormSkeleton } from "@/components/ui/Skeleton";
 
 export const StoreInfoComponent = () => {
   const { storeId } = useStoreNavigation();
@@ -19,6 +20,7 @@ export const StoreInfoComponent = () => {
   const dispatch = useDispatch();
   const {
     data: { currentStore },
+    status,
     storeUpdateStatus,
   } = useSelector(selectCurrentStoreState);
 
@@ -64,6 +66,10 @@ export const StoreInfoComponent = () => {
   };
 
   const isUpdating = storeUpdateStatus === "loading";
+
+  if (status === "loading") {
+    return <FormSkeleton rows={4} />;
+  }
 
   return (
     <div className="space-y-6">

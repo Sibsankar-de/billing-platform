@@ -7,6 +7,7 @@ import { StoreCreateModal } from "./StoreCreateModal";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStoreList, selectStoreState } from "@/store/features/storeSlice";
 import { StoreCard } from "./StoreCard";
+import { StoreCardSkeleton } from "@/components/ui/Skeleton";
 
 export const StoreListSection = () => {
   const dispatch = useDispatch();
@@ -36,9 +37,11 @@ export const StoreListSection = () => {
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-4">
-        {storeList.map((store, index) => (
-          <StoreCard store={store} key={index} />
-        ))}
+        {storeStatus === "loading"
+          ? [1, 2, 3].map((i) => <StoreCardSkeleton key={i} />)
+          : storeList.map((store, index) => (
+              <StoreCard store={store} key={index} />
+            ))}
       </div>
 
       <StoreCreateModal

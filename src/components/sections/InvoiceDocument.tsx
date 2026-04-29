@@ -8,6 +8,7 @@ import { convertUnit } from "@/utils/conversion";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { ConditionalDiv } from "../ui/ConditionalDiv";
 import { cn } from "../utils";
+import { Dot } from "lucide-react";
 
 interface Props extends React.ComponentPropsWithoutRef<"div"> {
   invoice: CreateInvoiceDto;
@@ -91,18 +92,7 @@ export const InvoiceDocument = React.forwardRef<HTMLDivElement, Props>(
           )}
         >
           <div className="min-w-0 flex-1">
-            <div className="flex items-start gap-2">
-              <ConditionalDiv condition={storeSettings?.invoiceStoreLogoUrl}>
-                <img
-                  src={storeSettings.invoiceStoreLogoUrl}
-                  alt={storeName}
-                  className={cn(
-                    "shrink-0 rounded border border-gray-200 object-contain",
-                    isCompact ? "h-9 w-9" : "h-12 w-12",
-                  )}
-                />
-              </ConditionalDiv>
-
+            <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-[9px] font-semibold uppercase tracking-wide text-gray-500">
                   Invoice
@@ -115,23 +105,51 @@ export const InvoiceDocument = React.forwardRef<HTMLDivElement, Props>(
                 >
                   {storeName}
                 </h1>
-                <ConditionalDiv condition={storeAddress}>
-                  <p className="mt-0.5 whitespace-pre-line leading-tight text-gray-600 wrap-break-word">
-                    {storeAddress}
-                  </p>
-                </ConditionalDiv>
-                <ConditionalDiv condition={currentStore?.contactNo}>
-                  <p className="mt-0.5 text-gray-600 wrap-break-word">
-                    {currentStore.contactNo}
-                  </p>
-                </ConditionalDiv>
-                <ConditionalDiv condition={currentStore?.contactEmail}>
-                  <p className="text-gray-600 wrap-break-word">
-                    {currentStore.contactEmail}
-                  </p>
-                </ConditionalDiv>
               </div>
+              <ConditionalDiv condition={storeSettings?.invoiceStoreLogoUrl}>
+                <img
+                  src={storeSettings.invoiceStoreLogoUrl}
+                  alt={storeName}
+                  className={cn(
+                    "shrink-0 rounded border border-gray-200 object-contain",
+                    isCompact ? "h-9 w-9" : "h-12 w-12",
+                  )}
+                />
+              </ConditionalDiv>
             </div>
+            <ConditionalDiv
+              condition={
+                storeAddress ||
+                currentStore?.contactNo ||
+                currentStore?.contactEmail
+              }
+              className="mt-1 text-gray-600"
+            >
+              <ConditionalDiv
+                condition={storeAddress}
+                className="whitespace-pre-line leading-tight wrap-break-word"
+              >
+                {storeAddress}
+              </ConditionalDiv>
+              <ConditionalDiv
+                condition={currentStore?.contactNo || currentStore.contactEmail}
+                className="flex flex-wrap items-center"
+              >
+                <ConditionalDiv
+                  condition={currentStore?.contactNo}
+                  className="wrap-break-word"
+                >
+                  {currentStore.contactNo}
+                </ConditionalDiv>
+                <Dot size={15} />
+                <ConditionalDiv
+                  condition={currentStore?.contactEmail}
+                  className="wrap-break-word"
+                >
+                  {currentStore.contactEmail}
+                </ConditionalDiv>
+              </ConditionalDiv>
+            </ConditionalDiv>
           </div>
 
           <div
@@ -145,7 +163,6 @@ export const InvoiceDocument = React.forwardRef<HTMLDivElement, Props>(
               label="Date"
               value={formatDateStr(invoice.issueDate).dashedDate}
             />
-            <DetailLine label="Status" value={invoice.status} />
           </div>
         </header>
 

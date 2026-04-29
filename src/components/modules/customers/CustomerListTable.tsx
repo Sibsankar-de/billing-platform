@@ -5,13 +5,8 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Pagination } from "@/components/ui/Pagination";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchInvoiceListThunk,
-  selectInvoiceState,
-} from "@/store/features/invoiceSlice";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import { PageState } from "@/types/PageableType";
-import { InvoiceDto } from "@/types/dto/invoiceDto";
 import { pageLimits } from "@/constants/pageLimits";
 import {
   fetchCustomerListThunk,
@@ -19,12 +14,14 @@ import {
 } from "@/store/features/customerSlice";
 import { CustomerDto } from "@/types/dto/customerDto";
 import { CustomerItem } from "./CustomerItem";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 
 export const CustomerListTable = () => {
   const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
   const {
     data: { customerListData },
+    status,
   } = useSelector(selectCustomerState);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,34 +69,40 @@ export const CustomerListTable = () => {
       {/* Invoices Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left text-primary px-6 py-4">Sno</th>
-                <th className="text-left text-gray-700 px-6 py-4">Name</th>
-                <th className="text-center text-gray-700 px-6 py-4">Address</th>
-                <th className="text-center text-gray-700 px-6 py-4">
-                  Phone number
-                </th>
-                <th className="text-center text-gray-700 px-6 py-4">
-                  Total Invoices
-                </th>
-                <th className="text-center text-gray-700 px-6 py-4">
-                  Total Due
-                </th>
-                <th className="text-right text-gray-700 px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageData?.docs.map((customer, index) => (
-                <CustomerItem
-                  key={customer._id}
-                  customer={customer}
-                  sno={index + 1}
-                />
-              ))}
-            </tbody>
-          </table>
+          {status === "loading" ? (
+            <TableSkeleton columns={7} rows={pageLimits.CUSTOMER_LIST} />
+          ) : (
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="text-left text-primary px-6 py-4">Sno</th>
+                  <th className="text-left text-gray-700 px-6 py-4">Name</th>
+                  <th className="text-center text-gray-700 px-6 py-4">
+                    Address
+                  </th>
+                  <th className="text-center text-gray-700 px-6 py-4">
+                    Phone number
+                  </th>
+                  <th className="text-center text-gray-700 px-6 py-4">
+                    Total Invoices
+                  </th>
+                  <th className="text-center text-gray-700 px-6 py-4">
+                    Total Due
+                  </th>
+                  <th className="text-right text-gray-700 px-6 py-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageData?.docs.map((customer, index) => (
+                  <CustomerItem
+                    key={customer._id}
+                    customer={customer}
+                    sno={index + 1}
+                  />
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 

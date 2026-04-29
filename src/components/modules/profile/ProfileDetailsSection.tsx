@@ -4,9 +4,14 @@ import { Avatar } from "@/components/ui/Avatar";
 import { selectUserSate } from "@/store/features/userSlice";
 import { Mail } from "lucide-react";
 import { useSelector } from "react-redux";
+import { ProfileSkeleton } from "@/components/ui/Skeleton";
 
 export const ProfileDetailsSection = () => {
-  const { data: user } = useSelector(selectUserSate);
+  const { data: user, status } = useSelector(selectUserSate);
+
+  if (status === "loading") {
+    return <ProfileSkeleton />;
+  }
 
   return (
     <div className="p-6">

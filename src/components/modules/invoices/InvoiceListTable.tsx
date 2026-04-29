@@ -15,6 +15,7 @@ import { PageState } from "@/types/PageableType";
 import { InvoiceDto } from "@/types/dto/invoiceDto";
 import { pageLimits } from "@/constants/pageLimits";
 import { InvoiceListItem } from "./InvoiceListItem";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 
 export const InvoiceListTable = () => {
   const { storeId } = useStoreNavigation();
@@ -69,31 +70,35 @@ export const InvoiceListTable = () => {
       {/* Invoices Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left text-gray-700 px-6 py-4">
-                  Invoice Number
-                </th>
-                <th className="text-center text-gray-700 px-6 py-4">
-                  Customer
-                </th>
-                <th className="text-center text-gray-700 px-6 py-4">Date</th>
-                <th className="text-center text-gray-700 px-6 py-4">Total</th>
-                <th className="text-center text-gray-700 px-6 py-4">Due</th>
-                <th className="text-right text-gray-700 px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageData?.docs.map((invoice) => (
-                <InvoiceListItem
-                  key={invoice._id}
-                  invoice={invoice}
-                  page={currentPage}
-                />
-              ))}
-            </tbody>
-          </table>
+          {invoiceFetchStatus === "loading" ? (
+            <TableSkeleton columns={6} rows={pageLimits.INVOICE_LIST} />
+          ) : (
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="text-left text-gray-700 px-6 py-4">
+                    Invoice Number
+                  </th>
+                  <th className="text-center text-gray-700 px-6 py-4">
+                    Customer
+                  </th>
+                  <th className="text-center text-gray-700 px-6 py-4">Date</th>
+                  <th className="text-center text-gray-700 px-6 py-4">Total</th>
+                  <th className="text-center text-gray-700 px-6 py-4">Due</th>
+                  <th className="text-right text-gray-700 px-6 py-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageData?.docs.map((invoice) => (
+                  <InvoiceListItem
+                    key={invoice._id}
+                    invoice={invoice}
+                    page={currentPage}
+                  />
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 

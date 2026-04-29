@@ -25,6 +25,7 @@ import { Separator } from "@/components/ui/Separator";
 import { ToggleButton } from "@/components/ui/ToggleButton";
 import { CategoryDto } from "@/types/dto/categoryDto";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
+import { FormSkeleton } from "@/components/ui/Skeleton";
 
 export const ProductForm = ({ formFor }: { formFor: string }) => {
   const router = useRouter();
@@ -129,6 +130,10 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     getStatus === "loading" ||
     createStatus === "loading" ||
     updateStatus === "loading";
+
+  if (getStatus === "loading") {
+    return <FormSkeleton rows={6} />;
+  }
 
   return (
     <div className="space-y-4">

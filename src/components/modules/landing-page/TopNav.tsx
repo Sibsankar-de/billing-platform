@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ArrowRight } from "lucide-react";
-import { AppLogo } from "@/components/ui/AppLogo";
 import clsx from "clsx";
+import { AppLogoFull } from "@/components/ui/AppLogo";
 
 export const TopNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -35,10 +35,11 @@ export const TopNav = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="transition-transform duration-300 group-hover:scale-110">
-            <AppLogo size={32} />
-          </div>
-          <span className="text-xl font-semibold tracking-tight">EaseInv</span>
+          <AppLogoFull
+            size={140}
+            className="transition-transform duration-300 group-hover:scale-105"
+            priority
+          />
         </Link>
 
         {/* Desktop Navigation */}
@@ -60,11 +61,11 @@ export const TopNav = () => {
             href="/auth/login"
             className="text-sm font-medium hover:text-primary transition-colors"
           >
-            Log in
+            Sign In
           </Link>
           <Link
             href="/auth/signup"
-            className="group flex items-center gap-2 text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/90 transition-all shadow-sm hover:shadow-md"
+            className="group flex items-center gap-2 text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-all shadow-sm hover:shadow-md"
           >
             Get Started
             <ArrowRight
@@ -105,11 +106,11 @@ export const TopNav = () => {
               className="text-center py-2 text-base font-medium hover:text-primary transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Log in
+              Sign In
             </Link>
             <Link
               href="/auth/signup"
-              className="text-center py-2 text-base font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
+              className="text-center py-3 text-base font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Get Started

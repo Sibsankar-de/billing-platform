@@ -19,12 +19,14 @@ import {
   selectInvoiceState,
 } from "@/store/features/invoiceSlice";
 import { toast } from "react-toastify";
+import { FormSkeleton } from "@/components/ui/Skeleton";
 
 export const CreateBillPage = () => {
   const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
   const {
     data: { currentStore, storeSettings },
+    status,
   } = useSelector(selectCurrentStoreState);
 
   const { createStatus } = useSelector(selectInvoiceState);
@@ -120,6 +122,10 @@ export const CreateBillPage = () => {
   };
 
   const isSaving = createStatus === "loading";
+
+  if (status === "loading") {
+    return <FormSkeleton rows={6} />;
+  }
 
   // keyboard events
   useEffect(() => {
