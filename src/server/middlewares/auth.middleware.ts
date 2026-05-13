@@ -12,22 +12,29 @@ export const verifyAuth = async (
 ): Promise<MiddlewareContext> => {
   try {
     const accessToken = req.cookies.get("accessToken")?.value;
+    const refreshToken = req.cookies.get("refreshToken")?.value;
 
-    if (!accessToken)
+    if (!accessToken && !refreshToken)
       throw new ApiError(StatusCodes.BAD_REQUEST, "Invalid request");
 
     let verifiedToken;
     try {
-      verifiedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
+      verifiedToken = jwt.verify(accessToken!, process.env.ACCESS_TOKEN_SECRET);
     } catch (error) {
-      if (error instanceof jwt.TokenExpiredError) {
+      if (
+        (error instanceof jwt.TokenExpiredError || !accessToken) &&
+        refreshToken
+      ) {
         const newAccessToken = await refreshAccessToken(req);
         verifiedToken = jwt.verify(
           newAccessToken,
-          process.env.ACCESS_TOKEN_SECRET!,
+          process.env.ACCESS_TOKEN_SECRET,
         );
       } else {
-        throw error;
+        throw new ApiError(
+          StatusCodes.UNAUTHORIZED,
+          "Invalid or expired token",
+        );
       }
     }
 
