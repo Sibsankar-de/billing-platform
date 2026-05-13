@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const loginWithGoogle = requestHandler(async () => {
-    await router.push("/api/oauth/authenticate/google");
+    window.location.href = `${window.location.origin}/api/oauth/authenticate/google`;
   });
 
   return (

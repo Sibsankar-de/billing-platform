@@ -4,9 +4,12 @@ import { asyncHandler } from "../utils/asynchandler";
 import { NextRequest, NextResponse } from "next/server";
 import { ApiError } from "../utils/error-handler";
 import { User } from "../models/user.model";
-import { cookieOptions, generateAccessAndRefrehToken } from "./user.controller";
-import { cookies } from "next/headers";
+import { generateAccessAndRefrehToken } from "./user.controller";
 import { randomBytes } from "crypto";
+import {
+  setAccessTokenCookie,
+  setRefreshTokenCookie,
+} from "../utils/cookie-utils";
 
 const client_secret = process.env.GOOGLE_CLIENT_SECRET;
 const client_id = process.env.GOOGLE_CLIENT_ID;
@@ -92,9 +95,9 @@ export const googleOauthCallback = asyncHandler(async (req: NextRequest) => {
   const { accessToken, refreshToken } = await generateAccessAndRefrehToken(
     user._id,
   );
-  (await cookies()).set("accessToken", accessToken, cookieOptions);
-  (await cookies()).set("refreshToken", refreshToken, cookieOptions);
-  console.log(`${process.env.CLIENT_URI}/profile`);
-  
+
+  await setAccessTokenCookie(accessToken);
+  await setRefreshTokenCookie(refreshToken);
+
   return NextResponse.redirect(`${process.env.CLIENT_URI}/profile`);
 });

@@ -3,33 +3,53 @@ import { ApiError } from "../utils/error-handler";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model";
 import { MiddlewareContext } from "@/types/middleware";
+import { StatusCodes } from "http-status-codes";
+import { refreshAccessToken } from "../controllers/user.controller";
 
 export const verifyAuth = async (
   req: NextRequest,
   context: MiddlewareContext,
 ): Promise<MiddlewareContext> => {
   try {
-    const token = req.cookies.get("accessToken")?.value;
-    if (!token) throw new ApiError(400, "Invalid request");
+    const accessToken = req.cookies.get("accessToken")?.value;
 
-    const verifiedToken = await jwt.verify(
-      token,
-      process.env.ACCESS_TOKEN_SECRET,
-    );
+    if (!accessToken)
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Invalid request");
+
+    let verifiedToken;
+    try {
+      verifiedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        const newAccessToken = await refreshAccessToken(req);
+        verifiedToken = jwt.verify(
+          newAccessToken,
+          process.env.ACCESS_TOKEN_SECRET!,
+        );
+      } else {
+        throw error;
+      }
+    }
 
     if (
       !verifiedToken ||
       typeof verifiedToken !== "object" ||
-      !("_id" in verifiedToken)
+      !("_id" in (verifiedToken as jwt.JwtPayload))
     ) {
-      throw new ApiError(401, "Token expired");
+      throw new ApiError(StatusCodes.UNAUTHORIZED, "Token expired");
     }
 
-    const user = await User.findById(verifiedToken as jwt.JwtPayload);
-    if (!user) throw new ApiError(402, "Invalid user");
+    const user = await User.findById((verifiedToken as jwt.JwtPayload)._id);
+    if (!user) throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid user");
 
     return { ...context, userId: user._id };
   } catch (error) {
-    throw new ApiError(401, "Unauthorised request");
+    console.error("Auth verification error:", error);
+    throw error instanceof ApiError
+      ? error
+      : new ApiError(
+          StatusCodes.INTERNAL_SERVER_ERROR,
+          "Token verification error",
+        );
   }
 };

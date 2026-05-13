@@ -5,6 +5,7 @@ import {
 } from "@/types/PageableType";
 import { PaginateResponseType } from "@/types/PaginatedResponseType";
 import { createAsyncThunk, WritableDraft } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
 export const createApiThunk = (
   type: string,
@@ -16,9 +17,16 @@ export const createApiThunk = (
       return response.data.data;
     } catch (err) {
       const error = err as any;
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message;
+
+      if (status && status >= 400 && status < 500) {
+        toast.error(message || "Something went wrong!");
+      }
+
       const errorData = {
         data: error?.response?.data,
-        status: error?.response?.status,
+        status,
       };
       return rejectWithValue(errorData);
     }

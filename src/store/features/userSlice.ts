@@ -4,10 +4,11 @@ import { RootState } from "../store";
 import { createApiThunk, setState } from "../utils";
 import api from "@/configs/axios-config";
 
-export const fetchCurrentUser: any = createApiThunk(
-  "/users/get",
-  async () => await api.get("/users/current-user")
-);
+export const fetchCurrentUser: any = createApiThunk("/users/get", async () => {
+  try {
+    return await api.get("/users/current-user");
+  } catch (error) {}
+});
 
 const initialState = {
   data: {} as UserDto,

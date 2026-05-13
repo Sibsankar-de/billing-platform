@@ -22,9 +22,6 @@ api.interceptors.response.use(
           message: message,
         }),
       );
-      if (status && status >= 400 && status < 500 && status != 401) {
-        toast.error(message || "Something went wrong!");
-      }
     }
 
     return Promise.reject(err);

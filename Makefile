@@ -1,6 +1,6 @@
-.PHONY: dev docker-down docker-up
+.PHONY: dev docker-down docker-up clean-next
 
-dev: docker-down docker-up npm-dev
+dev: clean-next docker-down docker-up npm-dev
 
 docker-down:
 	docker compose down
@@ -10,3 +10,6 @@ docker-up:
 
 npm-dev:
 	npm run dev
+
+clean-next:
+	rm -rf .next
