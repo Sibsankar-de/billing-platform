@@ -5,6 +5,7 @@ import StoreProvider from "@/store/storeProvider";
 import { ToastProvider } from "./toastProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NavContextProvider } from "@/contexts/NavContext";
+import { AppLoadingLayout } from "@/components/layout/AppLoadingLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,7 +63,9 @@ export default function RootLayout({
         <ToastProvider>
           <NavContextProvider>
             <StoreProvider>
-              <AuthProvider>{children}</AuthProvider>
+              <AuthProvider>
+                <AppLoadingLayout>{children}</AppLoadingLayout>
+              </AuthProvider>
             </StoreProvider>
           </NavContextProvider>
         </ToastProvider>

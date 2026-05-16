@@ -77,7 +77,6 @@ export function DataTable<TData>({
                         "px-6 py-4 text-sm font-semibold text-gray-700 group",
                         header.column.getCanSort() &&
                           "cursor-pointer select-none hover:bg-gray-100 transition-colors",
-                        // Support alignment if specified in meta
                         header.column.columnDef.meta?.className,
                       )}
                       onClick={header.column.getToggleSortingHandler()}
@@ -117,10 +116,7 @@ export function DataTable<TData>({
             </thead>
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
-                <TableBodySkeleton
-                  columns={columns.length}
-                  rows={pagination?.pageSize ?? 5}
-                />
+                <TableBodySkeleton columns={columns.length} rows={5} />
               ) : table.getRowModel().rows.length > 0 ? (
                 table.getRowModel().rows.map((row) => (
                   <tr

@@ -26,6 +26,10 @@ import { ToggleButton } from "@/components/ui/ToggleButton";
 import { CategoryDto } from "@/types/dto/categoryDto";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { FormSkeleton } from "@/components/ui/Skeleton";
+import { useNavContext } from "@/contexts/NavContext";
+import { NavActionButton } from "../navbar/navbar";
+import { IconTooltip } from "@/components/ui/IconTooltip";
+import descriptiveTooltip from "@/constants/descriptiveTooltip";
 
 export const ProductForm = ({ formFor }: { formFor: string }) => {
   const router = useRouter();
@@ -39,6 +43,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     data: { storeSettings },
   } = useSelector(selectCurrentStoreState);
   const { navigate } = useStoreNavigation();
+  const { setActionButtons } = useNavContext();
 
   // Data state (Numeric values for backend)
   const [formData, setFormData] = useState<Record<string, any>>({
@@ -130,6 +135,18 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     getStatus === "loading" ||
     createStatus === "loading" ||
     updateStatus === "loading";
+
+  useEffect(() => {
+    setActionButtons(
+      <NavActionButton
+        onClick={handleSaveProduct}
+        disabled={isSubmitting || isLoading}
+        loading={isSubmitting}
+      >
+        Save
+      </NavActionButton>,
+    );
+  }, [setActionButtons, isLoading, isSubmitting, formData]);
 
   if (getStatus === "loading") {
     return <FormSkeleton rows={6} />;
@@ -239,12 +256,12 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
 
       <div>
         <div className="flex items-center gap-6 mb-3">
-          <Label
-            className="flex items-center gap-3 mb-0"
-            htmlFor="enable-tracking"
-          >
+          <Label className="flex items-center gap-3 mb-0" htmlFor="">
             <p>Enable Inventory tracking</p>
-            <Info size={15} />
+            <IconTooltip
+              icon={<Info size={15} />}
+              tooltip={descriptiveTooltip.STOCK_TRACKING_TOOLTIP}
+            />
           </Label>
           <ToggleButton
             id="enable-tracking"
@@ -275,8 +292,16 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
       <Separator text={"Selling price"} className="mb-8 mt-10" />
 
       <div>
-        <Label htmlFor="price-breakdown" required>
-          Add price per quantity (Selling prices)
+        <Label
+          className="flex items-center gap-3"
+          htmlFor="price-breakdown"
+          required
+        >
+          <p>Add price per quantity (Selling prices)</p>
+          <IconTooltip
+            icon={<Info size={15} />}
+            tooltip={descriptiveTooltip.PRICE_PER_QUANTITY_TOOLTIP}
+          />
         </Label>
         <div>
           <PriceBreakdownInput
