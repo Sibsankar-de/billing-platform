@@ -1,4 +1,4 @@
-import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { PrimaryBox } from "@/components/ui/PrimaryBox";
 import { ReactNode } from "react";
 
 export const ChartCard = ({

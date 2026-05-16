@@ -18,6 +18,8 @@ export const getCustomersPaged = asyncHandler(
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     const pipeline = [
       { $match: { storeId: new mongoose.Types.ObjectId(storeId) } },
@@ -53,7 +55,7 @@ export const getCustomersPaged = asyncHandler(
     const paginatedList = await Customer.aggregatePaginate(pipeline, {
       page,
       limit,
-      sort: { createdAt: -1 },
+      sort: { [sortBy]: sortOrder },
     });
 
     return NextResponse.json(
@@ -73,6 +75,8 @@ export const searchCustomers = asyncHandler(
     const query = searchParams.get("query") || "";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const sortBy = searchParams.get("sortBy") || "searchScore";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     if (!storeId)
       throw new ApiError(StatusCodes.BAD_REQUEST, "storeId is required");
@@ -120,7 +124,7 @@ export const searchCustomers = asyncHandler(
     const results = await Customer.aggregatePaginate(pipeLine, {
       page,
       limit,
-      sort: { searchScore: -1, name: 1 },
+      sort: { [sortBy]: sortOrder, name: 1 },
     });
 
     return NextResponse.json(

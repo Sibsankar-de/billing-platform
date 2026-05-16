@@ -4,6 +4,7 @@ import mongoose, {
   Schema,
   InferSchemaType,
   PaginateModel,
+  AggregatePaginateModel,
 } from "mongoose";
 import { pricePerQuantitySchema } from "./product.model";
 import { invoiceEnums } from "../enums/invoice.enum";
@@ -108,7 +109,7 @@ const invoiceSchema = new Schema(
       default: 0,
     },
     totalProfit: {
-      type: String,
+      type: Number,
       default: 0,
     },
     roundupTotal: {
@@ -132,13 +133,13 @@ invoiceSchema.plugin(aggregatePaginate);
 
 export type InvoiceModelType = InferSchemaType<typeof invoiceSchema>;
 
+type InvoiceModel = PaginateModel<InvoiceModelType> &
+  AggregatePaginateModel<InvoiceModelType>;
+
 if (process.env.NODE_ENV === "development" && models.Invoice) {
   delete models.Invoice;
 }
 
 export const Invoice =
-  (models.Invoice as PaginateModel<InvoiceModelType>) ||
-  model<InvoiceModelType, PaginateModel<InvoiceModelType>>(
-    "Invoice",
-    invoiceSchema,
-  );
+  (models.Invoice as InvoiceModel) ||
+  model<InvoiceModelType, InvoiceModel>("Invoice", invoiceSchema);

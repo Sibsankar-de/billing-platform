@@ -21,7 +21,7 @@ import {
 import { toast } from "react-toastify";
 import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "@/components/layout/navbar";
+import { NavActionButton } from "@/components/modules/navbar/navbar";
 
 export const CreateBillPage = () => {
   const { storeId } = useStoreNavigation();

@@ -1,4 +1,4 @@
-import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { PrimaryBox } from "@/components/ui/PrimaryBox";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 export const DashboardSkeleton = ({

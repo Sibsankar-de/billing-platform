@@ -1,6 +1,6 @@
 "use client";
 
-import { AccessDeniedComponent } from "@/components/layout/AccessDeniedComponent";
+import { AccessDeniedComponent } from "@/components/sections/AccessDeniedComponent";
 import { selectGlobalErrorState } from "@/store/features/globalErrorSlice";
 import React, { createContext } from "react";
 import { useSelector } from "react-redux";

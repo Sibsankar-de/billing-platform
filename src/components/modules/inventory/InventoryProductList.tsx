@@ -2,30 +2,65 @@
 
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Plus, Search } from "lucide-react";
-import { useEffect, useState } from "react";
-import { InventoryProductCard } from "./InventoryProductCard";
+import { Plus, Search, Edit2, Trash2, PackageSearch } from "lucide-react";
+import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SelectOptionType } from "@/types/SelectType";
-import { Pagination } from "@/components/ui/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchProducts,
   selectProductState,
+  clearProductList,
 } from "@/store/features/productSlice";
 import { ProductDto } from "@/types/dto/productDto";
 import { Button } from "@/components/ui/Button";
 import { useStoreNavigation } from "@/hooks/store-navigation";
-import { PageState } from "@/types/PageableType";
 import { pageLimits } from "@/constants/pageLimits";
-import { TableSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { PackageSearch } from "lucide-react";
+import { DataTable } from "@/components/ui/DataTable";
+import { createColumnHelper, SortingState } from "@tanstack/react-table";
+import { formatDateStr } from "@/utils/formatDate";
+import { convertUnit } from "@/utils/conversion";
+import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
+import { ProductDeleteModal } from "./ProductDeleteModal";
+import { getSearchDebounceTime } from "@/utils/get-debounce";
 
 const categories: SelectOptionType[] = [
   { value: "All Categories", key: "all" },
   { value: "Services", key: "services" },
   { value: "Subscription", key: "subscription" },
 ];
+
+const columnHelper = createColumnHelper<ProductDto>();
+
+const ProductActions = ({ product }: { product: ProductDto }) => {
+  const { navigate } = useStoreNavigation();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  return (
+    <div className="flex items-center justify-center gap-2">
+      <Button
+        variant="none"
+        className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
+        onClick={() => navigate(`/inventory/product/${product?._id}/edit`)}
+      >
+        <Edit2 className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="none"
+        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+        onClick={() => setIsDeleteOpen(true)}
+      >
+        <Trash2 className="w-4 h-4" />
+      </Button>
+      <ProductDeleteModal
+        openState={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        product={product}
+      />
+    </div>
+  );
+};
 
 export const InventoryProductList = () => {
   const { storeId, navigate } = useStoreNavigation();
@@ -34,32 +69,114 @@ export const InventoryProductList = () => {
     data: { productList },
     status,
   } = useSelector(selectProductState);
+  const {
+    data: { storeSettings },
+  } = useSelector(selectCurrentStoreState);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageData, setPageData] = useState<PageState<ProductDto> | null>(null);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: pageLimits.PRODUCT_LIST,
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const debounceCtx = React.useRef({ lastInputAt: 0, lastValueLength: 0 });
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
+
+  const currentPage = pagination.pageIndex + 1;
+
+  // Debounced search
+  useEffect(() => {
+    const delay = getSearchDebounceTime(searchTerm, debounceCtx.current);
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(clearProductList());
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, delay);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm, dispatch]);
 
   useEffect(() => {
     if (!productList.pages[currentPage]) {
+      const sortField = sorting[0]?.id;
+      const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
       dispatch(
         fetchProducts({
           storeId,
           page: currentPage,
-          limit: pageLimits.PRODUCT_LIST,
+          limit: pagination.pageSize,
+          query: searchTerm || undefined,
+          sortBy: sortField,
+          sortOrder,
         }),
-      )
-        .unwrap()
-        .then((res: any) => {
-          setCurrentPage(res.page);
-        });
+      );
     }
-  }, [dispatch, storeId, currentPage]);
+  }, [dispatch, storeId, currentPage, pagination.pageSize, productList.pages, searchTerm, sorting]);
 
-  useEffect(() => {
-    const data = productList.pages?.[currentPage] || null;
-    if (data) {
-      setPageData(data);
-    }
-  }, [productList, currentPage]);
+  const columns = useMemo(
+    () => [
+      columnHelper.display({
+        id: "sno",
+        header: "Sno",
+        enableSorting: false,
+        cell: (info) => (
+          <span className="text-primary">{info.row.index + 1}</span>
+        ),
+        meta: { className: "text-left w-16" },
+      }),
+      columnHelper.accessor("name", {
+        header: "Product Name",
+        cell: (info) => <span className="text-gray-900 font-medium">{info.getValue()}</span>,
+        meta: { className: "text-left" },
+      }),
+      columnHelper.accessor("sku", {
+        header: "SKU",
+        cell: (info) => <span className="text-gray-600">{info.getValue()}</span>,
+        meta: { className: "text-center" },
+      }),
+      columnHelper.accessor("createdAt", {
+        header: "Date added",
+        cell: (info) => (
+          <span className="text-gray-600">
+            {info.getValue() ? formatDateStr(info.getValue()!).dashedDate : "-"}
+          </span>
+        ),
+        meta: { className: "text-center" },
+      }),
+      columnHelper.display({
+        id: "price-qty",
+        header: "Price / Qty",
+        enableSorting: false,
+        cell: (info) => (
+          <span className="text-gray-900">
+            <span>
+              &#8377;{Number(info.row.original.buyingPricePerQuantity?.toFixed(2))}
+            </span>{" "}
+            <span>/</span>{" "}
+            <span>
+              {convertUnit(info.row.original.stockUnit, storeSettings.customUnits)}
+            </span>
+          </span>
+        ),
+        meta: { className: "text-center" },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        cell: (info) => <ProductActions product={info.row.original} />,
+        meta: { className: "text-center" },
+      }),
+    ],
+    [storeSettings.customUnits]
+  );
+
+  const pageData = useMemo(
+    () => productList.pages?.[currentPage]?.docs || [],
+    [productList, currentPage]
+  );
 
   return (
     <div>
@@ -70,76 +187,49 @@ export const InventoryProductList = () => {
             <Input
               type="text"
               placeholder="Search products by name or SKU..."
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm}
+              onChange={(val) => setSearchTerm(val)}
               className="pl-10"
             />
           </div>
           <Select
             options={categories}
+            value={selectedCategory}
+            onChange={(val) => setSelectedCategory(val)}
             placeholder="Select category"
             className="min-w-40"
           />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-4">
-        <div className="overflow-x-auto">
-          {status === "loading" ? (
-            <TableSkeleton columns={6} rows={pageLimits.PRODUCT_LIST} />
-          ) : (
-            <>
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="text-left text-primary px-6 py-4">Sno</th>
-                    <th className="text-left text-gray-700 px-6 py-4">
-                      Product Name
-                    </th>
-                    <th className="text-center text-gray-700 px-6 py-4">SKU</th>
-                    <th className="text-center text-gray-700 px-6 py-4">
-                      Date added
-                    </th>
-                    <th className="text-center text-gray-700 px-6 py-4">
-                      Price / Qty
-                    </th>
-                    <th className="text-center text-gray-700 px-6 py-4">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pageData?.docs.map((product, index) => (
-                    <InventoryProductCard
-                      key={product._id}
-                      product={product}
-                      index={index + 1}
-                    />
-                  ))}
-                </tbody>
-              </table>
-              {status !== "loading" && pageData?.docs.length === 0 && (
-                <EmptyState
-                  icon={<PackageSearch className="w-8 h-8 text-gray-400" />}
-                  title="No products found"
-                  description="Your inventory is empty. Start adding products to manage your stock and create invoices."
-                  action={
-                    <Button onClick={() => navigate("/inventory/add-product")}>
-                      <Plus size={17} />
-                      Add new product
-                    </Button>
-                  }
-                />
-              )}
-            </>
-          )}
-        </div>
-      </div>
-
-      <Pagination
-        totalPage={productList.totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
+      <DataTable
+        columns={columns}
+        data={pageData}
+        isLoading={status === "loading"}
+        pageCount={productList.totalPages}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        sorting={sorting}
+        onSortingChange={(updater) => {
+          const nextState =
+            typeof updater === "function" ? updater(sorting) : updater;
+          setSorting(nextState);
+          dispatch(clearProductList());
+          setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        }}
+        emptyState={
+          <EmptyState
+            icon={<PackageSearch className="w-8 h-8 text-gray-400" />}
+            title="No products found"
+            description="Your inventory is empty. Start adding products to manage your stock and create invoices."
+            action={
+              <Button onClick={() => navigate("/inventory/add-product")}>
+                <Plus size={17} />
+                Add new product
+              </Button>
+            }
+          />
+        }
       />
     </div>
   );

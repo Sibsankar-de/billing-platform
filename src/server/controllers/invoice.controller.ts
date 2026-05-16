@@ -173,7 +173,7 @@ export const updateInvoiceDueAmount = asyncHandler(
   },
 );
 
-export const getInvoiceList = asyncHandler(
+export const searchInvoice = asyncHandler(
   async (
     req: NextRequest,
     context: MiddlewareContext | undefined,
@@ -183,28 +183,56 @@ export const getInvoiceList = asyncHandler(
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const status = searchParams.get("status");
+    const customerPrefix = searchParams.get("customerPrefix");
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
-    let invoices = await Invoice.paginate(
-      { storeId },
+    const match: any = {
+      storeId: new mongoose.Types.ObjectId(storeId),
+    };
+
+    if (status) {
+      match.status = status;
+    }
+
+    const pipeline: any[] = [
+      { $match: match },
       {
-        page,
-        limit,
-        sort: { createdAt: 1 },
-        populate: [{ path: "customerId" }],
-        lean: true,
+        $lookup: {
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customerDetails",
+        },
       },
-    );
+      {
+        $unwind: {
+          path: "$customerDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
 
-    invoices.docs = invoices.docs.map((inv) => {
-      const { customerId, ...rest } = inv;
-      return {
-        ...rest,
-        customerDetails: customerId,
-      };
-    });
+    if (customerPrefix) {
+      const safeTerm = customerPrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      pipeline.push({
+        $match: {
+          "customerDetails.name": { $regex: new RegExp(`^${safeTerm}`, "i") },
+        },
+      });
+    }
+
+    const options = {
+      page,
+      limit,
+      sort: { [sortBy]: sortOrder },
+    };
+
+    const result = await Invoice.aggregatePaginate(pipeline, options);
 
     return NextResponse.json(
-      new ApiResponse(200, invoices, "Invoice list fetched."),
+      new ApiResponse(StatusCodes.OK, result, "Invoice list fetched."),
     );
   },
 );

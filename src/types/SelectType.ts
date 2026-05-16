@@ -5,7 +5,7 @@ export type SelectType = {
   name?: string;
   placeholder?: string;
   value?: string;
-  options?: SelectOptionType[];
+  options: SelectOptionType[];
   onChange?: (val: string) => void;
   required?: boolean;
   disabled?: boolean;

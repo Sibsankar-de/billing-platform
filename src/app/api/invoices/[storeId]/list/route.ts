@@ -2,7 +2,7 @@ import { withDbAndCors } from "@/server/utils/withDbAndCors";
 import { NextRequest } from "next/server";
 import { runMiddlewares } from "@/server/utils/middlewareControll";
 import { verifyAuth } from "@/server/middlewares/auth.middleware";
-import { getInvoiceList } from "@/server/controllers/invoice.controller";
+import { searchInvoice as getInvoices } from "@/server/controllers/invoice.controller";
 import { userRoles } from "@/server/enums/store.enum";
 import { verifyStoreAccess } from "@/server/middlewares/verifyStoreAccess.middleware";
 
@@ -22,5 +22,5 @@ export const GET = withDbAndCors(async (req: NextRequest, { params }) => {
     ],
     params,
   );
-  return await getInvoiceList(req, context, params);
+  return await getInvoices(req, context, params);
 });

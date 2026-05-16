@@ -1,4 +1,4 @@
-import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { PrimaryBox } from "@/components/ui/PrimaryBox";
 import { ElementType, ReactNode } from "react";
 
 type MetricTone = "primary" | "success" | "info" | "warning" | "danger";

@@ -1,6 +1,6 @@
 "use client";
 
-import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { PrimaryBox } from "@/components/ui/PrimaryBox";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   fetchInvoiceSummaryThunk,

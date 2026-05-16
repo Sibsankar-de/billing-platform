@@ -1,6 +1,6 @@
 "use client";
 
-import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { PrimaryBox } from "@/components/ui/PrimaryBox";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "@/components/layout/navbar";
+import { NavActionButton } from "@/components/modules/navbar/navbar";
 
 export const StoreInfoComponent = () => {
   const { storeId } = useStoreNavigation();

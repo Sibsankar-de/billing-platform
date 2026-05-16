@@ -1,6 +1,6 @@
 "use client";
 
-import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { PrimaryBox } from "@/components/ui/PrimaryBox";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { ToggleButton } from "@/components/ui/ToggleButton";
@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { ProductUnitAddSection } from "./ProductUnitAddSection";
 import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "@/components/layout/navbar";
+import { NavActionButton } from "@/components/modules/navbar/navbar";
 
 export const InventorySettingsComponent = () => {
   const { storeId } = useStoreNavigation();

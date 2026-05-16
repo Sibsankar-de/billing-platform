@@ -6,10 +6,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const fetchCustomerListThunk: any = createApiThunk(
   "/customers/list",
-  async (payload: any) =>
-    await api.get(
-      `/customers/${payload.storeId}/list?page=${payload.page}&limit=${payload.limit}`,
-    ),
+  async (payload: any) => {
+    let url = payload.query 
+      ? `/search/${payload.storeId}/customers?query=${payload.query}&page=${payload.page}&limit=${payload.limit}`
+      : `/customers/${payload.storeId}/list?page=${payload.page}&limit=${payload.limit}`;
+    
+    if (payload.sortBy) url += `&sortBy=${payload.sortBy}`;
+    if (payload.sortOrder) url += `&sortOrder=${payload.sortOrder}`;
+    
+    return await api.get(url);
+  }
 );
 
 export const customerSearchThunk: any = createApiThunk(
@@ -42,7 +48,15 @@ const initialState = {
 const customerSlice = createSlice({
   name: "customers",
   initialState,
-  reducers: {},
+  reducers: {
+    clearCustomerListData: (state) => {
+      state.data.customerListData = {
+        pages: {},
+        totalDocs: 0,
+        totalPages: 0,
+      };
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(fetchCustomerListThunk.pending, setState)
@@ -77,4 +91,5 @@ const customerSlice = createSlice({
 });
 
 export const selectCustomerState = (state: any) => state.customers;
+export const { clearCustomerListData } = customerSlice.actions;
 export default customerSlice.reducer;

@@ -267,11 +267,26 @@ export const getProductsByStore = asyncHandler(
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
+    const query = searchParams.get("query") || "";
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+
+    const match: any = { storeId: new mongoose.Types.ObjectId(storeId) };
+
+    if (query) {
+      const safeTerm = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`^${safeTerm}`, "i");
+      match.$or = [
+        { name: { $regex: regex } },
+        { sku: { $regex: regex } },
+        { gtin: { $regex: regex } },
+      ];
+    }
 
     const productList = await Product.aggregatePaginate(
       [
         {
-          $match: { storeId: new mongoose.Types.ObjectId(storeId) },
+          $match: match,
         },
         {
           $lookup: {
@@ -294,7 +309,7 @@ export const getProductsByStore = asyncHandler(
       {
         page,
         limit,
-        sort: { createdAt: -1 },
+        sort: { [sortBy]: sortOrder },
       },
     );
 

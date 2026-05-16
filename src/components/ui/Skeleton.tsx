@@ -6,9 +6,7 @@ interface SkeletonProps {
 
 export const Skeleton = ({ className }: SkeletonProps) => {
   return (
-    <div
-      className={cn("animate-pulse rounded-md bg-gray-200", className)}
-    />
+    <div className={cn("animate-pulse rounded-md bg-gray-200", className)} />
   );
 };
 
@@ -17,6 +15,30 @@ interface TableSkeletonProps {
   columns?: number;
   className?: string;
 }
+
+export const TableBodySkeleton = ({
+  rows = 5,
+  columns = 5,
+}: {
+  rows?: number;
+  columns?: number;
+}) => {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <tr key={rowIndex} className="border-b border-gray-100 last:border-0">
+          {Array.from({ length: columns }).map((_, colIndex) => (
+            <td key={colIndex} className="px-6 py-4">
+              <Skeleton
+                className={cn("h-4", colIndex === 0 ? "w-8" : "w-full")}
+              />
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
+  );
+};
 
 export const TableSkeleton = ({
   rows = 5,
@@ -36,20 +58,7 @@ export const TableSkeleton = ({
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: rows }).map((_, rowIndex) => (
-            <tr key={rowIndex} className="border-b border-gray-100 last:border-0">
-              {Array.from({ length: columns }).map((_, colIndex) => (
-                <td key={colIndex} className="px-6 py-4">
-                  <Skeleton
-                    className={cn(
-                      "h-4",
-                      colIndex === 0 ? "w-8" : "w-full"
-                    )}
-                  />
-                </td>
-              ))}
-            </tr>
-          ))}
+          <TableBodySkeleton rows={rows} columns={columns} />
         </tbody>
       </table>
     </div>

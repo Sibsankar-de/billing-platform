@@ -34,10 +34,14 @@ const initialState = {
 
 export const fetchInvoiceListThunk: any = createApiThunk(
   "/invoices/list",
-  async (payload: any) =>
-    await api.get(
-      `/invoices/${payload.storeId}/list?page=${payload.page}&limit=${payload.limit}`,
-    ),
+  async (payload: any) => {
+    let url = `/invoices/${payload.storeId}/list?page=${payload.page}&limit=${payload.limit}`;
+    if (payload.status) url += `&status=${payload.status}`;
+    if (payload.customerPrefix) url += `&customerPrefix=${payload.customerPrefix}`;
+    if (payload.sortBy) url += `&sortBy=${payload.sortBy}`;
+    if (payload.sortOrder) url += `&sortOrder=${payload.sortOrder}`;
+    return await api.get(url);
+  },
 );
 
 export const createInvoiceThunk: any = createApiThunk(
@@ -64,6 +68,13 @@ const invoiceSlice = createSlice({
   name: "invoices",
   initialState,
   reducers: {
+    clearInvoiceList: (state) => {
+      state.data.invoiceListData = {
+        pages: {},
+        totalDocs: 0,
+        totalPages: 0,
+      };
+    },
     updateInvoiceDue: (state, action) => {
       const { page, invoiceId, newDueAmount } = action.payload;
       const pageData = state.data.invoiceListData.pages[page];
@@ -136,5 +147,5 @@ const invoiceSlice = createSlice({
 });
 
 export const selectInvoiceState = (state: RootState) => state.invoice;
-export const { updateInvoiceDue } = invoiceSlice.actions;
+export const { updateInvoiceDue, clearInvoiceList } = invoiceSlice.actions;
 export default invoiceSlice.reducer;

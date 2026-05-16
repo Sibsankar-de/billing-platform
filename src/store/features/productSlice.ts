@@ -8,10 +8,13 @@ import { PaginatedPages } from "@/types/PageableType";
 
 export const fetchProducts: any = createApiThunk(
   "products/list",
-  async (payload) =>
-    await api.get(
-      `/stores/${payload.storeId}/product-list?page=${payload.page}&limit=${payload.limit}`,
-    ),
+  async (payload: any) => {
+    let url = `/stores/${payload.storeId}/product-list?page=${payload.page}&limit=${payload.limit}`;
+    if (payload.query) url += `&query=${encodeURIComponent(payload.query)}`;
+    if (payload.sortBy) url += `&sortBy=${payload.sortBy}`;
+    if (payload.sortOrder) url += `&sortOrder=${payload.sortOrder}`;
+    return await api.get(url);
+  },
 );
 
 export const getProductDetailsThunk: any = createApiThunk(
@@ -86,7 +89,15 @@ const initialState = {
 const productSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    clearProductList: (state) => {
+      state.data.productList = {
+        pages: {},
+        totalDocs: 0,
+        totalPages: 0,
+      };
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(fetchProducts.pending, setState)
@@ -181,4 +192,5 @@ const productSlice = createSlice({
 });
 
 export const selectProductState = (state: RootState) => state.product;
+export const { clearProductList } = productSlice.actions;
 export default productSlice.reducer;

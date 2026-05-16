@@ -3,9 +3,9 @@
 import api from "@/configs/axios-config";
 import { AppDispatch } from "@/store/store";
 import { requestHandler } from "@/utils/api-request";
-import React, { createContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { fetchCurrentUser } from "@/store/features/userSlice";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCurrentUser, selectUserSate } from "@/store/features/userSlice";
 import { useRouter } from "next/navigation";
 
 type AuthContextTypes = {
@@ -24,7 +24,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthChecking, setIsAuthChecking] = useState(false);
+
+  const { status } = useSelector(selectUserSate);
 
   // fetch current user
   useEffect(() => {
@@ -57,6 +58,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     window.location.href = `${window.location.origin}/api/oauth/authenticate/google`;
   });
 
+  const isAuthChecking = status === "loading";
+
   return (
     <AuthContext.Provider
       value={{
@@ -71,6 +74,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
 export default AuthContext;

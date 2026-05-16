@@ -1,23 +1,79 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, FileText, Pen, Eye, Download } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Pagination } from "@/components/ui/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchInvoiceListThunk,
   selectInvoiceState,
+  clearInvoiceList,
 } from "@/store/features/invoiceSlice";
 import { useStoreNavigation } from "@/hooks/store-navigation";
-import { PageState } from "@/types/PageableType";
 import { InvoiceDto } from "@/types/dto/invoiceDto";
 import { pageLimits } from "@/constants/pageLimits";
-import { InvoiceListItem } from "./InvoiceListItem";
-import { TableSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { FileText } from "lucide-react";
+import { FilterSelector } from "@/components/ui/FilterSelector";
+import { SelectOptionType } from "@/types/SelectType";
+import { DataTable } from "@/components/ui/DataTable";
+import { createColumnHelper, SortingState } from "@tanstack/react-table";
+import { formatDateStr } from "@/utils/formatDate";
+import { InvoiceDueEditModal } from "./InvoiceDueEditModal";
+import { InvoiceViewModal } from "./InvoiceViewModal";
+import { getSearchDebounceTime } from "@/utils/get-debounce";
+
+const filterOptions: SelectOptionType[] = [
+  { value: "All", key: "all" },
+  { value: "Paid", key: "paid" },
+  { value: "Unpaid", key: "unpaid" },
+  { value: "Overdue", key: "overdue" },
+];
+
+const columnHelper = createColumnHelper<InvoiceDto>();
+
+const InvoiceActions = ({ invoice, page }: { invoice: InvoiceDto; page: number }) => {
+  const [editOpen, setEditOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
+
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <Button
+        variant="outline"
+        className="p-2 text-primary"
+        tooltip="Update due"
+        onClick={() => setEditOpen(true)}
+      >
+        <Pen className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="outline"
+        className="p-2"
+        tooltip="View or print"
+        onClick={() => setViewOpen(true)}
+      >
+        <Eye className="w-4 h-4" />
+      </Button>
+      <Button variant="outline" className="p-2" tooltip="Download">
+        <Download className="w-4 h-4" />
+      </Button>
+
+      <InvoiceDueEditModal
+        openState={editOpen}
+        invoice={invoice}
+        page={page}
+        onClose={() => setEditOpen(false)}
+      />
+
+      <InvoiceViewModal
+        openState={viewOpen}
+        invoice={invoice}
+        onClose={() => setViewOpen(false)}
+      />
+    </div>
+  );
+};
 
 export const InvoiceListTable = () => {
   const { storeId } = useStoreNavigation();
@@ -27,95 +83,160 @@ export const InvoiceListTable = () => {
     status: invoiceFetchStatus,
   } = useSelector(selectInvoiceState);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageData, setPageData] = useState<PageState<InvoiceDto> | null>(null);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: pageLimits.INVOICE_LIST,
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const debounceCtx = React.useRef({ lastInputAt: 0, lastValueLength: 0 });
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "issueDate", desc: true },
+  ]);
+
+  const currentPage = pagination.pageIndex + 1;
+
+  // Debounced search
+  useEffect(() => {
+    const delay = getSearchDebounceTime(searchTerm, debounceCtx.current);
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(clearInvoiceList());
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, delay);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm, dispatch]);
 
   useEffect(() => {
     if (!invoiceListData.pages[currentPage]) {
+      const sortField = sorting[0]?.id;
+      const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
       dispatch(
         fetchInvoiceListThunk({
           storeId,
           page: currentPage,
-          limit: pageLimits.INVOICE_LIST,
+          limit: pagination.pageSize,
+          status: filterStatus !== "all" ? filterStatus : undefined,
+          customerPrefix: searchTerm || undefined,
+          sortBy: sortField,
+          sortOrder,
         }),
-      )
-        .unwrap()
-        .then((res: any) => {
-          setCurrentPage(res.page);
-        });
+      );
     }
-  }, [dispatch, storeId, currentPage]);
+  }, [
+    dispatch,
+    storeId,
+    currentPage,
+    pagination.pageSize,
+    filterStatus,
+    invoiceListData.pages,
+    searchTerm,
+    sorting,
+  ]);
 
-  useEffect(() => {
-    const data = invoiceListData.pages[currentPage] || null;
-    if (data) {
-      setPageData(data);
-    }
-  }, [invoiceListData, currentPage]);
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("invoiceNumber", {
+        header: "Invoice Number",
+        cell: (info) => <span className="text-indigo-600 font-medium">{info.getValue()}</span>,
+        meta: { className: "text-left" },
+      }),
+      columnHelper.accessor("customerDetails.name", {
+        header: "Customer",
+        cell: (info) => <span className="text-gray-900">{info.getValue()}</span>,
+        meta: { className: "text-center" },
+      }),
+      columnHelper.accessor("issueDate", {
+        header: "Date",
+        cell: (info) => (
+          <span className="text-gray-900">
+            {formatDateStr(info.getValue()).dashedDate}
+          </span>
+        ),
+        meta: { className: "text-center" },
+      }),
+      columnHelper.accessor("total", {
+        header: "Total",
+        cell: (info) => <span className="text-gray-900 font-medium">&#8377;{info.getValue()}</span>,
+        meta: { className: "text-center" },
+      }),
+      columnHelper.accessor("dueAmount", {
+        header: "Due",
+        cell: (info) => (
+          <span className={info.getValue() ? "text-red-400 font-medium" : "text-green-600 font-medium"}>
+            &#8377;{info.getValue()}
+          </span>
+        ),
+        meta: { className: "text-center" },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        cell: (info) => (
+          <InvoiceActions invoice={info.row.original} page={currentPage} />
+        ),
+        meta: { className: "text-right" },
+      }),
+    ],
+    [currentPage]
+  );
+
+  const pageData = useMemo(
+    () => invoiceListData.pages[currentPage]?.docs || [],
+    [invoiceListData, currentPage]
+  );
 
   return (
     <div>
       {/* Search and Filters */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search by invoice number or client name..."
-            // value={searchTerm}
-            // onChange={(e) => setSearchTerm(e)}
-            className="pl-10"
+        <div className="flex items-center gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search by invoice number or client name..."
+              value={searchTerm}
+              onChange={(val) => setSearchTerm(val)}
+              className="pl-10"
+            />
+          </div>
+          <FilterSelector 
+            options={filterOptions} 
+            value={filterStatus}
+            onChange={(val) => {
+              setFilterStatus(val);
+              dispatch(clearInvoiceList());
+              setPagination(prev => ({ ...prev, pageIndex: 0 }));
+            }}
           />
         </div>
       </div>
 
-      {/* Invoices Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
-        <div className="overflow-x-auto">
-          {invoiceFetchStatus === "loading" ? (
-            <TableSkeleton columns={6} rows={pageLimits.INVOICE_LIST} />
-          ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="text-left text-gray-700 px-6 py-4">
-                    Invoice Number
-                  </th>
-                  <th className="text-center text-gray-700 px-6 py-4">
-                    Customer
-                  </th>
-                  <th className="text-center text-gray-700 px-6 py-4">Date</th>
-                  <th className="text-center text-gray-700 px-6 py-4">Total</th>
-                  <th className="text-center text-gray-700 px-6 py-4">Due</th>
-                  <th className="text-right text-gray-700 px-6 py-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pageData?.docs.map((invoice) => (
-                  <InvoiceListItem
-                    key={invoice._id}
-                    invoice={invoice}
-                    page={currentPage}
-                  />
-                ))}
-              </tbody>
-            </table>
-          )}
-          {invoiceFetchStatus !== "loading" && pageData?.docs.length === 0 && (
-            <EmptyState
-              icon={<FileText className="w-8 h-8 text-gray-400" />}
-              title="No invoices found"
-              description="Create your first invoice to start tracking your sales and payments."
-            />
-          )}
-        </div>
-      </div>
-
-      {/* pagination  */}
-      <Pagination
-        totalPage={invoiceListData.totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
+      <DataTable
+        columns={columns}
+        data={pageData}
+        isLoading={invoiceFetchStatus === "loading"}
+        pageCount={invoiceListData.totalPages}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        sorting={sorting}
+        onSortingChange={(updater) => {
+          const nextState =
+            typeof updater === "function" ? updater(sorting) : updater;
+          setSorting(nextState);
+          dispatch(clearInvoiceList());
+          setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+        }}
+        emptyState={
+          <EmptyState
+            icon={<FileText className="w-8 h-8 text-gray-400" />}
+            title="No invoices found"
+            description="Create your first invoice to start tracking your sales and payments."
+          />
+        }
       />
     </div>
   );

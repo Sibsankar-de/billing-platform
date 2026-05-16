@@ -1,4 +1,4 @@
-import { PrimaryBox } from "@/components/sections/PrimaryBox";
+import { PrimaryBox } from "@/components/ui/PrimaryBox";
 
 export const EmptyAnalyticsState = () => (
   <PrimaryBox className="border-dashed bg-muted/40">
