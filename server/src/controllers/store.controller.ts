@@ -9,7 +9,7 @@ import { Customer } from "../models/customer.model";
 import mongoose from "mongoose";
 import { Category } from "../models/category.model";
 import { StoreSettings } from "../models/storeSettings.model";
-import { uploadToCloudinary } from "../utils/cloudinary";
+import { uploadToCloudinary } from "../services/cloudinary.service";
 import { cloudinaryFolders } from "../constants/cloudinary.constant";
 import { StoreUser } from "../models/storeUser.model";
 import { userRoles } from "../enums/store.enum";

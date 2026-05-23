@@ -14,10 +14,17 @@ declare namespace NodeJS {
     CLOUDINARY_API_SECRET: string;
     CLOUDINARY_API_KEY: string;
     CLOUDINARY_FOLDER: string;
-    GOOGLE_CALLBACK_URI: string;
+    GOOGLE_CALLBACK_URL: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
     ACCESS_TOKEN_COOKIE_EXPIRY: number;
     REFRESH_TOKEN_COOKIE_EXPIRY: number;
+    SMTP_HOST: string;
+    SMTP_PORT: string;
+    SMTP_SECURE: string;
+    SMTP_USER: string;
+    SMTP_PASS: string;
+    RABBITMQ_CONNECTION_URI: string;
+    RABBITMQ_EMAIL_QUEUE: string;
   }
 }

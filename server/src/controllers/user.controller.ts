@@ -5,7 +5,7 @@ import { User } from "../models/user.model";
 import { ApiResponse } from "../utils/ApiResponse";
 import mongoose from "mongoose";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { deleteFromCloudinary, uploadToCloudinary } from "../utils/cloudinary";
+import { deleteFromCloudinary, uploadToCloudinary } from "../services/cloudinary.service";
 import { cloudinaryFolders } from "../constants/cloudinary.constant";
 import { StatusCodes } from "http-status-codes";
 import { env } from "../configs/env";

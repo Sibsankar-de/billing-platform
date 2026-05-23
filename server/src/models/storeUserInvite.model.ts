@@ -1,0 +1,44 @@
+import mongoose, { InferSchemaType, PaginateModel, Schema } from "mongoose";
+import { storeEnums, userRoles } from "../enums/store.enum";
+
+const storeUserInviteSchema = new Schema(
+  {
+    storeId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Store",
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    role: {
+      type: String,
+      required: true,
+      enum: storeEnums.USER_ROLES,
+    },
+    token: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+    },
+  },
+  { timestamps: true },
+);
+
+storeUserInviteSchema.index({ storeId: 1, email: 1 }, { unique: true });
+
+export type StoreUserInviteModelType = InferSchemaType<
+  typeof storeUserInviteSchema
+>;
+
+export const StoreUserInvite = mongoose.model<
+  StoreUserInviteModelType,
+  PaginateModel<StoreUserInviteModelType>
+>("StoreUserInvite", storeUserInviteSchema);
