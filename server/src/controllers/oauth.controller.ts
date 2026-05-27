@@ -43,9 +43,11 @@ export interface GoogleUserInfo {
 // };
 
 export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
+  const redirect = req.query.redirect as string;
   const authorisedUrl = oAuth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
+    state: redirect || clientPages.PROFILE_PAGE,
   });
 
   return res.redirect(authorisedUrl);
@@ -110,10 +112,16 @@ export const googleAuthCallback = asyncHandler(
       user._id as mongoose.Types.ObjectId,
     );
 
+    const state = req.query.state as string;
+    const finalRedirect =
+      state && state.startsWith("/")
+        ? clientPages.constructPageUrl(state)
+        : clientPages.PROFILE_PAGE;
+
     return res
       .status(StatusCodes.OK)
       .cookie("accessToken", accessToken, accessTokenCookieOptions)
       .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
-      .redirect(clientPages.PROFILE_PAGE);
+      .redirect(finalRedirect);
   },
 );

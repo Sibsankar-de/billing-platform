@@ -44,9 +44,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   });
 
+  const getRedirectUrl = (): string => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const redirectParam = searchParams.get("redirect");
+    return redirectParam && redirectParam.startsWith("/")
+      ? redirectParam
+      : "/profile";
+  };
+
   const loginUser = requestHandler(async (payload) => {
+    const redirectTo = getRedirectUrl();
+
     await api.post("/users/login", payload).then(() => {
-      window.location.href = `${window.location.origin}/profile`;
+      window.location.href = `${window.location.origin}${redirectTo}`;
     });
   });
 
@@ -57,7 +67,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const loginWithGoogle = requestHandler(async () => {
-    window.location.href = `${api.defaults.baseURL}/oauth/authenticate`;
+    const redirectTo = getRedirectUrl();
+    window.location.href = `${api.defaults.baseURL}/oauth/authenticate?redirect=${encodeURIComponent(redirectTo)}`;
   });
 
   return (

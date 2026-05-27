@@ -17,7 +17,10 @@ export const PreAuthPageLayout = ({
 
   useEffect(() => {
     if (!isAuthChecking && isAuthenticated) {
-      router.push("/profile");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectParam = searchParams.get("redirect");
+      const redirectTo = (redirectParam && redirectParam.startsWith('/')) ? redirectParam : "/profile";
+      router.push(redirectTo);
     }
   }, [router, isAuthenticated, isAuthChecking]);
 

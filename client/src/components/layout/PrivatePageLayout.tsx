@@ -17,7 +17,8 @@ export const PrivatePageLayout = ({
 
   useEffect(() => {
     if (!isAuthChecking && !isAuthenticated) {
-      router.push("/auth/login");
+      const currentUrl = window.location.pathname + window.location.search;
+      router.push(`/auth/login?redirect=${encodeURIComponent(currentUrl)}`);
     }
   }, [router, isAuthenticated, isAuthChecking]);
 
