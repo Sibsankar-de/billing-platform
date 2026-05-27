@@ -40,7 +40,7 @@ export async function startWorker() {
 
         log.info("Email sent: " + job.to);
       } catch (err) {
-        log.error("Email failed: " + err);
+        log.error("Email sending failed: " + err);
 
         // retry
         channel.nack(msg, false, true);

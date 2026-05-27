@@ -26,9 +26,8 @@
     </mj-section>
 
     <!-- BODY -->
-    <mj-section background-color="#ffffff" padding="22px 24px">
+    <mj-section background-color="#ffffff" padding="22px 24px 10px">
       <mj-column>
-
         <mj-text>
           Hi <strong>{{recipientName}}</strong>,
         </mj-text>
@@ -36,40 +35,42 @@
         <mj-text>
           Join <strong>{{storeName}}</strong> on EaseInv.
         </mj-text>
+      </mj-column>
+    </mj-section>
 
-        <!-- CARD -->
-        <mj-section background-color="#f8f9ff" padding="14px" border="1px solid #ecebff" border-radius="6px">
-          <mj-column>
+    <!-- CARD -->
+    <mj-section background-color="#ffffff" padding="0 24px">
+      <mj-column background-color="#f8f9ff" padding="14px" border="1px solid #ecebff" border-radius="6px">
+        <mj-text font-size="12px" color="#777" padding="0">
+          Store
+        </mj-text>
+        <mj-text font-size="15px" font-weight="600" padding="0 0 6px">
+          {{storeName}}
+        </mj-text>
 
-            <mj-text font-size="12px" color="#777" padding="0">
-              Store
-            </mj-text>
-            <mj-text font-size="15px" font-weight="600" padding="0 0 6px">
-              {{storeName}}
-            </mj-text>
+        <mj-divider border-color="#ecebff" padding="6px 0" />
 
-            <mj-divider border-color="#ecebff" padding="6px 0" />
+        <mj-text font-size="12px" color="#777" padding="0">
+          Role
+        </mj-text>
+        <mj-text font-size="13px" color="#4f39f6" font-weight="600" padding="0 0 6px">
+          {{recipientRole}}
+        </mj-text>
 
-            <mj-text font-size="12px" color="#777" padding="0">
-              Role
-            </mj-text>
-            <mj-text font-size="13px" color="#4f39f6" font-weight="600" padding="0 0 6px">
-              {{recipientRole}}
-            </mj-text>
+        <mj-divider border-color="#ecebff" padding="6px 0" />
 
-            <mj-divider border-color="#ecebff" padding="6px 0" />
+        <mj-text font-size="12px" color="#777" padding="0">
+          Email
+        </mj-text>
+        <mj-text font-size="13px" padding="0">
+          {{recipientEmail}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
 
-            <mj-text font-size="12px" color="#777" padding="0">
-              Email
-            </mj-text>
-            <mj-text font-size="13px" padding="0">
-              {{recipientEmail}}
-            </mj-text>
-
-          </mj-column>
-        </mj-section>
-
-        <!-- CTA -->
+    <!-- CTA -->
+    <mj-section background-color="#ffffff" padding="10px 24px 22px">
+      <mj-column>
         <mj-button
           background-color="#4f39f6"
           color="#ffffff"
@@ -97,7 +98,6 @@
         <mj-text font-size="12px">
           If not expected, you can ignore this email.
         </mj-text>
-
       </mj-column>
     </mj-section>
 

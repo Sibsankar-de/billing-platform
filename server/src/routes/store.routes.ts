@@ -13,7 +13,8 @@ import {
 } from "../controllers/store.controller";
 import {
   getStoreUsers,
-  addStoreUser,
+  inviteStoreUser,
+  acceptStoreUserInvite,
   updateStoreUserRole,
   removeStoreUser,
 } from "../controllers/store-access.controller";
@@ -70,7 +71,12 @@ router.post("/:storeId/add-category", verifyManagerLevelAccess, createCategory);
 
 // Store access routes
 router.get("/:storeId/users", verifyManagerLevelAccess, getStoreUsers);
-router.post("/:storeId/users", verifyManagerLevelAccess, addStoreUser);
+router.post(
+  "/:storeId/users/invite",
+  verifyManagerLevelAccess,
+  inviteStoreUser,
+);
+router.post("/accept-invite", acceptStoreUserInvite);
 router.patch(
   "/:storeId/users/:userId",
   verifyManagerLevelAccess,

@@ -6,6 +6,7 @@ import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 import { env } from "../configs/env";
 
 interface UserMethods {
+  _id: mongoose.Types.ObjectId;
   checkPassword(password: string): Promise<boolean>;
   generatePasswordResetToken(): Promise<string>;
   getAccessToken(): Promise<string>;
@@ -109,8 +110,7 @@ userSchema.methods.getRefreshToken = async function () {
 userSchema.plugin(mongoosePaginate);
 userSchema.plugin(aggregatePaginate);
 
-export type UserModelType = InferSchemaType<typeof userSchema> &
-  UserMethods & { _id: mongoose.Types.ObjectId };
+export type UserModelType = InferSchemaType<typeof userSchema> & UserMethods;
 
 export const User = mongoose.model<UserModelType, PaginateModel<UserModelType>>(
   "User",

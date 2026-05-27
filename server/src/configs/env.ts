@@ -12,11 +12,11 @@ export const env = {
   APP_DEBUG: parseBoolean(process.env.APP_DEBUG),
 
   CORS_ORIGIN: process.env.CORS_ORIGIN || "http://localhost:3000",
-  CLIENT_URI: process.env.CLIENT_URI || "http://localhost:3000",
+  CLIENT_URL: process.env.CLIENT_URL || "http://localhost:3000",
   COOKIE_DOMAIN: process.env.COOKIE_DOMAIN || "localhost",
 
   MONGO_CONNECTION_URI: process.env.MONGO_CONNECTION_URI || "",
-  DB_NAME: process.env.DB_NAME,
+  DB_NAME: process.env.DB_NAME || "ease-inv",
 
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,
@@ -44,6 +44,8 @@ export const env = {
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASS: process.env.SMTP_PASS,
 
+  MAIL_FROM: process.env.MAIL_FROM,
+
   RABBITMQ_CONNECTION_URI: process.env.RABBITMQ_CONNECTION_URI,
-  RABBITMQ_EMAIL_QUEUE: process.env.RABBITMQ_EMAIL_QUEUE,
+  RABBITMQ_EMAIL_QUEUE: process.env.RABBITMQ_EMAIL_QUEUE || "email_queue",
 } as const;

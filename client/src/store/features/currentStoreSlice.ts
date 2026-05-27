@@ -52,10 +52,10 @@ export const fetchAccessorsListThunk: any = createApiThunk(
   async (storeId: string) => await api.get(`/stores/${storeId}/users`),
 );
 
-export const addStoreAccessorThunk: any = createApiThunk(
-  "/current-store/add-accessor",
+export const inviteStoreUserThunk: any = createApiThunk(
+  "/current-store/invite-accessor",
   async (data: { storeId: string; userData: any }) =>
-    await api.post(`/stores/${data.storeId}/users`, data.userData),
+    await api.post(`/stores/${data.storeId}/users/invite`, data.userData),
 );
 
 export const updateStoreAccessorRoleThunk: any = createApiThunk(
@@ -164,15 +164,14 @@ const currentStoreSlice = createSlice({
         state.data.accessorsList = action.payload;
         state.error = null;
       })
-      .addCase(addStoreAccessorThunk.pending, (state, action) =>
+      .addCase(inviteStoreUserThunk.pending, (state, action) =>
         setState(state, action, "accessorAddStatus"),
       )
-      .addCase(addStoreAccessorThunk.rejected, (state, action) =>
+      .addCase(inviteStoreUserThunk.rejected, (state, action) =>
         setState(state, action, "accessorAddStatus"),
       )
-      .addCase(addStoreAccessorThunk.fulfilled, (state, action) => {
+      .addCase(inviteStoreUserThunk.fulfilled, (state, action) => {
         state.accessorAddStatus = "success";
-        state.data.accessorsList.push(action.payload);
         state.error = null;
       })
       .addCase(updateStoreAccessorRoleThunk.pending, (state, action) =>

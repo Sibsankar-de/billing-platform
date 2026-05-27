@@ -12,6 +12,7 @@ import {
   accessTokenCookieOptions,
   refreshTokenCookieOptions,
 } from "../utils/cookie-utils";
+import { clientPages } from "../constants/client.constant";
 
 const client_secret = env.GOOGLE_CLIENT_SECRET;
 const client_id = env.GOOGLE_CLIENT_ID;
@@ -113,6 +114,6 @@ export const googleAuthCallback = asyncHandler(
       .status(StatusCodes.OK)
       .cookie("accessToken", accessToken, accessTokenCookieOptions)
       .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
-      .redirect(`${env.CLIENT_URI}/profile`);
+      .redirect(clientPages.PROFILE_PAGE);
   },
 );

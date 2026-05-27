@@ -43,7 +43,8 @@ const convertToHtml = async (mjml: string): Promise<string> => {
   });
 
   if (errors && errors.length > 0) {
-    log.warn("MJML warnings:" + errors);
+    console.error("MJML conversion errors:", errors);
+    log.warn("MJML warnings: " + errors?.[0]?.formattedMessage);
   }
 
   return html;

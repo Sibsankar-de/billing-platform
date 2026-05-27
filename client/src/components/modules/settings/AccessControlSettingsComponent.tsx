@@ -17,7 +17,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addStoreAccessorThunk,
+  inviteStoreUserThunk,
   fetchAccessorsListThunk,
   removeStoreAccessorThunk,
   selectCurrentStoreState,
@@ -92,7 +92,7 @@ export const AccessControlSettingsComponent = () => {
     setActionButtons(
       <NavActionButton onClick={() => setIsAddModalOpen(true)}>
         <UserPlus className="w-4 h-4 mr-2" />
-        Add User
+        New invite
       </NavActionButton>,
     );
   }, [setActionButtons]);
@@ -153,7 +153,7 @@ export const AccessControlSettingsComponent = () => {
         </div>
         <Button className="py-2" onClick={() => setIsAddModalOpen(true)}>
           <UserPlus className="w-4 h-4 mr-2" />
-          Add User
+          Invite new user
         </Button>
       </div>
 
@@ -170,7 +170,7 @@ export const AccessControlSettingsComponent = () => {
         }
       />
 
-      <UserAddModal
+      <UserInviteModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
       />
@@ -178,7 +178,7 @@ export const AccessControlSettingsComponent = () => {
   );
 };
 
-const UserAddModal = ({
+const UserInviteModal = ({
   isOpen,
   onClose,
 }: {
@@ -190,21 +190,21 @@ const UserAddModal = ({
   const { accessorAddStatus } = useSelector(selectCurrentStoreState);
   const [formData, setFormData] = useState({ email: "", role: "EMPLOYEE" });
 
-  const handleAddUser = () => {
+  const handleInviteUser = () => {
     if (!formData.email) {
       toast.error("Email is required.");
       return;
     }
 
     dispatch(
-      addStoreAccessorThunk({
+      inviteStoreUserThunk({
         storeId: storeId,
         userData: formData,
       }),
     )
       .unwrap()
       .then(() => {
-        toast.success("User added successfully.");
+        toast.success("User invitation send successfully.");
         onClose();
       });
   };
@@ -213,7 +213,7 @@ const UserAddModal = ({
   return (
     <Modal openState={isOpen} onClose={onClose} className="space-y-4 p-4 w-lg">
       <div>
-        <h5 className="text-xl">Add new User</h5>
+        <h5 className="text-xl">Invite new User</h5>
       </div>
       <div className="space-y-2">
         <Label htmlFor="email" required>
@@ -249,9 +249,9 @@ const UserAddModal = ({
           variant="dark"
           loading={isSubmitting}
           disabled={isSubmitting || !formData.email}
-          onClick={handleAddUser}
+          onClick={handleInviteUser}
         >
-          Add User
+          Send invitation
         </Button>
       </div>
     </Modal>

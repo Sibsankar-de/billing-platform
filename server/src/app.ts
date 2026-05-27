@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import routes from "./routes";
 import { env } from "./configs/env";
+import { errorMiddleware } from "./middlewares/error.middleware";
 
 const app = express();
 
@@ -26,5 +27,8 @@ app.use(morgan("dev"));
 
 // routes
 app.use("/api/v1", routes);
+
+// error middleware
+app.use(errorMiddleware);
 
 export { app };

@@ -23,11 +23,10 @@ const transporter = nodemailer.createTransport({
 
 export async function sendMail(options: EmailJob) {
   const info = await transporter.sendMail({
-    from: process.env.MAIL_FROM,
+    from: env.MAIL_FROM,
     to: options.to,
     subject: options.subject,
     html: options.html,
-    text: options.text,
     cc: options.cc,
     bcc: options.bcc,
   });

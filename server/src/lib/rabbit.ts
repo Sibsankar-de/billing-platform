@@ -14,7 +14,8 @@ async function connectWithRetry(retries = 10, delay = 2000): Promise<any> {
       "RABBITMQ_CONNECTION_URI is not defined in environment variables",
     );
   }
-  const maskedUri = env.RABBITMQ_CONNECTION_URI.replace(/:([^@]+)@/, ":****@");
+  const maskedUri = env.RABBITMQ_CONNECTION_URI.match(/(?<=@)[^/]+/)?.[0];
+
   for (let i = 0; i < retries; i++) {
     try {
       log.info(

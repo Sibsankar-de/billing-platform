@@ -1,3 +1,4 @@
+import { emailTemplates } from "../constants/emailTemplates";
 import { StoreModelType } from "../models/store.model";
 import { UserModelType } from "../models/user.model";
 import { renderEmail } from "../services/emailRender.service";
