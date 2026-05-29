@@ -4,6 +4,10 @@ import { User } from "../models/user.model";
 import { ApiError } from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
 import { env } from "../configs/env";
+import {
+  accessTokenCookieOptions,
+  refreshTokenCookieOptions,
+} from "../utils/cookie-utils";
 
 export const verifyAuth = async (
   req: Request,
@@ -21,17 +25,14 @@ export const verifyAuth = async (
     let verifiedToken;
     try {
       if (!accessToken) throw new Error("No access token");
-      verifiedToken = jwt.verify(
-        accessToken,
-        env.ACCESS_TOKEN_SECRET as string,
-      );
+      verifiedToken = jwt.verify(accessToken, env.ACCESS_TOKEN_SECRET);
     } catch (_error) {
       if (refreshToken) {
         // Attempt to refresh
         try {
           const decodedRefresh = jwt.verify(
             refreshToken,
-            env.REFRESH_TOKEN_SECRET as string,
+            env.REFRESH_TOKEN_SECRET,
           ) as jwt.JwtPayload;
 
           const user = await User.findById(decodedRefresh._id);
@@ -48,13 +49,12 @@ export const verifyAuth = async (
           user.refreshToken = newRefreshToken;
           await user.save({ validateBeforeSave: false });
 
-          const cookieOptions = {
-            httpOnly: true,
-            secure: env.NODE_ENV === "production",
-          };
-
-          res.cookie("accessToken", newAccessToken, cookieOptions);
-          res.cookie("refreshToken", newRefreshToken, cookieOptions);
+          res.cookie("accessToken", newAccessToken, accessTokenCookieOptions);
+          res.cookie(
+            "refreshToken",
+            newRefreshToken,
+            refreshTokenCookieOptions,
+          );
 
           verifiedToken = jwt.verify(
             newAccessToken,
