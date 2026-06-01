@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HeaderNavbar, Sidebar } from "@/components/modules/navbar/navbar";
+import { HeaderNavbar, Sidebar } from "@/components/modules/navbar/Navbar";
 import { StoreContentProvider } from "@/components/modules/store/StoreContentProvider";
 import { StoreContextProvider } from "@/components/modules/store/storeContext";
 import React from "react";

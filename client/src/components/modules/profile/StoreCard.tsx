@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, BadgeVariant } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ConditionalDiv } from "@/components/ui/ConditionalDiv";
 import { cn } from "@/components/utils";

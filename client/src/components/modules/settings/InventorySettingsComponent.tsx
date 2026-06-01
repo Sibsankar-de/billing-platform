@@ -3,7 +3,6 @@
 import { PrimaryBox } from "@/components/ui/PrimaryBox";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
-import { ToggleButton } from "@/components/ui/ToggleButton";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   selectCurrentStoreState,
@@ -15,8 +14,9 @@ import { toast } from "react-toastify";
 import { ProductUnitAddSection } from "./ProductUnitAddSection";
 import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "@/components/modules/navbar/navbar";
+import { NavActionButton } from "@/components/modules/navbar/Navbar";
 import { LineToggle } from "@/components/ui/LineToggle";
+import { CloudCheck } from "lucide-react";
 
 export const InventorySettingsComponent = () => {
   const { storeId } = useStoreNavigation();
@@ -76,7 +76,8 @@ export const InventorySettingsComponent = () => {
         disabled={isUpdating}
         loading={isUpdating}
       >
-        Save
+        <CloudCheck size={17} />
+        Save Changes
       </NavActionButton>,
     );
   }, [setActionButtons, isUpdating, formData]);
@@ -118,6 +119,7 @@ export const InventorySettingsComponent = () => {
           disabled={isUpdating}
           loading={isUpdating}
         >
+          <CloudCheck size={17} />
           Save Changes
         </Button>
       </div>

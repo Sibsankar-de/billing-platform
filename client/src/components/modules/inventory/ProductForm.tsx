@@ -27,7 +27,7 @@ import { CategoryDto } from "@/types/dto/categoryDto";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "../navbar/navbar";
+import { NavActionButton } from "../navbar/Navbar";
 import { IconTooltip } from "@/components/ui/IconTooltip";
 import descriptiveTooltip from "@/constants/descriptiveTooltip";
 import { ProductImageSection } from "./ProductImageSection";
@@ -160,7 +160,8 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
         disabled={isSubmitting || isLoading}
         loading={isSubmitting}
       >
-        Save
+        <CloudCheck size={17} />
+        Save Product
       </NavActionButton>,
     );
   }, [setActionButtons, isLoading, isSubmitting, formData]);
@@ -239,7 +240,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
       </div>
 
       <Separator text={"Categories"} className="mb-8 mt-10" />
-      
+
       <div>
         <Label htmlFor="category" className="block text-gray-600 mb-1.5">
           Select categories

@@ -1,8 +1,7 @@
 "use client";
 
-import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Plus, Search, Edit2, Trash2, PackageSearch } from "lucide-react";
+import { Plus, Edit2, Trash2, PackageSearch } from "lucide-react";
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { SelectOptionType } from "@/types/SelectType";
@@ -24,6 +23,9 @@ import { convertUnit } from "@/utils/conversion";
 import { selectCurrentStoreState } from "@/store/features/currentStoreSlice";
 import { ProductDeleteModal } from "./ProductDeleteModal";
 import { getTableSearchDebounceTime } from "@/utils/get-debounce";
+import { SearchInput } from "@/components/ui/SearchInput";
+import { NavActionButton } from "../navbar/Navbar";
+import { useNavContext } from "@/contexts/NavContext";
 
 const categories: SelectOptionType[] = [
   { value: "All Categories", key: "all" },
@@ -66,6 +68,8 @@ const ProductActions = ({ product }: { product: ProductDto }) => {
 
 export const InventoryProductList = () => {
   const { storeId, navigate } = useStoreNavigation();
+  const { setActionButtons } = useNavContext();
+
   const dispatch = useDispatch();
   const {
     data: { productList },
@@ -198,19 +202,27 @@ export const InventoryProductList = () => {
     [productList, currentPage],
   );
 
+  useEffect(() => {
+    setActionButtons(
+      <NavActionButton
+        onClick={() => {
+          navigate(`/inventory/add-product`);
+        }}
+      >
+        <Plus size={17} />
+        Add Product
+      </NavActionButton>,
+    );
+  }, []);
+
   return (
     <div>
       <div className="flex gap-4 mb-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search products by name or SKU..."
-            value={searchTerm}
-            onChange={(val) => setSearchTerm(val)}
-            className="pl-10"
-          />
-        </div>
+        <SearchInput
+          placeholder="Search products by name or SKU..."
+          value={searchTerm}
+          onChange={(val) => setSearchTerm(val)}
+        />
         <Select
           options={categories}
           value={selectedCategory}

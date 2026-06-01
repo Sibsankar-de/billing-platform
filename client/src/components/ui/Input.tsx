@@ -28,7 +28,7 @@ export const Input = ({
   const [showPassword, setShowPassword] = useState(false);
   const isTypePassword = type === "password";
   return (
-    <div className="flex items-center relative">
+    <div className="flex items-center relative group">
       {icon && (
         <span className="w-fit h-fit absolute left-3 flex items-center justify-center">
           {icon}

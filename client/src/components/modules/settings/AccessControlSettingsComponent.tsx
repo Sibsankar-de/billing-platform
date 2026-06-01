@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "@/components/modules/navbar/navbar";
-import { Mail, Trash2, Edit2, UserPlus, Users, Search } from "lucide-react";
+import { NavActionButton } from "@/components/modules/navbar/Navbar";
+import { Mail, Trash2, Edit2, UserPlus, Users } from "lucide-react";
 import { toast } from "react-toastify";
 import { Avatar } from "@/components/ui/Avatar";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -26,6 +26,7 @@ import {
 import { StoreAccessorDto } from "@/types/dto/storeDto";
 import { Badge } from "@/components/ui/Badge";
 import { RoleBadgeVarient } from "@/constants/storeUserRole";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 const ROLES = [
   { key: "MANAGER", value: "Manager" },
@@ -141,14 +142,11 @@ export const AccessControlSettingsComponent = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
+        <div className="flex-1">
+          <SearchInput
             placeholder="Search by email or name"
             // value={searchTerm}
             // onChange={(val) => setSearchTerm(val)}
-            className="pl-10"
           />
         </div>
         <Button className="py-2" onClick={() => setIsAddModalOpen(true)}>

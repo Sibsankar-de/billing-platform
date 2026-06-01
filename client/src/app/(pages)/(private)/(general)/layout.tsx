@@ -1,4 +1,4 @@
-import { HeaderNavbar } from "@/components/modules/navbar/navbar";
+import { HeaderNavbar } from "@/components/modules/navbar/Navbar";
 
 export default function GeneralPagesLayout({
   children,

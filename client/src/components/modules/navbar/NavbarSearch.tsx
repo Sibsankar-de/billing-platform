@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Search, FileText, Layout, ExternalLink } from "lucide-react";
+import { FileText, Layout, ExternalLink } from "lucide-react";
 import Fuse from "fuse.js";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import { searchIndex, SearchIndexItem } from "@/constants/searchIndex";
@@ -11,6 +11,7 @@ import {
   SelectableItem,
 } from "../../ui/SelectableInputDropdown";
 import { cn } from "../../utils";
+import { SearchIcon } from "@/components/ui/SearchInput";
 
 export const NavbarSearch = () => {
   const router = useRouter();
@@ -56,7 +57,7 @@ export const NavbarSearch = () => {
       onChange={setQuery}
       inputProps={{
         placeholder: "Search pages (e.g. dashboard, invoices)...",
-        icon: <Search className="w-5 h-5 text-gray-400" />,
+        icon: <SearchIcon />,
         className: "bg-gray-50/50",
       }}
     >

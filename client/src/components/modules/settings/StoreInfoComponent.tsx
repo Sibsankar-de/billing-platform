@@ -14,8 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "@/components/modules/navbar/navbar";
+import { NavActionButton } from "@/components/modules/navbar/Navbar";
 import { CurrencySelector } from "@/components/ui/CurrencySelector";
+import { CloudCheck } from "lucide-react";
 
 export const StoreInfoComponent = () => {
   const { storeId } = useStoreNavigation();
@@ -79,7 +80,8 @@ export const StoreInfoComponent = () => {
         disabled={isUpdating}
         loading={isUpdating}
       >
-        Save
+        <CloudCheck size={17} />
+        Save Changes
       </NavActionButton>,
     );
   }, [setActionButtons, isUpdating, formData]);
@@ -181,7 +183,8 @@ export const StoreInfoComponent = () => {
           loading={isUpdating}
           onClick={handleSaveChanges}
         >
-          Save changes
+          <CloudCheck size={17} />
+          Save Changes
         </Button>
       </div>
     </div>

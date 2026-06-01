@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HeaderNavbar } from "@/components/modules/navbar/navbar";
+import { HeaderNavbar } from "@/components/modules/navbar/Navbar";
 import { ProfileDetailsSection } from "@/components/modules/profile/ProfileDetailsSection";
 import { StoreListSection } from "@/components/modules/profile/StoreListSection";
 import { PageContainer } from "@/components/ui/PageContainer";

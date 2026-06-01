@@ -2,9 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Users, Eye, Download, Trash2 } from "lucide-react";
-import Link from "next/link";
-import { Input } from "@/components/ui/Input";
+import { Users, Eye, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import { pageLimits } from "@/constants/pageLimits";
@@ -22,6 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/components/utils";
 import { getTableSearchDebounceTime } from "@/utils/get-debounce";
 import { CustomerDeleteModal } from "./CustomerDeleteModal";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 const columnHelper = createColumnHelper<CustomerDto>();
 
@@ -171,7 +170,8 @@ export const CustomerListTable = () => {
         header: "Total Due",
         cell: (info) => (
           <span className={info.getValue() ? "text-red-400" : "text-gray-900"}>
-            {currencySymbol}{info.getValue() || 0}
+            {currencySymbol}
+            {info.getValue() || 0}
           </span>
         ),
         meta: { className: "text-center" },
@@ -195,14 +195,11 @@ export const CustomerListTable = () => {
   return (
     <div>
       {/* Search and Filters */}
-      <div className="flex-1 relative mb-4">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <Input
-          type="text"
+      <div className="mb-4">
+        <SearchInput
           placeholder="Search by name or phone number..."
           value={searchTerm}
           onChange={(val) => setSearchTerm(val)}
-          className="pl-10"
         />
       </div>
 

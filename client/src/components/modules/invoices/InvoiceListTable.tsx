@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Search, FileText, Pen, Eye, Download } from "lucide-react";
-import { Input } from "@/components/ui/Input";
+import { FileText, Pen, Eye, Download } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -25,6 +24,7 @@ import { InvoiceDueEditModal } from "./InvoiceDueEditModal";
 import { InvoiceViewModal } from "./InvoiceViewModal";
 import { getTableSearchDebounceTime } from "@/utils/get-debounce";
 import { cn } from "@/components/utils";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 const filterOptions: SelectOptionType[] = [
   { value: "All", key: "all" },
@@ -183,7 +183,8 @@ export const InvoiceListTable = ({ customerId }: { customerId?: string }) => {
         header: "Total",
         cell: (info) => (
           <span className="text-gray-900 font-medium">
-            {currencySymbol}{info.getValue()}
+            {currencySymbol}
+            {info.getValue()}
           </span>
         ),
         meta: { className: "text-center" },
@@ -198,7 +199,8 @@ export const InvoiceListTable = ({ customerId }: { customerId?: string }) => {
                 : "text-green-600 font-medium"
             }
           >
-            {currencySymbol}{info.getValue()}
+            {currencySymbol}
+            {info.getValue()}
           </span>
         ),
         meta: { className: "text-center" },
@@ -225,16 +227,11 @@ export const InvoiceListTable = ({ customerId }: { customerId?: string }) => {
     <div>
       {/* Search and Filters */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search by invoice number or client name..."
-            value={searchTerm}
-            onChange={(val) => setSearchTerm(val)}
-            className="pl-10"
-          />
-        </div>
+        <SearchInput
+          placeholder="Search by invoice number or client name..."
+          value={searchTerm}
+          onChange={(val) => setSearchTerm(val)}
+        />
         <FilterSelector
           options={filterOptions}
           value={filterStatus}

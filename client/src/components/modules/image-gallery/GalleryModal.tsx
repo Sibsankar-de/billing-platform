@@ -3,8 +3,7 @@
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Modal } from "../../ui/Modal";
 import { Button } from "../../ui/Button";
-import { Input } from "../../ui/Input";
-import { Search, X, Image as ImageIcon, CloudUpload } from "lucide-react";
+import { X, Image as ImageIcon, CloudUpload } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearGalleryList,
@@ -22,6 +21,7 @@ import { Tooltip } from "react-tooltip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Pagination } from "@/components/ui/Pagination";
 import { GalleryImageDto } from "@/types/dto/galleryImageDto";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 interface GalleryModalProps {
   open: boolean;
@@ -85,7 +85,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     if (multiSelect) {
       setLocalSelectedImages((prev) =>
         prev.find((img) => img._id === image._id)
-          ? prev.filter((img) => img._id !== img._id)
+          ? prev.filter((img) => img._id !== image._id)
           : [...prev, image],
       );
     } else {
@@ -142,17 +142,8 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
       </div>
 
       <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="relative max-w-md p-4">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-          <Input
-            placeholder="Search images by name..."
-            className="pl-10 bg-white"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e)}
-          />
+        <div className="p-4">
+          <SearchInput placeholder="Search image by name..." />
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">

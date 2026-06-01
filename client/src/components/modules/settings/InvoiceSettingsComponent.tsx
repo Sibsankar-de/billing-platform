@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { LogoUploader } from "@/components/ui/LogoUploader";
-import { ToggleButton } from "@/components/ui/ToggleButton";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   selectCurrentStoreState,
@@ -13,13 +12,19 @@ import {
   uploadQRCodeThunk,
   uploadStoreLogoThunk,
 } from "@/store/features/currentStoreSlice";
-import { Building2, Landmark, Palette, ScanQrCode, Upload } from "lucide-react";
+import {
+  Building2,
+  CloudCheck,
+  Landmark,
+  Palette,
+  ScanQrCode,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useNavContext } from "@/contexts/NavContext";
-import { NavActionButton } from "@/components/modules/navbar/navbar";
+import { NavActionButton } from "@/components/modules/navbar/Navbar";
 import { LineToggle } from "@/components/ui/LineToggle";
 
 export const InvoiceSettingsComponent = () => {
@@ -136,7 +141,8 @@ export const InvoiceSettingsComponent = () => {
         disabled={isUpdating}
         loading={isUpdating}
       >
-        Save
+        <CloudCheck size={17} />
+        Save Changes
       </NavActionButton>,
     );
   }, [setActionButtons, isUpdating, formData]);
@@ -276,6 +282,7 @@ export const InvoiceSettingsComponent = () => {
           disabled={isUpdating}
           loading={isUpdating}
         >
+          <CloudCheck size={17} />
           Save Changes
         </Button>
       </div>

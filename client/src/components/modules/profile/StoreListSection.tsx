@@ -1,15 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { Plus } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { Plus, Store } from "lucide-react";
+import { useEffect, useState } from "react";
 import { StoreCreateModal } from "./StoreCreateModal";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStoreList, selectStoreState } from "@/store/features/storeSlice";
 import { StoreCard } from "./StoreCard";
 import { StoreCardSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Store } from "lucide-react";
 
 export const StoreListSection = () => {
   const dispatch = useDispatch();
