@@ -1,17 +1,10 @@
 "use client";
 
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Modal } from "../../ui/Modal";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
-import {
-  Search,
-  Upload,
-  X,
-  Loader2,
-  Image as ImageIcon,
-  CloudUpload,
-} from "lucide-react";
+import { Search, X, Image as ImageIcon, CloudUpload } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearGalleryList,
@@ -28,12 +21,13 @@ import { Loader } from "@/components/ui/loader";
 import { Tooltip } from "react-tooltip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Pagination } from "@/components/ui/Pagination";
+import { GalleryImageDto } from "@/types/dto/galleryImageDto";
 
 interface GalleryModalProps {
   open: boolean;
   onClose: () => void;
   onSelect: (images: any[]) => void;
-  selectedImageIds?: string[];
+  selectedImages?: GalleryImageDto[];
   multiSelect?: boolean;
 }
 
@@ -41,41 +35,38 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
   open,
   onClose,
   onSelect,
-  selectedImageIds = [],
+  selectedImages = [],
   multiSelect = true,
 }) => {
   const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
   const {
-    data: {
-      galleryListData: { pages },
-    },
+    data: { galleryListData },
     status,
     uploadStatus,
   } = useSelector(selectGalleryState);
   const [searchQuery, setSearchQuery] = useState("");
-  const [localSelectedIds, setLocalSelectedIds] =
-    useState<string[]>(selectedImageIds);
+  const [localSelectedImages, setLocalSelectedImages] =
+    useState<GalleryImageDto[]>(selectedImages);
 
-  // Aggregate all images from loaded pages
-  const allImages = Object.values(pages).flatMap((p: any) => p.docs);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    if (open) {
-      setLocalSelectedIds(selectedImageIds);
-      // Only fetch if page 1 doesn't exist
-      if (!pages[1]) {
-        dispatch(
-          fetchGalleryImagesThunk({
-            storeId,
-            query: searchQuery,
-            page: 1,
-            limit: pageLimits.GALLERY_IMAGE,
-          }),
-        );
-      }
+    if (!open) {
+      return;
     }
-  }, [open, storeId, dispatch]);
+    setLocalSelectedImages(selectedImages);
+    if (!galleryListData.pages[currentPage]) {
+      dispatch(
+        fetchGalleryImagesThunk({
+          storeId,
+          query: searchQuery,
+          page: currentPage,
+          limit: pageLimits.GALLERY_IMAGE,
+        }),
+      );
+    }
+  }, [open, storeId, currentPage, dispatch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -90,22 +81,20 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     );
   };
 
-  const handleImageSelect = (id: string) => {
+  const handleImageSelect = (image: GalleryImageDto) => {
     if (multiSelect) {
-      setLocalSelectedIds((prev) =>
-        prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+      setLocalSelectedImages((prev) =>
+        prev.find((img) => img._id === image._id)
+          ? prev.filter((img) => img._id !== img._id)
+          : [...prev, image],
       );
     } else {
-      setLocalSelectedIds([id]);
+      setLocalSelectedImages([image]);
     }
   };
 
   const handleConfirmSelection = () => {
-    // Collect selected images from across all loaded pages
-    const selectedImages = allImages.filter((img) =>
-      localSelectedIds.includes(img._id),
-    );
-    onSelect(selectedImages);
+    onSelect(localSelectedImages);
     onClose();
   };
 
@@ -122,13 +111,14 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
       .unwrap()
       .then((newImage: any) => {
         toast.success("Image uploaded");
-        if (multiSelect) {
-          setLocalSelectedIds((prev) => [...prev, newImage._id]);
-        } else {
-          setLocalSelectedIds([newImage._id]);
-        }
+        handleImageSelect(newImage);
       });
   };
+
+  const pageData = useMemo(
+    () => galleryListData.pages[currentPage]?.docs || [],
+    [galleryListData, currentPage],
+  );
 
   const isUploading = uploadStatus === "loading";
 
@@ -172,25 +162,35 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
               onChange={handleFileUpload}
             />
 
-            {allImages.map((image) => (
+            {pageData.map((image) => (
               <GalleryItem
                 key={image._id}
                 image={image}
-                isSelected={localSelectedIds.includes(image._id)}
+                isSelected={
+                  localSelectedImages.find((img) => img._id === image._id)
+                    ? true
+                    : false
+                }
                 onSelect={handleImageSelect}
               />
             ))}
           </div>
 
-          <Pagination currentPage={1} totalPage={5} />
+          {galleryListData.totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPage={galleryListData.totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
 
-          {status === "loading" && allImages.length === 0 && (
+          {status === "loading" && pageData.length === 0 && (
             <div className="h-40 flex items-center justify-center">
               <Loader size={32} />
             </div>
           )}
 
-          {status === "success" && allImages.length === 0 && searchQuery && (
+          {status === "success" && pageData.length === 0 && searchQuery && (
             <EmptyState
               title="No images found"
               description="Upload images to select a image."
@@ -202,14 +202,14 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
 
       <div className="p-4 border-t flex items-center justify-between bg-gray-50">
         <p className="text-sm text-gray-600">
-          {localSelectedIds.length} image(s) selected
+          {localSelectedImages.length} image(s) selected
         </p>
         <div className="flex gap-3">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button
-            disabled={localSelectedIds.length === 0}
+            disabled={localSelectedImages.length === 0}
             onClick={handleConfirmSelection}
           >
             Confirm Selection

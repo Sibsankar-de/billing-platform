@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { GalleryModal } from "../image-gallery/GalleryModal";
 import Image from "next/image";
-import { ImagePlus, Plus, Trash } from "lucide-react";
+import { ImagePlus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GalleryImageDto } from "@/types/dto/galleryImageDto";
 import { cn } from "@/components/utils";
@@ -48,7 +48,7 @@ export const ProductImageSection = ({
         open={isGalleryOpen}
         onClose={() => setIsGalleryOpen(false)}
         onSelect={handleImageSelect}
-        selectedImageIds={selectedImages.map((img) => img._id)}
+        selectedImages={selectedImages}
       />
     </div>
   );

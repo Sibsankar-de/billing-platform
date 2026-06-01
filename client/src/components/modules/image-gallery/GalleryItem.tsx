@@ -1,15 +1,13 @@
 import React from "react";
 import Image from "next/image";
-import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/components/utils";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { GalleryImageDto } from "@/types/dto/galleryImageDto";
-import { Tooltip } from "react-tooltip";
 
 interface GalleryItemProps {
   image: GalleryImageDto;
   isSelected: boolean;
-  onSelect: (id: string) => void;
+  onSelect: (image: GalleryImageDto) => void;
 }
 
 export const GalleryItem: React.FC<GalleryItemProps> = ({
@@ -25,7 +23,7 @@ export const GalleryItem: React.FC<GalleryItemProps> = ({
           ? "border-primary"
           : "border-transparent hover:border-border",
       )}
-      onClick={() => onSelect(image._id)}
+      onClick={() => onSelect(image)}
     >
       <div className="aspect-square relative">
         <Image
@@ -41,7 +39,7 @@ export const GalleryItem: React.FC<GalleryItemProps> = ({
             !isSelected && "hidden group-hover:block",
           )}
           checked={isSelected}
-          onChange={() => onSelect(image._id)}
+          onChange={() => onSelect(image)}
         />
       </div>
       <div className="p-2 border-t border-border">
