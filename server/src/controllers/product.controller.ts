@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiResponse } from "../utils/ApiResponse";
-import { Product, ProductModelType } from "../models/product.model";
+import { Product } from "../models/product.model";
 import { ProductImage } from "../models/productImage.model";
 import { ApiError } from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
@@ -62,6 +62,9 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
               $match: {
                 $expr: { $eq: ["$productId", "$$productId"] },
               },
+            },
+            {
+              $sort: { priority: 1 },
             },
             {
               $lookup: {
@@ -164,7 +167,7 @@ export const createProduct = asyncHandler(
       await addOrRemoveProductImages(product._id.toString(), imageIds);
     }
 
-    const productWithCategories = await getProductWithCategories(product);
+    const productWithCategories = await getPopulatedProductData(product);
 
     return res
       .status(StatusCodes.OK)
@@ -234,8 +237,7 @@ export const updateProduct = asyncHandler(
       await addOrRemoveProductImages(productId as string, imageIds);
     }
 
-    const productWithCategories =
-      await getProductWithCategories(updatedProduct);
+    const productWithCategories = await getPopulatedProductData(updatedProduct);
 
     return res
       .status(StatusCodes.OK)
@@ -270,10 +272,14 @@ const addOrRemoveProductImages = async (
 
   if (imagesToAdd.length > 0) {
     await ProductImage.insertMany(
-      imagesToAdd.map((imageId) => ({
-        productId,
-        imageId,
-      })),
+      imagesToAdd.map((imageId) => {
+        const index = imageIds.indexOf(imageId);
+        return {
+          productId,
+          imageId,
+          priority: index !== -1 ? index + 1 : 1,
+        };
+      }),
     );
   }
 };
@@ -293,25 +299,18 @@ const getOrCreateCategory = async (categoryName: string, storeId: string) => {
 export const getProductById = asyncHandler(
   async (req: Request, res: Response) => {
     const { productId } = req.params;
-    const product = await Product.findById(productId).populate([
-      { path: "categories", select: "_id name storeId" },
-    ]);
+    const product = await Product.findById(productId);
 
     if (!product)
       throw new ApiError(StatusCodes.BAD_REQUEST, "Invalid product id");
 
-    const images = await ProductImage.find({ productId }).populate("imageId");
+    const populatedProduct = await getPopulatedProductData(product);
 
-    return res.status(StatusCodes.OK).json(
-      new ApiResponse(
-        StatusCodes.OK,
-        {
-          ...product.toObject(),
-          images: images.map((img) => img.imageId),
-        },
-        "Product fetched",
-      ),
-    );
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(StatusCodes.OK, populatedProduct, "Product fetched"),
+      );
   },
 );
 
@@ -329,15 +328,65 @@ export const deleteProduct = asyncHandler(
   },
 );
 
-const getProductWithCategories = async (product: any) => {
+export const rearrangeProductImages = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params;
+    const { imagePriorities } = req.body;
+
+    if (!imagePriorities || typeof imagePriorities !== "object") {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Image priorities map is required.",
+      );
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId as string)) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, "Invalid product id.");
+    }
+
+    const bulkOps = Object.entries(imagePriorities)
+      .filter(([imageId]) => mongoose.Types.ObjectId.isValid(imageId))
+      .map(([imageId, priority]) => ({
+        updateOne: {
+          filter: {
+            productId: new mongoose.Types.ObjectId(productId as string),
+            imageId: new mongoose.Types.ObjectId(imageId),
+          },
+          update: { $set: { priority: Number(priority) } },
+        },
+      }));
+
+    if (bulkOps.length > 0) {
+      await ProductImage.bulkWrite(bulkOps);
+    }
+
+    return res
+      .status(StatusCodes.OK)
+      .json(
+        new ApiResponse(StatusCodes.OK, null, "Images rearranged successfully"),
+      );
+  },
+);
+
+const getPopulatedProductData = async (product: any) => {
   const categories = await Category.find({ _id: { $in: product.categories } });
-  const images = await ProductImage.find({ productId: product._id }).populate(
-    "imageId",
-  );
+  const images = await ProductImage.find({ productId: product._id })
+    .sort({ priority: 1 })
+    .populate("imageId");
+
   return {
     ...product.toObject(),
     categories,
-    images: images.map((img) => img.imageId),
+    images: images.map((img) => {
+      const imageData = img.imageId as any;
+      return {
+        _id: img._id,
+        priority: img.priority,
+        imageId: imageData._id,
+        url: imageData.url,
+        name: imageData.name,
+      };
+    }),
   };
 };
 

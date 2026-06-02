@@ -5,6 +5,14 @@ export type PricePerQuantityType = {
   profitMargin: number;
 };
 
+export type ProductImageType = {
+  _id: string;
+  imageId: string;
+  priority: number;
+  url: string;
+  name: string;
+};
+
 export type ProductDto = {
   _id: string;
   storeId: string;
@@ -18,11 +26,7 @@ export type ProductDto = {
   enableInventoryTracking?: boolean;
   stockUnit: string;
   pricePerQuantity: PricePerQuantityType[];
-  images?: {
-    _id: string;
-    url: string;
-    name: string;
-  }[];
+  images?: ProductImageType[];
   imageIds?: string[];
   createdAt?: Date;
   updatedAt?: Date;

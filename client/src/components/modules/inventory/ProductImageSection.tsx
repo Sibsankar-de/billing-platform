@@ -3,12 +3,13 @@ import { GalleryModal } from "../image-gallery/GalleryModal";
 import Image from "next/image";
 import { ImagePlus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { GalleryImageDto } from "@/types/dto/galleryImageDto";
 import { cn } from "@/components/utils";
+import { ProductImageType } from "@/types/dto/productDto";
+import { GalleryImageDto } from "@/types/dto/galleryImageDto";
 
 type ProductImageSectionTypes = {
-  selectedImages: GalleryImageDto[];
-  onImageChange: (images: GalleryImageDto[]) => void;
+  selectedImages: ProductImageType[];
+  onImageChange: (images: ProductImageType[]) => void;
 };
 
 export const ProductImageSection = ({
@@ -17,20 +18,35 @@ export const ProductImageSection = ({
 }: ProductImageSectionTypes) => {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
-  const handleImageSelect = (images: any[]) => {
-    onImageChange(images);
+  const handleImageSelect = (images: GalleryImageDto[]) => {
+    const productImages: ProductImageType[] = images.map((img) => ({
+      ...(selectedImages.find((selected) => selected.imageId === img._id) || {
+        _id: "",
+        imageId: img._id,
+        priority: selectedImages.length + 1,
+        url: img.url,
+        name: img.name,
+      }),
+    }));
+    onImageChange(productImages);
   };
 
   const removeImage = (id: string) => {
-    const updatedImages = selectedImages.filter((img) => img._id !== id);
+    const updatedImages = selectedImages.filter((img) => img.imageId !== id);
     onImageChange(updatedImages);
   };
+
+  console.log("Selected Images in ProductImageSection:", selectedImages);
 
   return (
     <div>
       <div className="flex flex-wrap gap-4">
         {selectedImages.map((image) => (
-          <ProductImage key={image._id} image={image} onRemove={removeImage} />
+          <ProductImage
+            key={image.imageId}
+            image={image}
+            onRemove={removeImage}
+          />
         ))}
         <Button
           variant="none"
@@ -48,7 +64,7 @@ export const ProductImageSection = ({
         open={isGalleryOpen}
         onClose={() => setIsGalleryOpen(false)}
         onSelect={handleImageSelect}
-        selectedImages={selectedImages}
+        selectedImageIds={selectedImages.map((img) => img.imageId)}
       />
     </div>
   );
@@ -58,7 +74,7 @@ const ProductImage = ({
   image,
   onRemove,
 }: {
-  image: GalleryImageDto;
+  image: ProductImageType;
   onRemove: (id: string) => void;
 }) => {
   return (
@@ -66,7 +82,7 @@ const ProductImage = ({
       <Image src={image.url} alt={image.name} fill className="object-cover" />
       <Button
         variant="danger"
-        onClick={() => onRemove(image._id)}
+        onClick={() => onRemove(image.imageId)}
         className="absolute top-1 right-1 p-2"
       >
         <Trash size={12} />

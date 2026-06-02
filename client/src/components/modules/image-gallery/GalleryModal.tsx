@@ -26,8 +26,8 @@ import { SearchInput } from "@/components/ui/SearchInput";
 interface GalleryModalProps {
   open: boolean;
   onClose: () => void;
-  onSelect: (images: any[]) => void;
-  selectedImages?: GalleryImageDto[];
+  onSelect: (images: GalleryImageDto[]) => void;
+  selectedImageIds?: string[];
   multiSelect?: boolean;
 }
 
@@ -35,7 +35,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
   open,
   onClose,
   onSelect,
-  selectedImages = [],
+  selectedImageIds = [],
   multiSelect = true,
 }) => {
   const { storeId } = useStoreNavigation();
@@ -46,8 +46,9 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     uploadStatus,
   } = useSelector(selectGalleryState);
   const [searchQuery, setSearchQuery] = useState("");
-  const [localSelectedImages, setLocalSelectedImages] =
-    useState<GalleryImageDto[]>(selectedImages);
+  const [localSelectedImages, setLocalSelectedImages] = useState<
+    GalleryImageDto[]
+  >([]);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -55,7 +56,13 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     if (!open) {
       return;
     }
-    setLocalSelectedImages(selectedImages);
+    // populate selected images in local state based on selectedImageIds
+    setLocalSelectedImages(
+      galleryListData.pages[currentPage]?.docs.filter((img) =>
+        selectedImageIds.includes(img._id),
+      ) || [],
+    );
+
     if (!galleryListData.pages[currentPage]) {
       dispatch(
         fetchGalleryImagesThunk({
@@ -66,7 +73,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
         }),
       );
     }
-  }, [open, storeId, currentPage, dispatch]);
+  }, [open, storeId, currentPage, galleryListData, dispatch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

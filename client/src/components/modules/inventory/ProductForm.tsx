@@ -9,7 +9,7 @@ import { PriceBreakdownInput } from "./PriceBreakdownInput";
 import { Button } from "../../ui/Button";
 import { CloudCheck, Info } from "lucide-react";
 import { useEffect, useState } from "react";
-import { PricePerQuantityType } from "@/types/dto/productDto";
+import { PricePerQuantityType, ProductImageType } from "@/types/dto/productDto";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addNewProductThunk,
@@ -31,7 +31,6 @@ import { NavActionButton } from "../navbar/Navbar";
 import { IconTooltip } from "@/components/ui/IconTooltip";
 import descriptiveTooltip from "@/constants/descriptiveTooltip";
 import { ProductImageSection } from "./ProductImageSection";
-import { GalleryImageDto } from "@/types/dto/galleryImageDto";
 
 export const ProductForm = ({ formFor }: { formFor: string }) => {
   const router = useRouter();
@@ -62,7 +61,7 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     imageIds: [] as string[],
   });
 
-  const [selectedImages, setSelectedImages] = useState<GalleryImageDto[]>([]);
+  const [selectedImages, setSelectedImages] = useState<ProductImageType[]>([]);
 
   // UI State (String values for Inputs)
   const [localInputs, setLocalInputs] = useState({
@@ -102,11 +101,11 @@ export const ProductForm = ({ formFor }: { formFor: string }) => {
     }));
   }
 
-  const handleSelectedImageChange = (images: GalleryImageDto[]) => {
+  const handleSelectedImageChange = (images: ProductImageType[]) => {
     setSelectedImages(images);
     handleFormData(
       "imageIds",
-      images.map((img) => img._id),
+      images.map((img) => img.imageId),
     );
   };
 

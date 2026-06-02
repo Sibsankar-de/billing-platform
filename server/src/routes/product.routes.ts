@@ -5,6 +5,7 @@ import {
   updateProduct,
   deleteProduct,
   getProductById,
+  rearrangeProductImages,
 } from "../controllers/product.controller";
 import { verifyAuth } from "../middlewares/auth.middleware";
 import {
@@ -20,6 +21,11 @@ router.get("/:storeId", verifyEmployeeLevelAccess, getProducts);
 router.post("/:storeId", verifyManagerLevelAccess, createProduct);
 router.get("/:storeId/:productId", verifyManagerLevelAccess, getProductById);
 router.patch("/:storeId/:productId", verifyManagerLevelAccess, updateProduct);
+router.patch(
+  "/:storeId/:productId/rearrange-images",
+  verifyManagerLevelAccess,
+  rearrangeProductImages,
+);
 router.delete("/:storeId/:productId", verifyManagerLevelAccess, deleteProduct);
 
 export default router;

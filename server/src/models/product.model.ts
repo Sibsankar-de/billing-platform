@@ -60,6 +60,10 @@ const productSchema = new Schema(
     description: {
       type: String,
     },
+    thumbnailImageId: {
+      type: mongoose.Types.ObjectId,
+      ref: "GalleryImage",
+    },
     categories: {
       type: [mongoose.Types.ObjectId],
       ref: "Category",

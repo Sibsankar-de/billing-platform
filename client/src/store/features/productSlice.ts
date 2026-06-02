@@ -25,8 +25,7 @@ export const getProductDetailsThunk: any = createApiThunk(
 
 export const addNewProductThunk: any = createApiThunk(
   "/products/create",
-  async (payload) =>
-    await api.post(`/products/${payload.storeId}`, payload),
+  async (payload) => await api.post(`/products/${payload.storeId}`, payload),
 );
 
 export const updateProductThunk: any = createApiThunk(
@@ -41,9 +40,7 @@ export const updateProductThunk: any = createApiThunk(
 export const deleteProductThunk: any = createApiThunk(
   "/products/delete",
   async (payload) =>
-    await api.delete(
-      `/products/${payload.storeId}/${payload.productId}`,
-    ),
+    await api.delete(`/products/${payload.storeId}/${payload.productId}`),
 );
 
 export const fetchCategoriesThunk: any = createApiThunk(
@@ -124,13 +121,6 @@ const productSlice = createSlice({
       .addCase(updateProductThunk.fulfilled, (state, action) => {
         state.updateStatus = "success";
         state.error = null;
-        // const updatedProduct = action.payload;
-        // const p_index = state.data.productList.findIndex(
-        //   (p) => p._id === updatedProduct._id,
-        // );
-        // if (p_index !== -1) {
-        //   state.data.productList[p_index] = updatedProduct;
-        // }
       })
 
       .addCase(deleteProductThunk.pending, (state, action) =>
@@ -142,9 +132,6 @@ const productSlice = createSlice({
       .addCase(deleteProductThunk.fulfilled, (state, action) => {
         state.deleteStatus = "success";
         state.error = null;
-        // state.data.productList = state.data.productList.filter(
-        //   (e) => e._id !== action.payload?.productId,
-        // );
       })
       .addCase(fetchCategoriesThunk.pending, (state, action) =>
         setState(state, action, "categoryStatus"),
