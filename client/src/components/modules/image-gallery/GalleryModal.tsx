@@ -1,7 +1,7 @@
 "use client";
 
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { Modal } from "../../ui/Modal";
+import { Modal, ModalHeader } from "../../ui/Modal";
 import { Button } from "../../ui/Button";
 import { X, Image as ImageIcon, CloudUpload } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -133,27 +133,13 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     <Modal
       openState={open}
       onClose={onClose}
-      className="max-w-4xl w-full h-[80vh] flex flex-col p-0"
+      className="max-w-4xl w-full h-[80vh] flex flex-col"
+      header={<ModalHeader title="Image Gallery" />}
     >
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <ImageIcon size={20} />
-          Image Gallery
-        </h2>
-        <button
-          onClick={onClose}
-          className="p-1 hover:bg-gray-100 rounded-full"
-        >
-          <X size={20} />
-        </button>
-      </div>
+      <div className="flex-1 overflow-hidden flex flex-col gap-4 p-2">
+        <SearchInput placeholder="Search image by name..." />
 
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="p-4">
-          <SearchInput placeholder="Search image by name..." />
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4">
             <ImageUploadButton
               isUploading={isUploading}
@@ -198,7 +184,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
         </div>
       </div>
 
-      <div className="p-4 border-t flex items-center justify-between bg-gray-50">
+      <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
           {localSelectedImages.length} image(s) selected
         </p>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { CurrencySelector } from "@/components/ui/CurrencySelector";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Modal } from "@/components/ui/Modal";
+import { Modal, ModalHeader } from "@/components/ui/Modal";
 import {
   createNewStoreThunk,
   selectStoreState,
@@ -54,16 +54,18 @@ export const StoreCreateModal = ({
   };
 
   return (
-    <Modal openState={openState} onClose={onClose} className="min-w-[70vh]">
+    <Modal
+      openState={openState}
+      onClose={onClose}
+      className="min-w-[70vh]"
+      header={
+        <ModalHeader
+          title="Create New Store"
+          subtitle="Fill the details to create new store."
+        />
+      }
+    >
       <div className="p-3 space-y-6">
-        <div>
-          <h2 className="text-gray-900 mb-1 text-2xl font-semibold">
-            Create new store
-          </h2>
-          <p className="text-sm text-gray-600">
-            Fill the details to create the store
-          </p>
-        </div>
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="storeName" required>

@@ -7,7 +7,7 @@ export const SearchInput = ({ ...props }: InputType) => {
   return (
     <Input
       type="search"
-      className={cn(" w-full", props.className)}
+      className={cn("w-full", props.className)}
       icon={<SearchIcon />}
       {...props}
     />

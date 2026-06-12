@@ -3,7 +3,7 @@
 import { InvoiceDocument } from "@/components/sections/InvoiceDocument";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
-import { Modal } from "@/components/ui/Modal";
+import { Modal, ModalHeader } from "@/components/ui/Modal";
 import { Select } from "@/components/ui/Select";
 import { pageSizes } from "@/constants/pageSizeMaps";
 import { CreateInvoiceDto } from "@/types/dto/invoiceDto";
@@ -60,13 +60,8 @@ export const PrintModal = ({
       openState={openState}
       className="min-w-[50vw] space-y-4"
       onClose={onClose}
+      header={<ModalHeader title="Save and print Invoice" />}
     >
-      <div className="flex items-center gap-3 justify-between">
-        <h3 className="text-xl">Save and print Invoice</h3>
-        <Button variant="outline" className="p-2" onClick={onClose}>
-          <X size={18} />
-        </Button>
-      </div>
       <div className="flex justify-end items-center gap-3">
         <Label className="mb-0">Page size:</Label>
         <Select

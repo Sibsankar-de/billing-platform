@@ -1,21 +1,35 @@
 "use client";
 
-import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "../utils";
+import { Button } from "./Button";
+import { X } from "lucide-react";
+
+const ModalContext = createContext<{
+  open: boolean;
+  onClose?: () => void;
+}>({
+  open: false,
+  onClose: () => {},
+});
+
+export const useModalContext = () => useContext(ModalContext);
 
 export type ModalProps = {
   children?: React.ReactNode;
   className?: string;
   onClose?: () => void;
   openState?: boolean;
+  header?: React.ReactNode;
 };
 
 export const Modal = ({
   children,
   openState = false,
-  onClose,
   className = "",
+  header,
+  onClose,
 }: ModalProps) => {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -50,25 +64,58 @@ export const Modal = ({
 
   if (!open) return null;
   return createPortal(
-    <div
-      className={clsx(
-      `fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.5)] 
-      flex items-start justify-center z-60 backdrop-blur-[5px] fade-in pt-8 pb-2 overflow-y-auto`,
-      closing && "fade-out",
-      )}
-      onClick={() => onClose && onClose()}
-    >
+    <ModalContext.Provider value={{ open, onClose }}>
       <div
-        className={clsx(
-          "min-w-[15em] min-h-[5em] bg-background p-3 rounded-xl dropdown-open-anim",
-          className,
-          closing && "dropdown-close-anim",
+        className={cn(
+          "fixed top-0 left-0 z-60 w-screen h-screen pt-8 pb-2 overflow-y-auto",
+          "bg-black/50 backdrop-blur-[5px] fade-in",
+          "flex items-start justify-center",
+          closing && "fade-out",
         )}
-        onClick={(e) => e.stopPropagation()}
+        onClick={() => onClose && onClose()}
       >
-        {children}
+        <div
+          className={cn(
+            "bg-background rounded-xl dropdown-open-anim",
+            closing && "dropdown-close-anim",
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          {header && header}
+
+          {/* Modal body */}
+          <div className={cn("min-w-[15em] min-h-[5em] p-3", className)}>
+            {children}
+          </div>
+        </div>
       </div>
-    </div>,
+    </ModalContext.Provider>,
     document.body,
+  );
+};
+
+export const ModalHeader = ({
+  title,
+  subtitle,
+}: {
+  title: React.ReactNode;
+  subtitle?: string;
+}) => {
+  const { onClose } = useModalContext();
+  return (
+    <div className="p-3 flex items-baseline gap-2 justify-between border-b border-border">
+      <div>
+        <h3 className="text-xl font-semibold">{title}</h3>
+        {subtitle && <p className="text-gray-600 text-sm">{subtitle}</p>}
+      </div>
+      <Button
+        variant="outline"
+        className="p-2 border-transparent"
+        onClick={() => onClose && onClose()}
+      >
+        <X size={18} />
+      </Button>
+    </div>
   );
 };

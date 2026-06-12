@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Modal } from "@/components/ui/Modal";
+import { Modal, ModalHeader } from "@/components/ui/Modal";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   deleteCustomerThunk,
@@ -54,15 +54,8 @@ export function CustomerDeleteModal({
       openState={openState}
       onClose={onClose}
       className="p-4 space-y-4 w-[30vw]"
+      header={<ModalHeader title="Delete Customer" />}
     >
-      <div className="flex justify-between items-center gap-2">
-        <div>
-          <h5 className="text-2xl">Delete customer</h5>
-        </div>
-        <Button variant="outline" className="p-2" onClick={onClose}>
-          <X size={20} />
-        </Button>
-      </div>
       <p>This action will delete the customer and its data permanently.</p>
       <div className="mb-6">
         <Label>

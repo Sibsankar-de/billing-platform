@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { DataTable } from "@/components/ui/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/Button";
-import { Modal } from "@/components/ui/Modal";
+import { Modal, ModalHeader } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
@@ -209,10 +209,12 @@ const UserInviteModal = ({
 
   const isSubmitting = accessorAddStatus === "loading";
   return (
-    <Modal openState={isOpen} onClose={onClose} className="space-y-4 p-4 w-lg">
-      <div>
-        <h5 className="text-xl">Invite new User</h5>
-      </div>
+    <Modal
+      openState={isOpen}
+      onClose={onClose}
+      className="space-y-4 p-4 w-lg"
+      header={<ModalHeader title="Invite New User" />}
+    >
       <div className="space-y-2">
         <Label htmlFor="email" required>
           User Email
@@ -363,10 +365,8 @@ const UserDeleteModal = ({
       openState={openState}
       onClose={onClose}
       className="space-y-6 p-4 w-lg"
+      header={<ModalHeader title="Remove User Access" />}
     >
-      <div>
-        <h5 className="text-xl">Remove Access</h5>
-      </div>
       <p className="text-gray-600">
         Are you sure you want to remove <strong>{userData.userName}</strong>'s
         access to this store? They will no longer be able to view or manage any
