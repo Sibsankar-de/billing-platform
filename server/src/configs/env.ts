@@ -17,6 +17,7 @@ export const env = {
 
   MONGO_CONNECTION_URI: process.env.MONGO_CONNECTION_URI || "",
   DB_NAME: process.env.DB_NAME || "ease-inv",
+  MONGO_REPLICA_SET: process.env.MONGO_REPLICA_SET || undefined,
 
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,

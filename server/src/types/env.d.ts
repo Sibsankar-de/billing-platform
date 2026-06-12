@@ -6,6 +6,7 @@ declare namespace NodeJS {
     COOKIE_DOMAIN: string;
     MONGO_CONNECTION_URI: string;
     DB_NAME: string;
+    MONGO_REPLICA_SET: string;
     ACCESS_TOKEN_SECRET: string;
     REFRESH_TOKEN_SECRET: string;
     ACCESS_TOKEN_EXPIRY: any;

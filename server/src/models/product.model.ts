@@ -117,7 +117,7 @@ productSchema.plugin(aggregatePaginate);
 
 export type ProductModelType = InferSchemaType<typeof productSchema> &
   ProductMethods;
-type ProductModel = PaginateModel<ProductModelType> &
+export type ProductModel = PaginateModel<ProductModelType> &
   AggregatePaginateModel<ProductModelType>;
 
 export const Product = model<ProductModelType, ProductModel>(
