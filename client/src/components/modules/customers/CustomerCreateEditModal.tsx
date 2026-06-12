@@ -3,12 +3,13 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Modal } from "@/components/ui/Modal";
+import { Modal, ModalHeader } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Textarea";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import {
   updateCustomerThunk,
   selectCustomerState,
+  createCustomerThunk,
 } from "@/store/features/customerSlice";
 import { CustomerDto } from "@/types/dto/customerDto";
 import { X } from "lucide-react";
@@ -16,18 +17,20 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-export function EditCustomerModal({
+export function CustomerCreateEditModal({
   openState,
   onClose,
   customer,
+  mode = "create",
 }: {
   openState: boolean;
   onClose: () => void;
-  customer: CustomerDto;
+  customer?: CustomerDto;
+  mode?: "create" | "edit";
 }) {
   const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
-  const { updateStatus } = useSelector(selectCustomerState);
+  const { createStatus, updateStatus } = useSelector(selectCustomerState);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,7 +40,7 @@ export function EditCustomerModal({
   });
 
   useEffect(() => {
-    if (customer) {
+    if (mode == "edit" && customer) {
       setFormData({
         name: customer.name || "",
         phoneNumber: customer.phoneNumber || "",
@@ -47,10 +50,27 @@ export function EditCustomerModal({
     }
   }, [customer, openState]);
 
-  const isUpdating = updateStatus === "loading";
+  const handleCreate = () => {
+    if (!formData.name.trim()) {
+      toast.warn("Customer name is required");
+      return;
+    }
+
+    dispatch(
+      createCustomerThunk({
+        storeId,
+        data: formData,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        toast.success("Customer created successfully!");
+        onClose();
+      });
+  };
 
   const handleUpdate = () => {
-    if (!formData.name.trim()) {
+    if (!customer || !formData.name.trim()) {
       toast.warn("Customer name is required");
       return;
     }
@@ -69,35 +89,47 @@ export function EditCustomerModal({
       });
   };
 
+  const handleSave = () => {
+    if (!storeId) return;
+
+    switch (mode) {
+      case "create":
+        handleCreate();
+        break;
+      case "edit":
+        handleUpdate();
+        break;
+    }
+  };
+
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const isLoading = updateStatus === "loading" || createStatus === "loading";
 
   return (
     <Modal
       openState={openState}
       onClose={onClose}
       className="p-4 space-y-4 w-[40vw]"
+      header={
+        <ModalHeader
+          title={`${mode === "edit" ? "Edit" : "Create"} Customer`}
+        />
+      }
     >
-      <div className="flex justify-between items-center gap-2">
-        <div>
-          <h5 className="text-2xl font-semibold">Edit Customer</h5>
-        </div>
-        <Button variant="outline" className="p-2" onClick={onClose}>
-          <X size={20} />
-        </Button>
-      </div>
-
       <div className="space-y-4">
         <div>
-          <Label htmlFor="name">Name*</Label>
+          <Label htmlFor="name" required>
+            Name
+          </Label>
           <Input
             id="name"
             placeholder="Enter customer name"
             value={formData.name}
             onChange={(val) => handleChange("name", val)}
-            disabled={isUpdating}
-            isInvalid={!formData.name.trim()}
+            disabled={isLoading}
           />
         </div>
 
@@ -108,7 +140,7 @@ export function EditCustomerModal({
             placeholder="Enter phone number"
             value={formData.phoneNumber}
             onChange={(val) => handleChange("phoneNumber", val)}
-            disabled={isUpdating}
+            disabled={isLoading}
           />
         </div>
 
@@ -120,7 +152,7 @@ export function EditCustomerModal({
             placeholder="Enter email address"
             value={formData.email}
             onChange={(val) => handleChange("email", val)}
-            disabled={isUpdating}
+            disabled={isLoading}
           />
         </div>
 
@@ -131,27 +163,21 @@ export function EditCustomerModal({
             placeholder="Enter address"
             value={formData.address}
             onChange={(val) => handleChange("address", val)}
-            disabled={isUpdating}
+            disabled={isLoading}
           />
         </div>
       </div>
 
-      <div className="pt-4 flex gap-3">
-        <Button
-          variant="outline"
-          className="flex-1 justify-center"
-          onClick={onClose}
-          disabled={isUpdating}
-        >
+      <div className="mt-4 flex gap-3 items-center justify-end">
+        <Button variant="outline" onClick={onClose} disabled={isLoading}>
           Cancel
         </Button>
         <Button
-          className="flex-1 justify-center"
-          onClick={handleUpdate}
-          disabled={isUpdating || !formData.name.trim()}
-          loading={isUpdating}
+          onClick={handleSave}
+          disabled={isLoading || !formData.name.trim()}
+          loading={isLoading}
         >
-          Save Changes
+          {mode === "edit" ? "Save Changes" : "Create Customer"}
         </Button>
       </div>
     </Modal>

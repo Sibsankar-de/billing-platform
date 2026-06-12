@@ -10,6 +10,9 @@ export const errorMiddleware = (
 ) => {
   let error = err;
 
+  // log the error for debugging
+  console.error("Error:", error);
+
   if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode || 500;
     const message = error.message || "Internal Server Error";

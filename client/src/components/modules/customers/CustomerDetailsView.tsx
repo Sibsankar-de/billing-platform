@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,7 +21,7 @@ import {
 import { InvoiceListTable } from "../invoices/InvoiceListTable";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
-import { EditCustomerModal } from "./EditCustomerModal";
+import { CustomerCreateEditModal } from "./CustomerCreateEditModal";
 
 export const CustomerDetailsView = () => {
   const { store_id: storeId, customer_id: customerId } = useParams();
@@ -142,7 +142,8 @@ export const CustomerDetailsView = () => {
         <InvoiceListTable customerId={customerId as string} />
       </div>
 
-      <EditCustomerModal
+      <CustomerCreateEditModal
+        mode="edit"
         openState={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         customer={currentCustomer}

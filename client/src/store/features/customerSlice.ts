@@ -32,6 +32,12 @@ export const fetchCustomerByIdThunk: any = createApiThunk(
     await api.get(`/customers/${payload.storeId}/${payload.customerId}`),
 );
 
+export const createCustomerThunk: any = createApiThunk(
+  "/customers/create",
+  async (payload: any) =>
+    await api.post(`/customers/${payload.storeId}`, payload.data),
+);
+
 export const deleteCustomerThunk: any = createApiThunk(
   "/customers/delete",
   async (payload: any) =>
@@ -125,6 +131,16 @@ const customerSlice = createSlice({
       .addCase(fetchCustomerByIdThunk.fulfilled, (state, action) => {
         state.fetchStatus = "success";
         state.data.currentCustomer = action.payload;
+        state.error = null;
+      })
+      .addCase(createCustomerThunk.pending, (state, action) =>
+        setState(state, action, "createStatus"),
+      )
+      .addCase(createCustomerThunk.rejected, (state, action) =>
+        setState(state, action, "createStatus"),
+      )
+      .addCase(createCustomerThunk.fulfilled, (state, action) => {
+        state.createStatus = "success";
         state.error = null;
       })
       .addCase(deleteCustomerThunk.pending, (state, action) =>

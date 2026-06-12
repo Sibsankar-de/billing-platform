@@ -56,7 +56,9 @@ export const getCustomers = asyncHandler(
 
     return res
       .status(StatusCodes.OK)
-      .json(new ApiResponse(StatusCodes.OK, paginatedList, "Customers fetched"));
+      .json(
+        new ApiResponse(StatusCodes.OK, paginatedList, "Customers fetched"),
+      );
   },
 );
 
@@ -112,11 +114,14 @@ export const searchCustomers = asyncHandler(
       },
     ];
 
-    const results = await Customer.aggregatePaginate(Customer.aggregate(pipeLine), {
-      page,
-      limit,
-      sort: { [sortBy]: sortOrder, name: 1 },
-    });
+    const results = await Customer.aggregatePaginate(
+      Customer.aggregate(pipeLine),
+      {
+        page,
+        limit,
+        sort: { [sortBy]: sortOrder, name: 1 },
+      },
+    );
 
     return res
       .status(StatusCodes.OK)
@@ -203,7 +208,9 @@ export const deleteCustomer = asyncHandler(
 
     return res
       .status(StatusCodes.OK)
-      .json(new ApiResponse(StatusCodes.OK, null, "Customer deleted successfully"));
+      .json(
+        new ApiResponse(StatusCodes.OK, null, "Customer deleted successfully"),
+      );
   },
 );
 
@@ -241,11 +248,14 @@ export const updateCustomer = asyncHandler(
 
 export const createCustomer = asyncHandler(
   async (req: Request, res: Response) => {
-    const { storeId } = req.params;
+    const storeId = req.store?._id;
     const { name, phoneNumber, email, address } = req.body;
 
     if (!name || !phoneNumber) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, "Name and phone number are required");
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Name and phone number are required",
+      );
     }
 
     const customer = await Customer.create({
@@ -253,12 +263,17 @@ export const createCustomer = asyncHandler(
       phoneNumber,
       email,
       address,
-      storeId: storeId as string,
+      storeId,
     });
 
     return res
       .status(StatusCodes.OK)
-      .json(new ApiResponse(StatusCodes.OK, customer, "Customer created successfully"));
+      .json(
+        new ApiResponse(
+          StatusCodes.OK,
+          customer,
+          "Customer created successfully",
+        ),
+      );
   },
 );
-

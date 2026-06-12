@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { DataTable } from "@/components/ui/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/Button";
@@ -27,6 +27,8 @@ import { StoreAccessorDto } from "@/types/dto/storeDto";
 import { Badge } from "@/components/ui/Badge";
 import { RoleBadgeVarient } from "@/constants/storeUserRole";
 import { SearchInput } from "@/components/ui/SearchInput";
+import { getTableSearchDebounceTime } from "@/utils/get-debounce";
+import { createIndex, search, SearchRule } from "@/utils/genericSearch";
 
 const ROLES = [
   { key: "MANAGER", value: "Manager" },
@@ -84,15 +86,50 @@ export const AccessControlSettingsComponent = () => {
   } = useSelector(selectCurrentStoreState);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const debounceCtx = useRef({ lastInputAt: 0, lastValueLength: 0 });
 
   useEffect(() => {
     dispatch(fetchAccessorsListThunk(storeId));
   }, [storeId, dispatch]);
 
+  // Debounce search input
+  useEffect(() => {
+    const delay = getTableSearchDebounceTime(searchTerm, debounceCtx.current);
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const searchRules = useMemo<SearchRule<StoreAccessorDto>[]>(
+    () => [
+      { field: "userName", priority: 10, mode: "prefix" },
+      { field: "userName", priority: 5, mode: "substring" },
+      { field: "email", priority: 8, mode: "prefix" },
+      { field: "email", priority: 4, mode: "substring" },
+    ],
+    [],
+  );
+
+  const searchIndex = useMemo(
+    () => createIndex(accessorsList, searchRules),
+    [accessorsList, searchRules],
+  );
+
+  const filteredAccessors = useMemo(() => {
+    if (!debouncedSearchTerm.trim()) {
+      return accessorsList;
+    }
+    return search(searchIndex, debouncedSearchTerm, accessorsList.length);
+  }, [accessorsList, searchIndex, debouncedSearchTerm]);
+
   useEffect(() => {
     setActionButtons(
       <NavActionButton onClick={() => setIsAddModalOpen(true)}>
-        <UserPlus className="w-4 h-4 mr-2" />
+        <UserPlus size={15} />
         New invite
       </NavActionButton>,
     );
@@ -145,26 +182,34 @@ export const AccessControlSettingsComponent = () => {
         <div className="flex-1">
           <SearchInput
             placeholder="Search by email or name"
-            // value={searchTerm}
-            // onChange={(val) => setSearchTerm(val)}
+            value={searchTerm}
+            onChange={(val) => setSearchTerm(val)}
           />
         </div>
         <Button className="py-2" onClick={() => setIsAddModalOpen(true)}>
-          <UserPlus className="w-4 h-4 mr-2" />
+          <UserPlus size={15} />
           Invite new user
         </Button>
       </div>
 
       <DataTable
         columns={columns}
-        data={accessorsList}
+        data={filteredAccessors}
         isLoading={isLoading}
         emptyState={
-          <EmptyState
-            title="No users found"
-            description="Start by adding a user to your store."
-            icon={<Users />}
-          />
+          debouncedSearchTerm ? (
+            <EmptyState
+              title="No users found"
+              description="No users matched your search criteria."
+              icon={<Users />}
+            />
+          ) : (
+            <EmptyState
+              title="No users found"
+              description="Start by adding a user to your store."
+              icon={<Users />}
+            />
+          )
         }
       />
 

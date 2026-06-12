@@ -22,6 +22,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Pagination } from "@/components/ui/Pagination";
 import { GalleryImageDto } from "@/types/dto/galleryImageDto";
 import { SearchInput } from "@/components/ui/SearchInput";
+import { getTableSearchDebounceTime } from "@/utils/get-debounce";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface GalleryModalProps {
   open: boolean;
@@ -29,6 +31,7 @@ interface GalleryModalProps {
   onSelect: (images: GalleryImageDto[]) => void;
   selectedImageIds?: string[];
   multiSelect?: boolean;
+  selectedImages?: { imageId: string; url: string; name: string }[];
 }
 
 export const GalleryModal: React.FC<GalleryModalProps> = ({
@@ -37,6 +40,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
   onSelect,
   selectedImageIds = [],
   multiSelect = true,
+  selectedImages = [],
 }) => {
   const { storeId } = useStoreNavigation();
   const dispatch = useDispatch();
@@ -45,48 +49,79 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     status,
     uploadStatus,
   } = useSelector(selectGalleryState);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const debounceCtx = React.useRef({ lastInputAt: 0, lastValueLength: 0 });
   const [localSelectedImages, setLocalSelectedImages] = useState<
     GalleryImageDto[]
   >([]);
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Initialize/reset selections when modal opens/closes
+  useEffect(() => {
+    if (open) {
+      if (selectedImages) {
+        const initialSelected = selectedImages.map(
+          (img) =>
+            ({
+              _id: img.imageId,
+              url: img.url,
+              name: img.name,
+            }) as GalleryImageDto,
+        );
+        setLocalSelectedImages(initialSelected);
+      } else {
+        setLocalSelectedImages([]);
+      }
+    }
+  }, [open, selectedImages]);
+
+  // Clean up search state on modal close
+  useEffect(() => {
+    if (!open) {
+      setSearchTerm("");
+      setDebouncedSearchTerm("");
+      dispatch(clearGalleryList());
+    }
+  }, [open, dispatch]);
+
+  // Debounce search input
+  useEffect(() => {
+    const delay = getTableSearchDebounceTime(searchTerm, debounceCtx.current);
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1);
+      dispatch(clearGalleryList());
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, dispatch]);
+
+  // Fetch gallery images
   useEffect(() => {
     if (!open) {
       return;
     }
-    // populate selected images in local state based on selectedImageIds
-    setLocalSelectedImages(
-      galleryListData.pages[currentPage]?.docs.filter((img) =>
-        selectedImageIds.includes(img._id),
-      ) || [],
-    );
 
     if (!galleryListData.pages[currentPage]) {
       dispatch(
         fetchGalleryImagesThunk({
           storeId,
-          query: searchQuery,
+          query: debouncedSearchTerm || undefined,
           page: currentPage,
           limit: pageLimits.GALLERY_IMAGE,
         }),
       );
     }
-  }, [open, storeId, currentPage, galleryListData, dispatch]);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    dispatch(clearGalleryList());
-    dispatch(
-      fetchGalleryImagesThunk({
-        storeId,
-        query,
-        page: 1,
-        limit: pageLimits.GALLERY_IMAGE,
-      }),
-    );
-  };
+  }, [
+    open,
+    storeId,
+    currentPage,
+    galleryListData,
+    debouncedSearchTerm,
+    dispatch,
+  ]);
 
   const handleImageSelect = (image: GalleryImageDto) => {
     if (multiSelect) {
@@ -133,11 +168,15 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
     <Modal
       openState={open}
       onClose={onClose}
-      className="max-w-4xl w-full h-[80vh] flex flex-col"
+      className="w-4xl h-[80vh] flex flex-col"
       header={<ModalHeader title="Image Gallery" />}
     >
       <div className="flex-1 overflow-hidden flex flex-col gap-4 p-2">
-        <SearchInput placeholder="Search image by name..." />
+        <SearchInput
+          placeholder="Search image by name..."
+          value={searchTerm}
+          onChange={(val) => setSearchTerm(val)}
+        />
 
         <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4">
@@ -146,18 +185,22 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
               onChange={handleFileUpload}
             />
 
-            {pageData.map((image) => (
-              <GalleryItem
-                key={image._id}
-                image={image}
-                isSelected={
-                  localSelectedImages.find((img) => img._id === image._id)
-                    ? true
-                    : false
-                }
-                onSelect={handleImageSelect}
-              />
-            ))}
+            {status === "loading" && pageData.length === 0
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <GalleryItemSkeleton key={i} />
+                ))
+              : pageData.map((image) => (
+                  <GalleryItem
+                    key={image._id}
+                    image={image}
+                    isSelected={
+                      localSelectedImages.find((img) => img._id === image._id)
+                        ? true
+                        : false
+                    }
+                    onSelect={handleImageSelect}
+                  />
+                ))}
           </div>
 
           {galleryListData.totalPages > 1 && (
@@ -168,19 +211,15 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
             />
           )}
 
-          {status === "loading" && pageData.length === 0 && (
-            <div className="h-40 flex items-center justify-center">
-              <Loader size={32} />
-            </div>
-          )}
-
-          {status === "success" && pageData.length === 0 && searchQuery && (
-            <EmptyState
-              title="No images found"
-              description="Upload images to select a image."
-              icon={<ImageIcon size={48} />}
-            />
-          )}
+          {status === "success" &&
+            pageData.length === 0 &&
+            debouncedSearchTerm && (
+              <EmptyState
+                title="No images found"
+                description="Upload images to select a image."
+                icon={<ImageIcon size={48} />}
+              />
+            )}
         </div>
       </div>
 
@@ -250,5 +289,16 @@ const ImageUploadButton = ({
         </div>
       )}
     </label>
+  );
+};
+
+const GalleryItemSkeleton = () => {
+  return (
+    <div className="rounded-md border border-border overflow-hidden">
+      <Skeleton className="aspect-square w-full rounded-none animate-pulse bg-gray-200" />
+      <div className="p-2 border-t border-border flex justify-center">
+        <Skeleton className="h-3 w-16 animate-pulse bg-gray-200" />
+      </div>
+    </div>
   );
 };

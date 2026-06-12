@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Users, Eye, Trash2 } from "lucide-react";
+import { Users, Eye, Trash2, UserPlus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useStoreNavigation } from "@/hooks/store-navigation";
 import { pageLimits } from "@/constants/pageLimits";
@@ -21,6 +21,9 @@ import { cn } from "@/components/utils";
 import { getTableSearchDebounceTime } from "@/utils/get-debounce";
 import { CustomerDeleteModal } from "./CustomerDeleteModal";
 import { SearchInput } from "@/components/ui/SearchInput";
+import { CustomerCreateEditModal } from "./CustomerCreateEditModal";
+import { useNavContext } from "@/contexts/NavContext";
+import { NavActionButton } from "../navbar/Navbar";
 
 const columnHelper = createColumnHelper<CustomerDto>();
 
@@ -57,6 +60,7 @@ const CustomerActions = ({ customer }: { customer: CustomerDto }) => {
 
 export const CustomerListTable = () => {
   const { storeId } = useStoreNavigation();
+  const { setActionButtons } = useNavContext();
   const dispatch = useDispatch();
   const {
     data: { customerListData },
@@ -65,6 +69,8 @@ export const CustomerListTable = () => {
   const {
     data: { currencySymbol },
   } = useSelector(selectCurrentStoreState);
+
+  const [customerAddModalOpen, setCustomerAddModalOpen] = useState(false);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -192,15 +198,31 @@ export const CustomerListTable = () => {
     [customerListData, currentPage],
   );
 
+  useEffect(() => {
+    setActionButtons(
+      <NavActionButton onClick={() => setCustomerAddModalOpen(true)}>
+        <UserPlus size={15} />
+        New Customer
+      </NavActionButton>,
+    );
+  }, [setActionButtons]);
+
   return (
     <div>
       {/* Search and Filters */}
-      <div className="mb-4">
+      <div className="mb-4 flex items-center gap-3">
         <SearchInput
           placeholder="Search by name or phone number..."
           value={searchTerm}
           onChange={(val) => setSearchTerm(val)}
         />
+        <Button
+          className="whitespace-nowrap"
+          onClick={() => setCustomerAddModalOpen(true)}
+        >
+          <UserPlus size={15} />
+          Add customer
+        </Button>
       </div>
 
       <DataTable
@@ -225,6 +247,12 @@ export const CustomerListTable = () => {
             description="Start adding customers to manage their invoices and track their due amounts."
           />
         }
+      />
+
+      <CustomerCreateEditModal
+        mode="create"
+        openState={customerAddModalOpen}
+        onClose={() => setCustomerAddModalOpen(false)}
       />
     </div>
   );

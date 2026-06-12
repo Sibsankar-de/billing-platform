@@ -236,6 +236,7 @@ export const ProductImageSection = ({
         onClose={() => setIsGalleryOpen(false)}
         onSelect={handleImageSelect}
         selectedImageIds={selectedImages.map((img) => img.imageId)}
+        selectedImages={selectedImages}
       />
     </div>
   );
