@@ -90,7 +90,7 @@ export const NavMenuItem = ({
         onClick={onClick || handleButtonClick}
         className={`w-full gap-3 ${
           isActive
-            ? "bg-indigo-100 text-indigo-600"
+            ? "bg-indigo-100 text-primary"
             : "text-gray-700 hover:bg-gray-200"
         }`}
       >

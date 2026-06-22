@@ -94,8 +94,8 @@ export function HeaderNavbar() {
           <div className="border-l border-gray-200 pl-1">
             <div
               className={cn(
-                "flex items-center gap-3 pl-4",
-                "hover:bg-gray-100 rounded-xl py-1.5 px-2 cursor-pointer active:bg-gray-300 transition-all duration-200",
+                "flex items-center gap-3 pl-4 rounded-xl py-1.5 px-2 cursor-pointer",
+                "hover:bg-gray-100 active:bg-gray-300 transition-all duration-200",
                 "select-none",
               )}
               onClick={() => setIsProfileOpen((p) => !p)}

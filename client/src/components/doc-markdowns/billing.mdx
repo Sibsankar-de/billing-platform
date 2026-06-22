@@ -1,0 +1,56 @@
+# Billing & Invoices
+
+The Invoices module enables you to construct professional bills, record client transactions, handle payments, and print standard invoices.
+
+---
+
+## Creating a New Invoice (Bill)
+
+To draft a new invoice:
+1. Navigate to the **Billing** tab or select **Create Bill** in your dashboard.
+2. Complete the billing form sections:
+   * **Bill To (Customer)**: Enter the customer's name, phone, and address.
+   * **Items Selection**: Select products from your inventory, specify the quantity, and choose the active pricing breakdown.
+   * **Discounts & Taxes**: Input absolute discounts or custom tax percentages.
+   * **Payment Details**: Enter the paid amount to calculate any outstanding dues. Select a payment mode (Cash, Card, UPI, Bank Transfer).
+
+---
+
+## Customer Auto-Linking
+
+When typing in the **Bill To** input field:
+* EaseInv performs a **search-as-you-type** query against your registered customers.
+* Selecting an existing customer auto-fills their phone, email, and address, and lists their current outstanding dues.
+* If the customer does not exist, type their info manually. EaseInv automatically creates a new customer profile when the invoice is saved!
+
+---
+
+## Saving & Printing Bills
+
+EaseInv provides two modes of storing and printing invoices:
+
+### 1. Saving Bills
+* Click **Save** or use the shortcut `Ctrl + S`.
+* Invoices are stored in the database. You can save an invoice as a **Draft** or mark it as **Paid** (which updates cash flows).
+
+### 2. Printing Bills
+* Click **Save & Print** or use the shortcut `Ctrl + P`.
+* A responsive modal displays the print layout. You can select your system printer or save directly as a **PDF**.
+
+---
+
+## Related Invoice Settings
+
+Customize your billing templates and details under [Store Settings > Invoice Settings](/stores/[store_id]/settings/invoice):
+
+### Invoice Numbering & Rounding
+* **Invoice Prefix**: Define a custom prefix (e.g. `INV-`) to generate serial numbering automatically (e.g. `INV-1001`, `INV-1002`).
+* **Roundup Invoice Total**: Toggle to round final amounts to the nearest whole integer (e.g., `$45.75` rounds to `$46.00`).
+
+### Branding
+* **Store Logo**: Upload a logo to be displayed in the header of the printed invoices.
+* **Footer Note**: Customize a message at the bottom of the invoice (e.g., *"Thank you for your business!"*).
+
+### Payments & Banking
+* **Payment QR Code**: Upload a UPI or payment QR code so customers can scan and pay directly from printed or digital invoices.
+* **Bank Account Details**: Provide bank details (Account Name, Bank Name, Account Number, IFSC/Bank Code) printed on invoices for direct bank transfers.

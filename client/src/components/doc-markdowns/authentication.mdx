@@ -1,0 +1,52 @@
+# API Authentication
+
+The EaseInv API uses API Keys to authenticate requests. You can view, create, and revoke your API keys in your store settings under the **API Keys** tab.
+
+All API requests must be performed over HTTPS. Requests made over unencrypted HTTP will fail.
+
+---
+
+## Authentication Header
+
+Authenticate your API requests by including your secret API key in the `Authorization` header. All keys should be prefixed with `Bearer `.
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+For example, using cURL:
+
+```bash
+curl -X GET https://api.easeinv.com/v1/products \\
+  -H "Authorization: Bearer sk_live_easeinv_demo_key_2026"
+```
+
+> [!WARNING]
+> **Keep your keys secure!**
+> Your API keys carry significant privileges. Do not share them in public repositories, client-side code (like browser-side JavaScript), or mobile apps. Always execute API calls from your secure backend server.
+
+---
+
+## Creating an API Key
+
+To create a new API Key:
+1. Log in to your EaseInv Dashboard.
+2. Select your store, and navigate to **Settings** (gear icon in the sidebar).
+3. Click on the **API Keys** tab.
+4. Click **Create Key**, specify a descriptive name (e.g. *Mobile App Backend*), choose permissions/scopes (Read/Write for Products, Invoices, Customers), and click **Create**.
+5. Copy the generated key immediately and save it in a safe place. For security reasons, the full key is only displayed once.
+
+---
+
+## API Key Scopes
+
+Each key can be restricted to specific access levels to limit exposure:
+
+| Scope | Description |
+|---|---|
+| `products:read` | Retrieve list of products and search inventory. |
+| `products:write` | Create, modify, and delete inventory products. |
+| `customers:read` | Retrieve customer lists and purchase history. |
+| `customers:write` | Create and edit customer profiles. |
+| `invoices:read` | View billing invoices, PDF files, and receipts. |
+| `invoices:write` | Generate new invoices, mark as paid, or cancel them. |

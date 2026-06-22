@@ -1,0 +1,91 @@
+# API Reference
+
+This document describes the endpoints available in the EaseInv API. For authentication instructions, please refer to the [Authentication Guide](/docs/authentication).
+
+---
+
+## Products API
+
+Manage your store catalog and product inventory.
+
+### 1. List Products
+`GET /v1/products`
+
+Retrieve a paginated list of products for the active store.
+
+**Response (200 OK)**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "prod_01J0EAW",
+      "name": "Wireless Ergonomic Mouse",
+      "sku": "WRLS-MSE-01",
+      "buyingPrice": 15.00,
+      "sellingPrice": 29.99,
+      "stock": 42,
+      "currency": "USD"
+    }
+  ]
+}
+```
+
+### 2. Create Product
+`POST /v1/products`
+
+Add a new product to your inventory.
+
+**Request Body**
+```json
+{
+  "name": "Bluetooth Mechanical Keyboard",
+  "sku": "KB-MECH-87",
+  "buyingPrice": 45.00,
+  "sellingPrice": 89.99,
+  "stock": 15
+}
+```
+
+---
+
+## Invoices API
+
+Create, update, and fetch invoice records.
+
+### 1. List Invoices
+`GET /v1/invoices`
+
+Retrieve a list of drafted and paid invoices.
+
+### 2. Create Invoice
+`POST /v1/invoices`
+
+Create a new billing invoice transaction.
+
+**Request Body**
+```json
+{
+  "customerId": "cust_01J0EBF",
+  "items": [
+    {
+      "productId": "prod_01J0EAW",
+      "quantity": 2
+    }
+  ],
+  "taxRate": 8.5,
+  "discount": 5.00,
+  "paymentMode": "UPI"
+}
+```
+
+---
+
+## Customers API
+
+Manage customer profiles and view their transaction histories.
+
+### 1. List Customers
+`GET /v1/customers`
+
+Retrieve a list of customers associated with your store.

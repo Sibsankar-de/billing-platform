@@ -1,0 +1,70 @@
+# Inventory Management
+
+The Inventory module in EaseInv allows you to catalog products, track stock counts in real time, configure selling units, and analyze profit margins with granular price breakdowns.
+
+---
+
+## Adding Products to Inventory
+
+To catalog a new product:
+1. Navigate to the **Inventory** section in the store dashboard.
+2. Click the **Add Product** button in the upper right.
+3. Fill out the core catalog fields:
+   * **Name**: The display name of the product.
+   * **SKU (Stock Keeping Unit)**: A unique identifier for tracking inventory.
+   * **GTIN (Global Trade Item Number)**: Barcode/EAN number (optional).
+   * **Description**: Item specifications or remarks (optional).
+   * **Buying Price**: The cost price per item at which you purchase stock. Used to calculate profit margins.
+
+---
+
+## Stock Tracking
+
+EaseInv supports tracking physical stock counts to prevent overselling. 
+
+### Enabling Stock Tracking
+1. **Per-Product**: In the Product Form, toggle **Enable Inventory Tracking**. When enabled, you can enter the **Initial/Total Stock** value.
+2. **Globally**: You can control stock tracking defaults in **Settings > Inventory Settings** under the **Enable Stock Tracking** switch.
+
+> [!NOTE]
+> If stock tracking is disabled for a product, it can be added to invoices infinitely without enforcing limits or issuing warnings.
+
+---
+
+## Product Units & Packaging
+
+Every product has a primary unit (e.g. `PCS`, `BOX`, `KG`, `LTR`).
+To add new units:
+1. Navigate to your store **Settings > Inventory Settings**.
+2. Under the **Add Custom Units** section, type your custom unit name (e.g., `BOX`, `PKT`) and click **Add**.
+3. Once saved, these custom units become available in the **Stock Unit** selection dropdown when creating or updating any product.
+
+---
+
+## How Price Breakdown Works
+
+EaseInv features a powerful **Price Breakdown Input** to support custom, quantity-based bulk pricing. This allows you to sell the same product at different price rates depending on the bulk amount.
+
+For example, a soda can might be sold for:
+* `$2` per `1 PCS`
+* `$20` per `12 PCS` (case)
+
+### Profit Margin Calculations
+For each price breakdown row, the system calculates and displays the margin percentage automatically:
+
+1. **Cost Per Item**: The unit selling price is computed as:
+   `Cost Per Item = Selling Price / Breakdown Quantity`
+2. **Profit Margin**: The profit margin percentage is calculated relative to your **Buying Price**:
+   `Profit Margin (%) = ((Cost Per Item - Buying Price Per Item) / Buying Price Per Item) * 100`
+
+The margin indicator is dynamically updated in the UI:
+* **Green**: Positive margin (Profit).
+* **Red**: Negative margin (Loss).
+
+---
+
+## Related Settings
+
+Ensure you configure your inventory parameters under **Store Settings > Inventory Settings**. Here you can manage:
+* **Global Inventory Tracking** toggle.
+* **Custom Packings/Units** registry.
