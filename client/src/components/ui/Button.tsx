@@ -23,6 +23,7 @@ export interface ButtonType extends React.ComponentProps<"button"> {
     | "dark";
   disabled?: boolean;
   loading?: boolean;
+  loadingMessage?: string;
   tooltip?: string;
   tooltipId?: string;
 }
@@ -36,6 +37,7 @@ export const Button = ({
   disabled = false,
   type = "button",
   loading = false,
+  loadingMessage,
   tooltip,
   tooltipId = "button-tooltip",
   ...props
@@ -83,12 +85,18 @@ export const Button = ({
         <div
           aria-disabled={true}
           className={cn(
-            "absolute w-full h-full inset-0 flex justify-center items-center",
+            "absolute w-full h-full inset-0 flex justify-center items-center gap-2",
             "bg-gray-300",
             "border-none! rounded-lg! transition-none! pointer-events-none!",
           )}
         >
-          <Loader className="border-white border-t-primary" size={22} />
+          <Loader
+            className="border-white border-t-primary"
+            size={loadingMessage ? 18 : 22}
+          />
+          {loadingMessage && (
+            <span className="text-sm text-slate-700">{loadingMessage}</span>
+          )}
         </div>
       )}
 

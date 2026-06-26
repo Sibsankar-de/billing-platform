@@ -4,6 +4,7 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "../../utils";
 import { Button } from "../../ui/Button";
+import { SpreadText } from "../../ui/SpreadText";
 import {
   BookOpen,
   Key,
@@ -17,7 +18,7 @@ import {
 interface SidebarItem {
   title: string;
   href: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 interface SidebarGroup {
@@ -82,9 +83,9 @@ export function DocsSidebar() {
       <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
         {navigationGroups.map((group, groupIdx) => (
           <div key={groupIdx} className="space-y-1">
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-3 mb-2">
+            <SpreadText as="h4" className="text-[10px] text-gray-400 px-3 mb-2">
               {group.title}
-            </h4>
+            </SpreadText>
             <ul className="space-y-1">
               {group.items.map((item, itemIdx) => {
                 const Icon = item.icon;

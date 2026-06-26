@@ -69,6 +69,7 @@ const docNavigationOrder: Record<string, DocPageInfo> = {
 export function DocPageLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const nextPage = docNavigationOrder[pathname];
+  const isApiExplorer = pathname === "/docs/api";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -83,7 +84,12 @@ export function DocPageLayout({ children }: { children: React.ReactNode }) {
         <DocsMobileNav />
 
         <main className="flex-1 min-w-0 flex flex-col justify-between">
-          <div className="px-6 pb-8 md:px-12 md:pb-10 flex-1 w-full max-w-5xl mx-auto space-y-8">
+          <div
+            className={cn(
+              "px-6 pb-8 md:px-12 md:pb-10 flex-1 w-full mx-auto space-y-8",
+              isApiExplorer ? "max-w-[1400px]" : "max-w-5xl",
+            )}
+          >
             <div>{children}</div>
 
             {nextPage && (
