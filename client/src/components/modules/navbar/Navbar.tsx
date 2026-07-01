@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { selectUserSate } from "@/store/features/userSlice";
 import { Avatar } from "../../ui/Avatar";
 import { ProfileDropdown } from "./ProfileDropdown";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppLogoFull } from "../../ui/AppLogo";
 import { NavbarSearch } from "./NavbarSearch";
 import { useRouter } from "next/navigation";
@@ -51,10 +51,18 @@ export function HeaderNavbar() {
   const { data: user } = useSelector(selectUserSate);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const router = useRouter();
-  const { actionButtons } = useNavContext();
+  const { actionButtons, setNavHeight } = useNavContext();
+
+  const navRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (navRef.current) setNavHeight(navRef.current?.clientHeight || 0);
+  }, [navRef.current]);
 
   return (
-    <header className="bg-white border-b border-gray-200 px-8 py-2 sticky top-0 z-50 h-fit">
+    <header
+      ref={navRef}
+      className="bg-white border-b border-gray-200 px-8 py-2 sticky top-0 z-50 h-fit"
+    >
       <div className="flex items-center justify-between">
         <AppLogoFull size={120} />
 
@@ -94,8 +102,8 @@ export function HeaderNavbar() {
           <div className="border-l border-gray-200 pl-1">
             <div
               className={cn(
-                "flex items-center gap-3 pl-4",
-                "hover:bg-gray-100 rounded-xl py-1.5 px-2 cursor-pointer active:bg-gray-300 transition-all duration-200",
+                "flex items-center gap-3 pl-4 rounded-xl py-1.5 px-2 cursor-pointer",
+                "hover:bg-gray-100 active:bg-gray-300 transition-all duration-200",
                 "select-none",
               )}
               onClick={() => setIsProfileOpen((p) => !p)}

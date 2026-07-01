@@ -10,6 +10,8 @@ import React, {
 } from "react";
 
 interface NavContextType {
+  navHeight: number;
+  setNavHeight: (h: number) => void;
   actionButtons: ReactNode;
   setActionButtons: React.Dispatch<React.SetStateAction<ReactNode>>;
 }
@@ -19,13 +21,16 @@ export const NavContext = createContext<NavContextType | undefined>(undefined);
 export const NavContextProvider = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
   const [actionButtons, setActionButtons] = useState<ReactNode>(null);
+  const [navHeight, setNavHeight] = useState(0);
 
   useEffect(() => {
     setActionButtons(null);
   }, [pathName]);
 
   return (
-    <NavContext.Provider value={{ actionButtons, setActionButtons }}>
+    <NavContext.Provider
+      value={{ actionButtons, setActionButtons, navHeight, setNavHeight }}
+    >
       {children}
     </NavContext.Provider>
   );
