@@ -19,9 +19,9 @@ export const TopNav = () => {
   }, []);
 
   const navLinks = [
-    { name: "Features", href: "#features" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Pricing", href: "#pricing" },
+    { name: "Features", href: "/features" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Docs", href: "/docs" },
   ];
 
   return (
